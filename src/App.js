@@ -1,7 +1,8 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { Vector3 } from 'three';
 import { configureStore } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
+import { useDispatch, Provider } from 'react-redux';
 import { StyledEngineProvider } from '@mui/material/styles';
 
 import personsReducer from './store/personsReducer';
@@ -11,6 +12,10 @@ import dialogsReducer from './store/dialogsReducer';
 import runtimeReducer from './store/runtimeReducer';
 import RenderProvider from './components/RenderProvider';
 import PedigreeRenderer from './components/PedegreeRenderer';
+import { setFamilyContext, loadFamily } from './lib/Connect';
+
+import { setPersons } from './store/personsReducer';
+import { setFamily } from './store/familyReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
@@ -27,9 +32,19 @@ const store = configureStore({ reducer: {
   runtime: runtimeReducer,
 }});
 
-function App() {
+function App(props) {
+  const { family = '' } = props;
   const cameraPosition= new Vector3(30.0, 30.0, 30.0);
   const cameraTarget = new Vector3(0, 0, 0);
+
+  useEffect(async () => {
+    if (family) {
+      setFamilyContext(family);
+      await store.dispatch(setFamily(family));
+      const loadedPersons = await loadFamily();
+      await store.dispatch(setPersons(loadedPersons));
+    }
+  }, [family]);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

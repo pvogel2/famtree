@@ -22,11 +22,12 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {WPElement} Element to render.
  */
-export default function Save() {
+export default function Save({ attributes }) {
+	const { family = '' } = attributes;
 	return (
 		<p { ...useBlockProps.save() }>
 		  <div style="position:relative; min-height: 640px;">
-			  <div id="testtest" />
+			  <div id="testtest" data-family={ family } />
 		  </div>
 		</p>
 	);

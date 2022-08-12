@@ -16,7 +16,6 @@ export async function loadFamily() {
     p.children = JSON.parse(p.children);
     p.partners = JSON.parse(p.partners);
   });
-  console.log(persons);
   return persons;
 }
 

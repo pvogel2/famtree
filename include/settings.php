@@ -135,7 +135,7 @@ function pedigree_options_page_html() {
     function pedigree_form_buttons() {
       ?>
       <tr>
-        <td><button type="button" onclick="window.pedigree.resetPerson()">Reset Person</button></td>
+        <td><p><button type="button" onclick="window.pedigree.resetPerson()" class="button">Reset Person</button></p></td>
         <td><?php submit_button( 'Save Person' ) ?></td>
       </tr>
       <?php
@@ -207,9 +207,9 @@ function pedigree_options_page_html() {
         <td><?php print ($person->deathday) ?></td>
         <td><?php print ($person->children) ?></td>
         <td><?php print ($person->partners) ?></td>
-        <td><button onclick="window.pedigree.togglePartner(<?php print ($person->id) ?>)">toggle as partner</button></td>
-        <td><button onclick="window.pedigree.toggleChild(<?php print ($person->id) ?>)">toggle as child</button></td>
-        <td><button onclick="window.pedigree.editPerson(<?php print ($person->id) ?>)">edit</button></td>
+        <td><button onclick="window.pedigree.togglePartner(<?php print ($person->id) ?>)" class="button">toggle as partner</button></td>
+        <td><button onclick="window.pedigree.toggleChild(<?php print ($person->id) ?>)" class="button">toggle as child</button></td>
+        <td><button onclick="window.pedigree.editPerson(<?php print ($person->id) ?>)" class="button">edit</button></td>
       </tr>
     <?php
       }

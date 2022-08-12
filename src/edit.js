@@ -13,7 +13,9 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+
+import { Panel, PanelBody, PanelRow, SelectControl } from '@wordpress/components';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -33,8 +35,8 @@ import App from './App';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit({ attributes }) {
-	const { align } = attributes;
+export default function Edit({ attributes, setAttributes  }) {
+	const { align, family } = attributes;
 
 	useEffect(() => {
     window.dispatchEvent(new Event('resize'));
@@ -42,7 +44,22 @@ export default function Edit({ attributes }) {
 
 	return (
 		<div { ...useBlockProps() }>
-      <div style={
+			<InspectorControls key="setting">
+				  <PanelBody title="Attribute Settings" initialOpen={ true }>
+				    <SelectControl
+  					  label={ __( 'Current family', 'pedigree' ) }
+	  					labelPosition= 'side'
+              value={ family }
+              onChange={ ( v ) => setAttributes( { family: v } ) }
+				  		options={ [
+					  		{ label: 'Default', value: 'default' },
+						  	{ label: 'Test', value: 'test' },
+							  { label: 'Meyer', value: 'meyer' },
+					    ] }
+						/>
+				  </PanelBody>
+			</InspectorControls>
+			<div style={
 			  { position: 'relative',
 			    minHeight: '640px',
 			  }}
