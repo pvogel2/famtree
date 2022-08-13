@@ -6,9 +6,9 @@ function pedigree_settings_init() {
     $args = array(
       'type' => 'array',
       'sanitize_callback' => 'sanitize_text_field',
-      'default' => 'default',
+      'default' => array(),
     );
-    register_setting( 'pedigree-options', 'families',  $args);
+    register_setting( 'pedigree-options', 'pedigree_families',  $args);
  
     // Register a new section in the "pedigree" page.
     add_settings_section(
@@ -33,8 +33,20 @@ function pedigree_settings_init() {
     );
 }
 
+function pedigree_field_families_cb() {
+  $families = get_option( 'pedigree_families', [] );
+	$args = isset( $families ) ? (array) $families : [];	
+	?>
+	<input type="text" name="pedigree_families[]" value="['test1', 'test2']" />
+	<select id="pedigree_families_select" name="pedigree_families[]">
+		<option <?php selected( in_array( 'ONE', $args ), 1 ); ?> value="ONE">One</option>
+		<option <?php selected( in_array( 'TWO', $args ), 1 ); ?> value="TWO">Two</option>
+	</select>
+	<?php	
+}
+
 function pedigree_section_options() {
-  print('Hello siettings!');
+  print('Hello settings!');
 }
 
 /* Register settings script. */
@@ -145,7 +157,7 @@ function pedigree_options_page_html() {
     function pedigree_form_buttons() {
       ?>
       <tr>
-        <td><p><button type="button" onclick="window.pedigree.resetPerson()" class="button">Reset Person</button></p></td>
+        <td><p class="submit"><button type="button" onclick="window.pedigree.resetPerson()" class="button">Reset Person</button></p></td>
         <td><?php submit_button( 'Save Person' ) ?></td>
       </tr>
       <?php
@@ -160,7 +172,11 @@ function pedigree_options_page_html() {
         settings_fields( 'pedigree-options' );
         // output setting sections and their fields
         // (sections are registered for "pedigree", each field is registered to a specific section)
-        do_settings_sections( 'pedigree-options' );
+        ?>
+          <input name="pedigree_families[default]">
+          <input name="pedigree_families[test]">
+        <?php
+        do_settings_sections( 'pedigree' );
         // output save settings button
         submit_button( 'Save Settings' );
 
