@@ -1,42 +1,46 @@
 <?php
 require_once(PEDIGREE__PLUGIN_DIR . 'include/database.php');
 
-/*function pedigree_settings_init() {
+function pedigree_settings_init() {
     // Register a new setting for "pedigree" page.
-    register_setting( 'pedigree', 'pedigree_options' );
+    $args = array(
+      'type' => 'array',
+      'sanitize_callback' => 'sanitize_text_field',
+      'default' => 'default',
+    );
+    register_setting( 'pedigree-options', 'families',  $args);
  
     // Register a new section in the "pedigree" page.
     add_settings_section(
-        'pedigree_section_developers',
-        __( 'The Matrix has you.', 'pedigree' ), 'pedigree_section_developers_callback',
-        'pedigree'
+      'pedigree-options',
+      __( 'The Matrix has you.', 'pedigree' ), 'pedigree_section_options',
+      'pedigree'
     );
  
     // Register a new field in the "pedigree_section_developers" section, inside the "pedigree" page.
     add_settings_field(
-        'pedigree_field_pill', // As of WP 4.6 this value is used only internally.
-                                // Use $args' label_for to populate the id inside the callback.
-            __( 'Pill', 'pedigree' ),
-        'pedigree_field_pill_cb',
-        'pedigree',
-        'pedigree_section_developers',
-        array(
-            'label_for'         => 'pedigree_field_pill',
-            'class'             => 'pedigree_row',
-            'pedigree_custom_data' => 'custom',
-        )
+      'pedigree_field_families', // As of WP 4.6 this value is used only internally.
+                               // Use $args' label_for to populate the id inside the callback.
+      __( 'Pill', 'pedigree' ),
+      'pedigree_field_families_cb',
+      'pedigree',
+      'pedigree-options',
+      array(
+       'label_for'         => 'pedigree_field_families',
+       'class'             => 'pedigree_row',
+       'pedigree_custom_data' => 'custom',
+      )
     );
 }
-*/
-/**
- * Register our pedigree_settings_init to the admin_init action hook.
- */
-//add_action( 'admin_init', 'pedigree_settings_init' );
 
+function pedigree_section_options() {
+  print('Hello siettings!');
+}
 
 /* Register settings script. */
 function pedigree_admin_init() {
   wp_register_script( 'pedigree-admin-script', plugins_url('/admin/script.js', __FILE__) );
+  pedigree_settings_init();
 }
 
 function pedigree_admin_scripts() {
@@ -70,6 +74,12 @@ add_action( 'admin_menu', 'pedigree_options_page' );
  * Register javascript for the pedigree_options_page.
  */
 add_action( 'admin_init', 'pedigree_admin_init' );
+
+function pedigree_settings_capability($capability) {
+  return 'pedigree_write';
+}
+
+add_filter( 'pedigree_capability_pedigree-options', 'pedigree_settings_capability' );
 
 /**
  * Top level menu callback function
@@ -141,20 +151,22 @@ function pedigree_options_page_html() {
       <?php
     }
     ?>
-    <div class="pedigree">
+    <div class="pedigree wrap">
       <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-      <!--form action="options.php" method="post">
+      
+      <form action="options.php" method="post">
         <?php
         // output security fields for the registered setting "wporg"
-        //settings_fields( 'pedigree' );
+        settings_fields( 'pedigree-options' );
         // output setting sections and their fields
         // (sections are registered for "pedigree", each field is registered to a specific section)
-        //do_settings_sections( 'pedigree' );
+        do_settings_sections( 'pedigree-options' );
         // output save settings button
-        //submit_button( 'Save Settings' );
+        submit_button( 'Save Settings' );
 
         ?>
-        </form-->
+        </form>
+
         <form method="post" action="?page=pedigree" id="editPersonForm">
           <input readonly hidden type="text" name="id" id="personId" /><br/>
           <table>

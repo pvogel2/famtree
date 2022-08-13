@@ -3,12 +3,17 @@
 global $jal_db_version;
 $jal_db_version = '1.0';
 
+function pedigree_persons_tablename() {
+	global $wpdb;
+  return $wpdb->prefix . 'pedigree';
+}
+
 // https://codex.wordpress.org/Creating_Tables_with_Plugins
 function pedigree_database_setup() {
 	global $wpdb;
   global $jal_db_version;
 
-	$table_name = $wpdb->prefix . 'pedigree';
+	$table_name = pedigree_persons_tablename();
 
 	$charset_collate = $wpdb->get_charset_collate();
 
@@ -43,7 +48,7 @@ function pedigree_database_get_persons($id) {
 
 function pedigree_database_create_person($person) {
 	global $wpdb;
-	$table_name = $wpdb->prefix . 'pedigree';
+	$table_name = pedigree_persons_tablename();
 
   $firstName = sanitize_text_field($person['firstName']);
   $surNames = sanitize_text_field($person['surNames']);
@@ -77,7 +82,7 @@ function pedigree_database_create_person($person) {
 
 function pedigree_database_update_person($person) {
 	global $wpdb;
-	$table_name = $wpdb->prefix . 'pedigree';
+	$table_name = pedigree_persons_tablename();
 
   $personId = sanitize_text_field($person['id']);
   $firstName = sanitize_text_field($person['firstName']);
