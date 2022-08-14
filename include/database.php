@@ -37,14 +37,22 @@ function pedigree_database_setup() {
 	add_option( 'jal_db_version', $jal_db_version );
 }
 
-function pedigree_database_get_persons($id) {
+function pedigree_database_get_persons($id = '') {
   global $wpdb;
   $table_name = $wpdb->prefix . 'pedigree';
 
-  $results = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
+  if (empty($id)) {
+    $results = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
+  } else {
+    $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE family=$id", OBJECT );
+  }
 
+  $families = get_option( 'pedigree_families', array('default' => 'default') );
   // $json = json_encode($results);
-  return $results;
+  return array(
+    'persons' => $results,
+    'families' => $families,
+  );
 }
 
 function pedigree_database_create_person($person) {

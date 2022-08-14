@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Fab, Menu, MenuItem } from '@mui/material';
 import { FamilyRestroom } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { setPersons } from '../../store/personsReducer';
 import { setFamily } from '../../store/familyReducer';
 import { loadFamily, setFamilyContext } from './../../lib/Connect';
 
-const families = ['twoChilds', 'test', 'default', 'dummy'];
+// const families = ['twoChilds', 'test', 'default', 'dummy'];
 
 function LoadFamily() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -15,11 +15,14 @@ function LoadFamily() {
   const open = Boolean(anchorEl);
 
   const dispatch = useDispatch();
+ 
+  const families = useSelector((state) => state.families);
 
   const handleLoad = async () => {
     try {
-      const loadedPersons = await loadFamily();
-      await dispatch(setPersons(loadedPersons));
+      const { persons } = await loadFamily();
+
+      await dispatch(setPersons(persons));
       handleMenuClose();
     } catch(err) {
       console.log(err);

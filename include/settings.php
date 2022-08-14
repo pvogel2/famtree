@@ -219,7 +219,7 @@ function pedigree_options_page_html() {
         </form>
       </div>
     <?php
-      $results = pedigree_database_get_persons('test');
+      $results = pedigree_database_get_persons();
 
       if ( $results ) {
     ?>

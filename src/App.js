@@ -8,6 +8,7 @@ import { StyledEngineProvider } from '@mui/material/styles';
 import personsReducer from './store/personsReducer';
 import focusedPersonReducer from './store/focusedPersonReducer';
 import familyReducer from './store/familyReducer';
+import familiesReducer from './store/familiesReducer';
 import dialogsReducer from './store/dialogsReducer';
 import runtimeReducer from './store/runtimeReducer';
 import RenderProvider from './components/RenderProvider';
@@ -16,6 +17,7 @@ import { setFamilyContext, loadFamily } from './lib/Connect';
 
 import { setPersons } from './store/personsReducer';
 import { setFamily } from './store/familyReducer';
+import { setFamilies } from './store/familiesReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
@@ -24,11 +26,10 @@ import Intersector from './components/Intersector';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-import api from '@wordpress/api';
-
 const store = configureStore({ reducer: {
   persons: personsReducer,
   family: familyReducer,
+  families: familiesReducer,
   config: dialogsReducer,
   focusedPerson: focusedPersonReducer,
   runtime: runtimeReducer,
@@ -43,19 +44,11 @@ function App(props) {
     if (family) {
       setFamilyContext(family);
       await store.dispatch(setFamily(family));
-      const loadedPersons = await loadFamily();
-      await store.dispatch(setPersons(loadedPersons));
+      const loadedData = await loadFamily();
+      await store.dispatch(setPersons(loadedData.persons));
+      await store.dispatch(setFamilies(loadedData.families));
     }
   }, [family]);
-
-  useEffect(() => {
-    api.loadPromise.then(() => {
-      const settings = new api.models.Settings();
-      settings.fetch().then((options) => {
-        console.log(options['pedigree_families']);
-      });
-    });
-  }, []);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
