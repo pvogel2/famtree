@@ -97,3 +97,17 @@ window.pedigree.resetPerson = () => {
   const children = document.getElementById('children');
   children._values = [];
 };
+
+window.pedigree.addFamily = () => {
+  const input = document.getElementById('pedigreeFamiliesInput');
+  const container = document.getElementById('pedigreeKnownFamilies');
+  const newFamily = input.value;
+  if (newFamily) {
+    const newInput = document.createElement('input');
+    newInput.type='text';
+    newInput.name=`pedigree_families[${newFamily}]`;
+    newInput.value = newFamily;
+    newInput.text = newFamily;
+    container.appendChild(newInput);
+  }
+};

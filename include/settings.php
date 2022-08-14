@@ -5,7 +5,6 @@ function pedigree_settings_init() {
     // Register a new setting for "pedigree" page.
     $args = array(
       'type' => 'array',
-      'sanitize_callback' => 'sanitize_text_field',
       'default' => array(),
     );
     register_setting( 'pedigree-options', 'pedigree_families',  $args);
@@ -21,7 +20,7 @@ function pedigree_settings_init() {
     add_settings_field(
       'pedigree_field_families', // As of WP 4.6 this value is used only internally.
                                // Use $args' label_for to populate the id inside the callback.
-      __( 'Pill', 'pedigree' ),
+      __( 'Families', 'pedigree' ),
       'pedigree_field_families_cb',
       'pedigree',
       'pedigree-options',
@@ -37,11 +36,12 @@ function pedigree_field_families_cb() {
   $families = get_option( 'pedigree_families', [] );
 	$args = isset( $families ) ? (array) $families : [];	
 	?>
-	<input type="text" name="pedigree_families[]" value="['test1', 'test2']" />
-	<select id="pedigree_families_select" name="pedigree_families[]">
-		<option <?php selected( in_array( 'ONE', $args ), 1 ); ?> value="ONE">One</option>
-		<option <?php selected( in_array( 'TWO', $args ), 1 ); ?> value="TWO">Two</option>
-	</select>
+	<input type="text" id="pedigreeFamiliesInput" value="" />
+  <div id="pedigreeKnownFamilies">
+  <?php foreach ($args as $value) {
+      ?><input type="text" readonly name="pedigree_families[<?php echo $value ?>]" value="<?php echo $value ?>" /><?php
+    }?>
+    </div>
 	<?php	
 }
 
@@ -173,8 +173,6 @@ function pedigree_options_page_html() {
         // output setting sections and their fields
         // (sections are registered for "pedigree", each field is registered to a specific section)
         ?>
-          <input name="pedigree_families[default]">
-          <input name="pedigree_families[test]">
         <?php
         do_settings_sections( 'pedigree' );
         // output save settings button
@@ -182,6 +180,7 @@ function pedigree_options_page_html() {
 
         ?>
         </form>
+        <button onclick="window.pedigree.addFamily()">add</button>
 
         <form method="post" action="?page=pedigree" id="editPersonForm">
           <input readonly hidden type="text" name="id" id="personId" /><br/>
