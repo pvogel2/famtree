@@ -5,7 +5,11 @@ function pedigree_settings_init() {
     // Register a new setting for "pedigree" page.
     $args = array(
       'type' => 'array',
-      'default' => array(),
+      'default' => array(
+        'families' => array(
+          'default' => 'default',
+        ),
+      ),
     );
     register_setting( 'pedigree-options', 'pedigree_families',  $args);
  
@@ -33,13 +37,16 @@ function pedigree_settings_init() {
 }
 
 function pedigree_field_families_cb() {
-  $families = get_option( 'pedigree_families', [] );
-	$args = isset( $families ) ? (array) $families : [];	
+  $families = get_option( 'pedigree_families', array('default' => 'default') );
+	$args = isset( $families ) ? (array) $families : array('default' => 'default');	
 	?>
-	<input type="text" id="pedigreeFamiliesInput" value="" />
+	<input type="text" id="pedigreeFamiliesInput" value="default" />
   <div id="pedigreeKnownFamilies">
   <?php foreach ($args as $value) {
-      ?><input type="text" readonly name="pedigree_families[<?php echo $value ?>]" value="<?php echo $value ?>" /><?php
+      ?>
+        <input type="text" readonly name="pedigree_families[<?php echo $value ?>]" value="<?php echo $value ?>" />
+        <button type="button" onclick="window.pedigree.setFamily('<?php echo $value ?>');" class="button">edit</button>
+      <?php
     }?>
     </div>
 	<?php	
@@ -127,6 +134,15 @@ function pedigree_options_page_html() {
     // show error/update messages
     settings_errors( 'pedigree_messages' );
 
+    function pedigree_form_read_field($name, $label) {
+      ?>
+      <tr>
+        <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
+        <td><input readonly type="text" name="<?php print ($name) ?>" id="<?php print ($name) ?>" /></td>
+      </tr>  
+      <?php
+    }
+
     function pedigree_form_text_field($name, $label) {
       ?>
       <tr>
@@ -186,6 +202,7 @@ function pedigree_options_page_html() {
           <input readonly hidden type="text" name="id" id="personId" /><br/>
           <table>
           <?php 
+            pedigree_form_read_field('family', 'Family');
             pedigree_form_text_field('firstName', 'First Name');
             pedigree_form_text_field('surNames', 'Sur Names');
             pedigree_form_text_field('lastName', 'Last Name');
@@ -210,6 +227,7 @@ function pedigree_options_page_html() {
         <thead>
           <tr>
           <td>id</td>
+          <td>family</td>
           <td>firstname</td>
           <td>surnames</td>
           <td>lastname</td>
@@ -226,6 +244,7 @@ function pedigree_options_page_html() {
     ?>
       <tr>
         <td><?php print ($person->id) ?></td>
+        <td><?php print ($person->family) ?></td>
         <td><?php print ($person->firstName) ?></td>
         <td><?php print ($person->surNames) ?></td>
         <td><?php print ($person->lastName) ?></td>

@@ -15,7 +15,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 
-import { Panel, PanelBody, PanelRow, SelectControl } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.

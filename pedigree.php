@@ -31,6 +31,7 @@ require_once(PEDIGREE__PLUGIN_DIR . 'include/settings.php');
 
 function create_block_pedigree_block_init() {
 	register_block_type( __DIR__ . '/build' );
+	wp_localize_script( 'viewScript', 'pedigreeFamilies', array( 'test'=> 'test' ) );
 }
 
 add_action( 'init', 'create_block_pedigree_block_init' );

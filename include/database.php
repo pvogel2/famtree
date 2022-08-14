@@ -19,6 +19,7 @@ function pedigree_database_setup() {
 
     $sql = "CREATE TABLE $table_name (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
+    family varchar(55) DEFAULT '' NOT NULL,
 		firstName varchar(55) DEFAULT '' NOT NULL,
 		surNames varchar(55) DEFAULT '' NOT NULL,
 		lastName varchar(55) DEFAULT '' NOT NULL,

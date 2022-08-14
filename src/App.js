@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import { Vector3 } from 'three';
 import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch, Provider } from 'react-redux';
+import { Provider } from 'react-redux';
 import { StyledEngineProvider } from '@mui/material/styles';
 
 import personsReducer from './store/personsReducer';
@@ -23,6 +23,8 @@ import Intersector from './components/Intersector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
+import api from '@wordpress/api';
 
 const store = configureStore({ reducer: {
   persons: personsReducer,
@@ -45,6 +47,15 @@ function App(props) {
       await store.dispatch(setPersons(loadedPersons));
     }
   }, [family]);
+
+  useEffect(() => {
+    api.loadPromise.then(() => {
+      const settings = new api.models.Settings();
+      settings.fetch().then((options) => {
+        console.log(options['pedigree_families']);
+      });
+    });
+  }, []);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

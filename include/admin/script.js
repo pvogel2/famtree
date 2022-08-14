@@ -9,22 +9,25 @@ window.addEventListener('DOMContentLoaded', () => {
     window.pedigree.persons.push(
       window.pedigree.getPerson({
         id: Number(fields[0].textContent.trim()),
-        firstName: fields[1].textContent.trim(),
-        surNames: fields[2].textContent.trim(),
-        lastName: fields[3].textContent.trim(),
-        birthName: fields[4].textContent.trim(),
-        birthday: fields[5].textContent.trim(),
-        deathday: fields[6].textContent.trim(),
-        children: fields[7].textContent.trim(),
-        partners: fields[8].textContent.trim(),
+        family: fields[1].textContent.trim(),
+        firstName: fields[2].textContent.trim(),
+        surNames: fields[3].textContent.trim(),
+        lastName: fields[4].textContent.trim(),
+        birthName: fields[5].textContent.trim(),
+        birthday: fields[6].textContent.trim(),
+        deathday: fields[7].textContent.trim(),
+        children: fields[8].textContent.trim(),
+        partners: fields[9].textContent.trim(),
       })
     );
   });
+  window.pedigree.setFamily();
 });
 
 window.pedigree.getPerson = (json) => {
   return {
     id: json.id,
+    family: json.family || '',
     firstName: json.firstName || '',
     surNames: json.surNames || '',
     lastName: json.lastName || '',
@@ -109,5 +112,12 @@ window.pedigree.addFamily = () => {
     newInput.value = newFamily;
     newInput.text = newFamily;
     container.appendChild(newInput);
+  }
+};
+
+window.pedigree.setFamily = (id = 'default') => {
+  const personInput = document.getElementById('family');
+  if (id) {
+    personInput.value = id;
   }
 };
