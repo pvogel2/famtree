@@ -39,13 +39,16 @@ function pedigree_settings_init() {
 function pedigree_field_families_cb() {
   $families = get_option( 'pedigree_families', array('default' => 'default') );
 	$args = isset( $families ) ? (array) $families : array('default' => 'default');	
-	?>
-	<input type="text" id="pedigreeFamiliesInput" value="default" />
+	?><table><tr>
+    <td><input type="text" id="pedigreeFamiliesInput" value="default" /></td>
+    <td><button class="button" type="button" onclick="window.pedigree.addFamily()">add</button></td>
+  </tr>
+</table>
   <div id="pedigreeKnownFamilies">
   <?php foreach ($args as $value) {
       ?>
         <input type="text" readonly name="pedigree_families[<?php echo $value ?>]" value="<?php echo $value ?>" />
-        <button type="button" onclick="window.pedigree.setFamily('<?php echo $value ?>');" class="button">edit</button>
+        <button type="button" onclick="window.pedigree.setFamily('<?php echo $value ?>');" class="button">use</button><br />
       <?php
     }?>
     </div>
@@ -189,6 +192,7 @@ function pedigree_options_page_html() {
         // output setting sections and their fields
         // (sections are registered for "pedigree", each field is registered to a specific section)
         ?>
+
         <?php
         do_settings_sections( 'pedigree' );
         // output save settings button
@@ -196,7 +200,6 @@ function pedigree_options_page_html() {
 
         ?>
         </form>
-        <button onclick="window.pedigree.addFamily()">add</button>
 
         <form method="post" action="?page=pedigree" id="editPersonForm">
           <input readonly hidden type="text" name="id" id="personId" /><br/>
@@ -220,8 +223,8 @@ function pedigree_options_page_html() {
       </div>
     <?php
       $results = pedigree_database_get_persons();
-
-      if ( $results ) {
+      $persons = $results['persons'];
+      if ( $persons ) {
     ?>
       <table id="familyTable">
         <thead>
@@ -240,7 +243,7 @@ function pedigree_options_page_html() {
       </thead>
       <tbody>
     <?php
-      foreach ( $results as $person ) {
+      foreach ( $persons as $person ) {
     ?>
       <tr>
         <td><?php print ($person->id) ?></td>
