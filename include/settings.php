@@ -116,6 +116,11 @@ function pedigree_options_page_html() {
     return;
   }
 
+  if (!empty($_POST) && $_POST['deleteId'] != '') {
+    $personId = sanitize_text_field($_POST['deleteId']);
+    pedigree_database_delete_person($personId);
+  } else
+
   if (
     !empty($_POST)
     && $_POST['firstName'] != ''
@@ -223,6 +228,10 @@ function pedigree_options_page_html() {
             pedigree_form_buttons();
           ?>
           </table>
+        </form>
+
+        <form method="post" action="?page=pedigree" id="deletePersonForm">
+          <input type="text" hidden name="deleteId" id="deletePersonId" />
         </form>
       </div>
     <?php

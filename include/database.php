@@ -58,7 +58,6 @@ function pedigree_database_get_persons($id = '') {
 function pedigree_database_delete_person($id = '') {
   global $wpdb;
   $table_name = $wpdb->prefix . 'pedigree';
-
   if (empty($id)) {
     return false;
   } else {

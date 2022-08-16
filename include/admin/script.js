@@ -1,5 +1,3 @@
-import apiFetch from '@wordpress/api-fetch';
-
 window.pedigree = window.pedigree || {
   persons: [],
 };
@@ -103,8 +101,10 @@ window.pedigree.resetPerson = () => {
   children._values = [];
 };
 
-await window.pedigree.removePerson = (id) => {
-  const data = await apiFetch({ path: `pedigree/v1/person/${id}`, method: 'DELETE', });
+window.pedigree.removePerson = async (id) => {
+  const form = document.getElementById('deletePersonForm');
+  form['deleteId'].value = id;
+  form.requestSubmit();
 }
 
 window.pedigree.addFamily = () => {
