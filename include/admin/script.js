@@ -1,3 +1,5 @@
+import apiFetch from '@wordpress/api-fetch';
+
 window.pedigree = window.pedigree || {
   persons: [],
 };
@@ -101,6 +103,10 @@ window.pedigree.resetPerson = () => {
   children._values = [];
 };
 
+await window.pedigree.removePerson = (id) => {
+  const data = await apiFetch({ path: `pedigree/v1/person/${id}`, method: 'DELETE', });
+}
+
 window.pedigree.addFamily = () => {
   const input = document.getElementById('pedigreeFamiliesInput');
   const container = document.getElementById('pedigreeKnownFamilies');
@@ -121,3 +127,7 @@ window.pedigree.setFamily = (id = 'default') => {
     personInput.value = id;
   }
 };
+
+window.pedigree.removeFamily = (id) => {
+  alert(`remove family ${id}`)
+}

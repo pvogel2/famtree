@@ -44,7 +44,7 @@ function pedigree_database_get_persons($id = '') {
   if (empty($id)) {
     $results = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
   } else {
-    $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE family=$id", OBJECT );
+    $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE family = '$id'", OBJECT );
   }
 
   $families = get_option( 'pedigree_families', array('default' => 'default') );
@@ -55,10 +55,23 @@ function pedigree_database_get_persons($id = '') {
   );
 }
 
+function pedigree_database_delete_person($id = '') {
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'pedigree';
+
+  if (empty($id)) {
+    return false;
+  } else {
+    return $wpdb -> delete( $table_name, array('id' => $id ));
+  }
+}
+
+
 function pedigree_database_create_person($person) {
 	global $wpdb;
 	$table_name = pedigree_persons_tablename();
 
+  $family = sanitize_text_field($person['family']);
   $firstName = sanitize_text_field($person['firstName']);
   $surNames = sanitize_text_field($person['surNames']);
   $lastName = sanitize_text_field($person['lastName']);
@@ -77,6 +90,7 @@ function pedigree_database_create_person($person) {
   $wpdb->insert( 
     $table_name, 
     array(
+      'family' => $family,
       'firstName' => $firstName,
       'surNames' => $surNames,
       'lastName' => $lastName,
@@ -94,6 +108,7 @@ function pedigree_database_update_person($person) {
 	$table_name = pedigree_persons_tablename();
 
   $personId = sanitize_text_field($person['id']);
+  $family = sanitize_text_field($person['family']);
   $firstName = sanitize_text_field($person['firstName']);
   $surNames = sanitize_text_field($person['surNames']);
   $lastName = sanitize_text_field($person['lastName']);
@@ -107,6 +122,7 @@ function pedigree_database_update_person($person) {
   $wpdb->update( 
     $table_name, 
     array(
+      'family' => $family,
       'firstName' => $firstName,
       'surNames' => $surNames,
       'lastName' => $lastName,

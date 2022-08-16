@@ -15,6 +15,12 @@ function pedigree_rest_register_routes() {
     'callback' => 'pedigree_database_get_persons',
     'permission_callback' => 'pedigree_rest_permission_get_family',
   ));
+
+  register_rest_route( $namespace, '/person/(?P<id>\w+)', array(
+    'methods' => WP_REST_Server::DELETABLE,
+    'callback' => 'pedigree_database_remove_person',
+    'permission_callback' => 'pedigree_rest_permission_get_family',
+  ));
 }
 
 add_action( 'rest_api_init', 'pedigree_rest_register_routes');

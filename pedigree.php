@@ -31,7 +31,6 @@ require_once(PEDIGREE__PLUGIN_DIR . 'include/settings.php');
 
 function create_block_pedigree_block_init() {
 	register_block_type( __DIR__ . '/build' );
-	wp_localize_script( 'viewScript', 'pedigreeFamilies', array( 'test'=> 'test' ) );
 }
 
 add_action( 'init', 'create_block_pedigree_block_init' );
@@ -39,4 +38,4 @@ add_action( 'init', 'create_block_pedigree_block_init' );
 register_activation_hook( __FILE__, 'pedigree_activate' );
 register_deactivation_hook( __FILE__, 'pedigree_role_teardown' );
 // To debug extra createt text messages:
-// add_action('activated_plugin','my_save_error'); function my_save_error() { file_put_contents(dirname(__file__).'/error_activation.txt', ob_get_contents()); } 
+add_action('activated_plugin','my_save_error'); function my_save_error() { file_put_contents(dirname(__file__).'/error_activation.txt', ob_get_contents()); } 

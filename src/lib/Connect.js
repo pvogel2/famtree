@@ -1,7 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 
 let currentFamily = 'default';
-let allFamilies = ['default'];
 // const family = 'test';
 
 /* export async function loadFamily() {

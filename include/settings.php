@@ -16,7 +16,7 @@ function pedigree_settings_init() {
     // Register a new section in the "pedigree" page.
     add_settings_section(
       'pedigree-options',
-      __( 'The Matrix has you.', 'pedigree' ), 'pedigree_section_options',
+      __( 'Families configuration', 'pedigree' ), 'pedigree_section_options',
       'pedigree'
     );
  
@@ -24,7 +24,7 @@ function pedigree_settings_init() {
     add_settings_field(
       'pedigree_field_families', // As of WP 4.6 this value is used only internally.
                                // Use $args' label_for to populate the id inside the callback.
-      __( 'Families', 'pedigree' ),
+      __( 'Define a new family', 'pedigree' ),
       'pedigree_field_families_cb',
       'pedigree',
       'pedigree-options',
@@ -48,7 +48,11 @@ function pedigree_field_families_cb() {
   <?php foreach ($args as $value) {
       ?>
         <input type="text" readonly name="pedigree_families[<?php echo $value ?>]" value="<?php echo $value ?>" />
-        <button type="button" onclick="window.pedigree.setFamily('<?php echo $value ?>');" class="button">use</button><br />
+        <button type="button" onclick="window.pedigree.setFamily('<?php echo $value ?>');" class="button">use</button>
+        <?php if ($value != 'default') { ?> 
+          <button onclick="window.pedigree.removeFamily('<?php echo $value ?>')" class="button">remove</button>
+        <?php } ?>
+        <br />
       <?php
     }?>
     </div>
@@ -56,7 +60,7 @@ function pedigree_field_families_cb() {
 }
 
 function pedigree_section_options() {
-  print('Hello settings!');
+  print('Here familes can be added and removed. Each person currently can be realted to one family. The pedigree block shows persons relations of one family.');
 }
 
 /* Register settings script. */
@@ -195,12 +199,12 @@ function pedigree_options_page_html() {
 
         <?php
         do_settings_sections( 'pedigree' );
-        // output save settings button
-        submit_button( 'Save Settings' );
+        submit_button( 'Save Families' );
 
         ?>
         </form>
 
+        <h2>Persons configuration</h2>
         <form method="post" action="?page=pedigree" id="editPersonForm">
           <input readonly hidden type="text" name="id" id="personId" /><br/>
           <table>
@@ -256,9 +260,10 @@ function pedigree_options_page_html() {
         <td><?php print ($person->deathday) ?></td>
         <td><?php print ($person->children) ?></td>
         <td><?php print ($person->partners) ?></td>
-        <td><button onclick="window.pedigree.togglePartner(<?php print ($person->id) ?>)" class="button">toggle as partner</button></td>
-        <td><button onclick="window.pedigree.toggleChild(<?php print ($person->id) ?>)" class="button">toggle as child</button></td>
-        <td><button onclick="window.pedigree.editPerson(<?php print ($person->id) ?>)" class="button">edit</button></td>
+        <td><button type="button" onclick="window.pedigree.togglePartner(<?php print ($person->id) ?>)" class="button">toggle as partner</button></td>
+        <td><button type="button" onclick="window.pedigree.toggleChild(<?php print ($person->id) ?>)" class="button">toggle as child</button></td>
+        <td><button type="button" onclick="window.pedigree.editPerson(<?php print ($person->id) ?>)" class="button">edit</button></td>
+        <td><button type="button" onclick="window.pedigree.removePerson(<?php print ($person->id) ?>)" class="button">remove</button></td>
       </tr>
     <?php
       }
