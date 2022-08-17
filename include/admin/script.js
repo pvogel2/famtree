@@ -129,5 +129,8 @@ window.pedigree.setFamily = (id = 'default') => {
 };
 
 window.pedigree.removeFamily = (id) => {
-  alert(`remove family ${id}`)
+  // alert(`remove family ${id}`)
+  const row = document.getElementById(`pedigree_families_${id}_container`);
+  row.remove();
+
 }

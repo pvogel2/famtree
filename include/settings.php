@@ -46,13 +46,13 @@ function pedigree_field_families_cb() {
 </table>
   <div id="pedigreeKnownFamilies">
   <?php foreach ($args as $value) {
-      ?>
+      ?><div id="pedigree_families_<?php echo $value ?>_container">
         <input type="text" readonly name="pedigree_families[<?php echo $value ?>]" value="<?php echo $value ?>" />
         <button type="button" onclick="window.pedigree.setFamily('<?php echo $value ?>');" class="button">use</button>
         <?php if ($value != 'default') { ?> 
-          <button onclick="window.pedigree.removeFamily('<?php echo $value ?>')" class="button">remove</button>
+          <button type="button" onclick="window.pedigree.removeFamily('<?php echo $value ?>')" class="button">remove</button>
         <?php } ?>
-        <br />
+        </div>
       <?php
     }?>
     </div>
@@ -107,6 +107,15 @@ function pedigree_settings_capability($capability) {
 
 add_filter( 'pedigree_capability_pedigree-options', 'pedigree_settings_capability' );
 
+function pedigree_settings_feedback($message) {
+  ?>
+  <div class="notice notice-success is-dismissible">
+      <p><?php echo $message; ?></p>
+  </div>
+  <?php
+}
+add_action( 'pedigree_settings_feedback', 'pedigree_settings_feedback' );
+
 /**
  * Top level menu callback function
  */
@@ -119,6 +128,7 @@ function pedigree_options_page_html() {
   if (!empty($_POST) && $_POST['deleteId'] != '') {
     $personId = sanitize_text_field($_POST['deleteId']);
     pedigree_database_delete_person($personId);
+    show_message(__('Families saved.', 'pedigree'));
   } else
 
   if (
@@ -129,8 +139,10 @@ function pedigree_options_page_html() {
       $personId = sanitize_text_field($_POST['id']);
       if (empty($personId)) {
         pedigree_database_create_person($_POST);
+        do_action( 'pedigree_settings_feedback', __('Person saved.', 'pedigree') );
       } else {
         pedigree_database_update_person($_POST);
+        do_action( 'pedigree_settings_feedback', __('Person updated.', 'pedigree'));
       }
     }
 
