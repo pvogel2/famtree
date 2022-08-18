@@ -21,7 +21,7 @@ const personsSlice = createSlice({
     setPersons(state, action) {
       const newState = state.splice();
       newState.push(...action.payload);
-      return newState;
+      return newState.length ? newState :  [dummyPerson.serialize()];
     },
     addPerson(state, action) {
       const newState = [...state];

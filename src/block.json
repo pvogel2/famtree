@@ -18,7 +18,7 @@
 	"attributes": {
 		"family": {
 			"type": "string",
-			"default": "test"
+			"default": "default"
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * Retrieves the translation of text.
@@ -26,6 +26,7 @@ import { PanelBody, SelectControl } from '@wordpress/components';
 import './editor.scss';
 
 import App from './App';
+import { loadFamily } from './lib/Connect';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -38,9 +39,30 @@ import App from './App';
 export default function Edit({ attributes, setAttributes  }) {
 	const { align, family } = attributes;
 
+	const [families, setFamilies] = useState([]);
+
 	useEffect(() => {
-    window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event('resize'));
 	}, [align]);
+
+	useEffect(() => {
+	  if (!family) {
+	    return;
+	  }
+
+	  const fetchData = async () => {
+        const data = await loadFamily(family);
+        setFamilies(data.families);
+	  };
+
+	  fetchData().catch(console.error);
+	}, [family]);
+
+	function getFamiliesOptions() {
+	  return families.map((value) => {
+	    return { label: value, value };
+	  });
+	}
 
 	return (
 		<div { ...useBlockProps() }>
@@ -49,13 +71,9 @@ export default function Edit({ attributes, setAttributes  }) {
 				    <SelectControl
   					  label={ __( 'Current family', 'pedigree' ) }
 	  					labelPosition= 'side'
-              value={ family }
-              onChange={ ( v ) => setAttributes( { family: v } ) }
-				  		options={ [
-					  		{ label: 'Default', value: 'default' },
-						  	{ label: 'Test', value: 'test' },
-							  { label: 'Meyer', value: 'meyer' },
-					    ] }
+                        value={ family }
+                        onChange={ ( v ) => setAttributes( { family: v } ) }
+				  		options={ getFamiliesOptions() }
 						/>
 				  </PanelBody>
 			</InspectorControls>
@@ -64,7 +82,7 @@ export default function Edit({ attributes, setAttributes  }) {
 			    minHeight: '640px',
 			  }}
 			>
-			  <App />
+			  <App family={ family } />
 		  </div>
 		</div>
 	);
