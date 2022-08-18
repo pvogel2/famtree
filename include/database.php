@@ -37,14 +37,19 @@ function pedigree_database_setup() {
 	add_option( 'jal_db_version', $jal_db_version );
 }
 
-function pedigree_database_get_persons($id = '') {
+function pedigree_database_get_persons(WP_REST_Request $req = null) {
   global $wpdb;
+  $id = '';
+  if (isset($req)) {
+    $id = $req->get_param('id');
+  }
+
   $table_name = $wpdb->prefix . 'pedigree';
 
   if (empty($id)) {
     $results = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
   } else {
-    $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE family = '$id'", OBJECT );
+    $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE family='$id'", OBJECT );
   }
 
   $families = get_option( 'pedigree_families', array('default' => 'default') );
@@ -55,7 +60,7 @@ function pedigree_database_get_persons($id = '') {
   );
 }
 
-function pedigree_database_delete_person($id = '') {
+function pedigree_database_delete_person($id) {
   global $wpdb;
   $table_name = $wpdb->prefix . 'pedigree';
   if (empty($id)) {
