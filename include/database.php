@@ -20,6 +20,7 @@ function pedigree_database_setup() {
     $sql = "CREATE TABLE $table_name (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
     family varchar(55) DEFAULT '' NOT NULL,
+    root BOOLEAN DEFAULT FALSE,
 		firstName varchar(55) DEFAULT '' NOT NULL,
 		surNames varchar(55) DEFAULT '' NOT NULL,
 		lastName varchar(55) DEFAULT '' NOT NULL,
@@ -70,6 +71,15 @@ function pedigree_database_delete_person($id) {
   }
 }
 
+function pedigree_database_update_root($id) {
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'pedigree';
+  if (empty($id)) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 function pedigree_database_create_person($person) {
 	global $wpdb;

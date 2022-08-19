@@ -40,6 +40,7 @@ export default function Edit({ attributes, setAttributes  }) {
 	const { align, family } = attributes;
 
 	const [families, setFamilies] = useState([]);
+	const [persons, setPersons] = useState([]);
 
 	useEffect(() => {
       window.dispatchEvent(new Event('resize'));
@@ -53,6 +54,7 @@ export default function Edit({ attributes, setAttributes  }) {
 	  const fetchData = async () => {
         const data = await loadFamily(family);
         setFamilies(data.families);
+				setPersons(data.persons);
 	  };
 
 	  fetchData().catch(console.error);
@@ -64,6 +66,9 @@ export default function Edit({ attributes, setAttributes  }) {
 	  });
 	}
 
+	if (!persons || !families) {
+		return null;
+	}
 	return (
 		<div { ...useBlockProps() }>
 			<InspectorControls key="setting">
@@ -82,7 +87,7 @@ export default function Edit({ attributes, setAttributes  }) {
 			    minHeight: '640px',
 			  }}
 			>
-			  <App family={ family } />
+			  <App family={ family } families={ families } persons={ persons }/>
 		  </div>
 		</div>
 	);

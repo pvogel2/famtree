@@ -36,7 +36,12 @@ const store = configureStore({ reducer: {
 }});
 
 function App(props) {
-  const { family = '' } = props;
+  const {
+    family = '',
+    persons = null,
+    families = null
+  } = props;
+
   const cameraPosition= new Vector3(30.0, 30.0, 30.0);
   const cameraTarget = new Vector3(0, 0, 0);
 
@@ -44,11 +49,17 @@ function App(props) {
     if (family) {
       setFamilyContext(family);
       await store.dispatch(setFamily(family));
-      const loadedData = await loadFamily();
-      await store.dispatch(setPersons(loadedData.persons));
-      await store.dispatch(setFamilies(loadedData.families));
+
+      if (!persons || !families) {
+        const loadedData = await loadFamily();
+        await store.dispatch(setPersons(loadedData.persons));
+        await store.dispatch(setFamilies(loadedData.families));
+      } else {
+        await store.dispatch(setPersons(persons));
+        await store.dispatch(setFamilies(families));
+      }
     }
-  }, [family]);
+  }, [family, persons, families]);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

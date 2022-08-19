@@ -10,6 +10,10 @@ function PedegreeRenderer() {
   const { renderer } = useContext(RenderContext);
 
   const root = useSelector((state) => {
+    const configured = state.persons.find((p) => p.isRoot);
+    if (configured) {
+      return configured;
+    }
     return state.persons[0];
   });
 
