@@ -17,6 +17,7 @@ export async function loadFamily() {
     p.id = Number(p.id);
     p.children = JSON.parse(p.children);
     p.partners = JSON.parse(p.partners);
+    p.root = p.root === '1';
   });
   return { persons, families: Object.values(families) };
 }

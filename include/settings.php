@@ -125,7 +125,12 @@ function pedigree_options_page_html() {
     return;
   }
 
-  if (!empty($_POST) && $_POST['deleteId'] != '') {
+  if (!empty($_POST) && $_POST['rootId'] != '') {
+    $personId = sanitize_text_field($_POST['rootId']);
+    $value = sanitize_text_field($_POST['rootValue']);
+    pedigree_database_update_root($personId, $value);
+    show_message(__('Root updated.', 'pedigree'));
+  } else if (!empty($_POST) && $_POST['deleteId'] != '') {
     $personId = sanitize_text_field($_POST['deleteId']);
     pedigree_database_delete_person($personId);
     show_message(__('Families saved.', 'pedigree'));
@@ -245,6 +250,11 @@ function pedigree_options_page_html() {
         <form method="post" action="?page=pedigree" id="deletePersonForm">
           <input type="text" hidden name="deleteId" id="deletePersonId" />
         </form>
+
+        <form method="post" action="?page=pedigree" id="updateRootForm">
+          <input type="text" hidden name="rootId" id="rootId" />
+          <input type="text" hidden name="rootValue" />
+        </form>
       </div>
     <?php
       $results = pedigree_database_get_persons();
@@ -264,6 +274,7 @@ function pedigree_options_page_html() {
           <td>deathday</td>
           <td>children</td>
           <td>partners</td>
+          <td>root</td>
         </tr>
       </thead>
       <tbody>
@@ -281,6 +292,7 @@ function pedigree_options_page_html() {
         <td><?php print ($person->deathday) ?></td>
         <td><?php print ($person->children) ?></td>
         <td><?php print ($person->partners) ?></td>
+        <td><input type="checkbox" <?php $person->root ? print('checked') : '' ?> onclick="window.pedigree.updateRoot(<?php print ($person->id) ?>)" /></td>
         <td><button type="button" onclick="window.pedigree.togglePartner(<?php print ($person->id) ?>)" class="button">toggle as partner</button></td>
         <td><button type="button" onclick="window.pedigree.toggleChild(<?php print ($person->id) ?>)" class="button">toggle as child</button></td>
         <td><button type="button" onclick="window.pedigree.editPerson(<?php print ($person->id) ?>)" class="button">edit</button></td>

@@ -54,7 +54,7 @@ export default function Edit({ attributes, setAttributes  }) {
 	  const fetchData = async () => {
         const data = await loadFamily(family);
         setFamilies(data.families);
-				setPersons(data.persons);
+	    setPersons(data.persons);
 	  };
 
 	  fetchData().catch(console.error);

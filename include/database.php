@@ -71,12 +71,21 @@ function pedigree_database_delete_person($id) {
   }
 }
 
-function pedigree_database_update_root($id) {
+function pedigree_database_update_root($id, $value) {
   global $wpdb;
   $table_name = $wpdb->prefix . 'pedigree';
   if (empty($id)) {
     return false;
   } else {
+    $wpdb->update( 
+      $table_name,
+      array(
+        'root' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+      ),
+      array(
+        'id' => $id,
+      )
+    );
     return true;
   }
 }

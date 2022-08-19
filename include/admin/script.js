@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
         deathday: fields[7].textContent.trim(),
         children: fields[8].textContent.trim(),
         partners: fields[9].textContent.trim(),
+        root: fields[10].firstChild.checked,
       })
     );
   });
@@ -28,6 +29,7 @@ window.pedigree.getPerson = (json) => {
   return {
     id: json.id,
     family: json.family || '',
+    root: !!json.root,
     firstName: json.firstName || '',
     surNames: json.surNames || '',
     lastName: json.lastName || '',
@@ -132,5 +134,17 @@ window.pedigree.removeFamily = (id) => {
   // alert(`remove family ${id}`)
   const row = document.getElementById(`pedigree_families_${id}_container`);
   row.remove();
-
 }
+
+window.pedigree.updateRoot = async (id) => {
+  const form = document.getElementById('updateRootForm');
+  const person = window.pedigree.persons.find((p) => p.id === id);
+  if (!person) {
+    return;
+  }
+
+  form['rootId'].value = id;
+  form['rootValue'].value = !person.root;
+  form.requestSubmit();
+}
+
