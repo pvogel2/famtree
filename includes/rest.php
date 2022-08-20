@@ -1,5 +1,5 @@
 <?php
-require_once(PEDIGREE__PLUGIN_DIR . 'include/database.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/database.php');
 
 function pedigree_rest_permission_get_family() {
   return current_user_can( 'pedigree_load' );

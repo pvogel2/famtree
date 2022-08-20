@@ -1,29 +1,32 @@
 === Pedigree ===
-Contributors:      The WordPress Contributors
+Contributors:      Peter Vogel
 Tags:              block
 Tested up to:      6.0
-Stable tag:        0.1.0
+Stable tag:        0.0.1-beta
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
-Example static block scaffolded with Create Block tool.
+Still experimental block to manage and visualize family trees (Scaffolded with Create Block tool).
 
 == Description ==
 
-This is the long description. No limit, and you can use Markdown (as well as in the following sections).
+The plugin provides the Pedigree Block showing configured family trees using threejs.
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+Multiple families are supported and can be configured on the pedigree options page.
+
+One block instance can be configured to visualize one configured family, this can be switched on run time.
+
+Kepp in mind that the plugin is still in beta and currently in development.
+
+The block itself does not support access restricitons, this can be achieved by using one of the several avilailable WP plugins.
+
+The plugin creates a dedicated role named 'pedigree' with custom capabilities to read and write stored family trees.
+The administrator role also is extended with this capabilities.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
 1. Upload the plugin files to the `/wp-content/plugins/pedigree` directory, or install the plugin through the WordPress plugins screen directly.
 1. Activate the plugin through the 'Plugins' screen in WordPress
-
 
 == Frequently Asked Questions ==
 
@@ -45,11 +48,8 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 == Changelog ==
 
-= 0.1.0 =
-* Release
+= 0.0.1-beta =
+* First MVP Release candidate
 
 == Arbitrary section ==
 
-You may provide arbitrary sections, in the same format as the ones above. This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation." Arbitrary sections will be shown below the built-in sections outlined above.

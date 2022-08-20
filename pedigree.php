@@ -25,9 +25,9 @@ if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 define( 'PEDIGREE__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
-require_once(PEDIGREE__PLUGIN_DIR . 'include/activation.php');
-require_once(PEDIGREE__PLUGIN_DIR . 'include/rest.php');
-require_once(PEDIGREE__PLUGIN_DIR . 'include/settings.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/activation.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/rest.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/settings.php');
 
 function create_block_pedigree_block_init() {
 	register_block_type( __DIR__ . '/build' );

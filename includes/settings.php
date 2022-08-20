@@ -1,7 +1,7 @@
 <?php
-require_once(PEDIGREE__PLUGIN_DIR . 'include/admin/save.php');
-require_once(PEDIGREE__PLUGIN_DIR . 'include/database.php');
-require_once(PEDIGREE__PLUGIN_DIR . 'include/admin/layout.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/admin/save.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/database.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/admin/layout.php');
 
 // Register a new setting for "pedigree" page.
 function pedigree_settings_init() {
@@ -50,7 +50,7 @@ function pedigree_section_options() {
 
 /* Register settings script. */
 function pedigree_admin_init() {
-  wp_register_script( 'pedigree-admin-script', plugins_url('/admin/script.js', __FILE__) );
+  wp_register_script( 'pedigree-admin-script', plugins_url('/../admin/js/script.js', __FILE__) );
   pedigree_settings_init();
 }
 

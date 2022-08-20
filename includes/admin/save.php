@@ -1,5 +1,5 @@
 <?php
-require_once(PEDIGREE__PLUGIN_DIR . 'include/database.php');
+require_once(PEDIGREE__PLUGIN_DIR . 'includes/database.php');
 
 function pedigree_is_update_family_root() {
   return !empty($_POST['rootId']);
