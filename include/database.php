@@ -110,7 +110,7 @@ function pedigree_database_create_person($person) {
   if (empty($deathday)) {
     $deathday = null;
   };
-  $wpdb->insert( 
+  $result = (boolean) $wpdb->insert( 
     $table_name, 
     array(
       'family' => $family,
@@ -124,6 +124,7 @@ function pedigree_database_create_person($person) {
       'children' => '[' . $children . ']',
     )
   );
+  return $result;
 }
 
 function pedigree_database_update_person($person) {
@@ -142,7 +143,7 @@ function pedigree_database_update_person($person) {
   $birthday = sanitize_text_field($person['birthday']);
   $deathday = sanitize_text_field($person['deathday']);
 
-  $wpdb->update( 
+  $result = (boolean) $wpdb->update( 
     $table_name, 
     array(
       'family' => $family,
@@ -159,4 +160,5 @@ function pedigree_database_update_person($person) {
       'id' => $personId,
     )
   );
+  return $result;
 }

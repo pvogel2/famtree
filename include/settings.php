@@ -1,4 +1,5 @@
 <?php
+require_once(PEDIGREE__PLUGIN_DIR . 'include/admin/save.php');
 require_once(PEDIGREE__PLUGIN_DIR . 'include/database.php');
 require_once(PEDIGREE__PLUGIN_DIR . 'include/admin/layout.php');
 
@@ -91,7 +92,8 @@ function pedigree_settings_capability($capability) {
 
 add_filter( 'pedigree_capability_pedigree-options', 'pedigree_settings_capability' );
 
-add_action( 'pedigree_settings_feedback', 'pedigree_render_settings_feedback' );
+add_action( 'pedigree_success_feedback', 'pedigree_render_success_feedback' );
+add_action( 'pedigree_error_feedback', 'pedigree_render_error_feedback' );
 
 /**
  * Top level menu callback function
@@ -102,29 +104,25 @@ function pedigree_options_page_html() {
     return;
   }
 
-  if (!empty($_POST) && isset($_POST['rootId'])) {
-    $personId = sanitize_text_field($_POST['rootId']);
-    $value = sanitize_text_field($_POST['rootValue']);
-    pedigree_database_update_root($personId, $value);
-    do_action( 'pedigree_settings_feedback', __('Root updated.', 'pedigree'));
-  } else if (!empty($_POST) && isset($_POST['deleteId'])) {
-    $personId = sanitize_text_field($_POST['deleteId']);
-    pedigree_database_delete_person($personId);
-    do_action( 'pedigree_settings_feedback', __('Person deleted.', 'pedigree'));
-  } else
+  if (!empty($_POST)) {
+    $result = FALSE;
+    $message = __('Undefined action', 'pedigree');
 
-  if (
-    !empty($_POST)
-    && $_POST['firstName'] != ''
-    && $_POST['lastName'] != ''
-  ) {
-    $personId = sanitize_text_field($_POST['id']);
-    if (empty($personId)) {
-      pedigree_database_create_person($_POST);
-      do_action( 'pedigree_settings_feedback', __('Person saved.', 'pedigree') );
+    if (pedigree_is_update_family_root()) {
+      $result = pedigree_update_family_root();
+      $message = __('Root updated', 'pedigree');
+    } else if (pedigree_is_delete_person()) {
+      $result = pedigree_delete_person();
+      $message = __('Person deleted', 'pedigree');
+    } else if (pedigree_is_save_person()) {
+      $result = pedigree_save_person();
+      $message = __('Person saved', 'pedigree');
+    }
+
+    if ($result == TRUE) {
+      do_action( 'pedigree_success_feedback', $message);
     } else {
-      pedigree_database_update_person($_POST);
-      do_action( 'pedigree_settings_feedback', __('Person updated.', 'pedigree'));
+      do_action( 'pedigree_error_feedback', $message);
     }
   }
 

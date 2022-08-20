@@ -176,10 +176,18 @@ function pedigree_render_families_fieldsets($families) {
   <?php
 }
 
-function pedigree_render_settings_feedback($message) {
+function pedigree_render_success_feedback($message) {
   ?>
   <div class="notice notice-success is-dismissible">
       <p><?php echo $message; ?></p>
+  </div>
+  <?php
+}
+
+function pedigree_render_error_feedback($message) {
+  ?>
+  <div class="notice notice-error is-dismissible">
+      <p><?php print __('Error', 'pedigree'); echo ': '; echo $message; ?></p>
   </div>
   <?php
 }
