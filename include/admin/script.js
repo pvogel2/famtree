@@ -114,12 +114,12 @@ window.pedigree.addFamily = () => {
   const container = document.getElementById('pedigreeKnownFamilies');
   const newFamily = input.value;
   if (newFamily) {
-    const newInput = document.createElement('input');
-    newInput.type='text';
-    newInput.name=`pedigree_families[${newFamily}]`;
-    newInput.value = newFamily;
-    newInput.text = newFamily;
-    container.appendChild(newInput);
+    const newLabel = document.createElement('label');
+    newLabel.id=`pedigree_families_${newFamily}_container`;
+    newLabel.innerHTML = `
+      <input type="text" readonly name="pedigree_families[${newFamily}]" value="${newFamily}" />
+    `;
+    container.appendChild(newLabel);
   }
 };
 
