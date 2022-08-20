@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name:       Pedigree
- * Description:       Example static block scaffolded with Create Block tool.
+ * Description:       Still experimental block to manage and visualize family trees (Scaffolded with Create Block tool).
  * Requires at least: 5.9
  * Requires PHP:      7.0
- * Version:           0.1.0
+ * Version:           0.0.1-beta
  * Author:            Peter Vogel
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html

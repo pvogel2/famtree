@@ -10,19 +10,19 @@ function pedigree_rest_register_routes() {
   $version = '1';
   $namespace = 'pedigree/v' . $version;
 
-  register_rest_route( $namespace, '/family/(?P<id>\w+)', array(
+  register_rest_route( $namespace, '/family/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::READABLE,
     'callback' => 'pedigree_database_get_persons',
     'permission_callback' => 'pedigree_rest_permission_get_family',
   ));
 
-  register_rest_route( $namespace, '/person/(?P<id>\w+)', array(
+  register_rest_route( $namespace, '/person/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::DELETABLE,
     'callback' => 'pedigree_database_remove_person',
     'permission_callback' => 'pedigree_rest_permission_get_family',
   ));
 
-  register_rest_route( $namespace, '/root/(?P<id>\w+)', array(
+  register_rest_route( $namespace, '/root/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::EDITABLE,
     'callback' => 'pedigree_database_update_root',
     'permission_callback' => 'pedigree_rest_permission_get_family',

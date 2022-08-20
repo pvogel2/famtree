@@ -52,9 +52,13 @@ export default function Edit({ attributes, setAttributes  }) {
 	  }
 
 	  const fetchData = async () => {
-        const data = await loadFamily(family);
-        setFamilies(data.families);
-	    setPersons(data.persons);
+      try {
+			  const data = await loadFamily(family);
+				setFamilies(data.families);
+				setPersons(data.persons);
+			} catch(err) {
+				console.log(err);
+			}
 	  };
 
 	  fetchData().catch(console.error);

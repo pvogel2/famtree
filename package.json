@@ -1,8 +1,8 @@
 {
 	"name": "pedigree",
-	"version": "0.1.0",
-	"description": "Example static block scaffolded with Create Block tool.",
-	"author": "The WordPress Contributors",
+	"version": "0.0.1-beta",
+	"description": "Still experimental block to manage and visualize family trees (Scaffolded with Create Block tool).",
+	"author": "Peter Vogel",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {

@@ -11,7 +11,6 @@ function PedegreeRenderer() {
 
   const root = useSelector((state) => {
     const configured = state.persons.find((p) => p.root);
-    console.log('configured', configured);
     if (configured) {
       return configured;
     }
