@@ -73,6 +73,7 @@ window.pedigree.toggleChild = (id) => {
 window.pedigree.editPerson = (id) => {
   const person = window.pedigree.persons.find((p) => p.id === id);
   if (person) {
+    document.getElementById('family').value = person.family;
     document.getElementById('personId').value = person.id;
     document.getElementById('firstName').value = person.firstName;
     document.getElementById('surNames').value = person.surNames;
@@ -134,6 +135,12 @@ window.pedigree.removeFamily = (id) => {
   // alert(`remove family ${id}`)
   const row = document.getElementById(`pedigree_families_${id}_container`);
   row.remove();
+  const family = document.getElementById('family');
+  family.querySelectorAll('option').forEach((o) => {
+    if (o.value === id) {
+      family.removeChild(o);
+    }
+  });
 }
 
 window.pedigree.updateRoot = async (id) => {

@@ -147,7 +147,11 @@ function pedigree_options_page_html() {
 
     <?php
       pedigree_render_section_title(__('Persons configuration', 'pedigree'));
-      pedigree_render_edit_person_form();
+
+      $families = get_option( 'pedigree_families', array('default' => 'default') );
+      $args = isset( $families ) ? (array) $families : array('default' => 'default');
+    
+      pedigree_render_edit_person_form($args);
       pedigree_render_delete_person_form();
       pedigree_render_update_root_form();
     ?>

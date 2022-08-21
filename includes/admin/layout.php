@@ -127,13 +127,22 @@ function pedigree_render_persons_listing($ps) {
   }
 }
 
-function pedigree_render_edit_person_form() {
+function pedigree_render_edit_person_form($families) {
   ?>
   <form method="post" action="?page=pedigree" id="editPersonForm">
     <input readonly hidden type="text" name="id" id="personId" /><br/>
     <table>
-      <?php 
-      pedigree_form_read_field('family', 'Family');
+  <tr>
+    <td><label for="family">Family:</label></td>
+    <td>
+      <select name="family" id="family">
+        <?php foreach ($families as $family) { ?>
+        <option value="<?php print($family) ?>"><?php print($family) ?></option>
+        <?php } ?>
+      </select>
+    </td>
+  </tr>  
+  <?php
       pedigree_form_text_field('firstName', 'First Name');
       pedigree_form_text_field('surNames', 'Sur Names');
       pedigree_form_text_field('lastName', 'Last Name');
@@ -153,7 +162,7 @@ function pedigree_render_families_fieldsets($families) {
   ?>
   <fieldset>
     <label>
-      <input type="text" id="pedigreeFamiliesInput" value="default" />
+      <input type="text" id="pedigreeFamiliesInput" placeholder="<?php echo __('new family', 'pedigree') ?>"value="" />
       <button class="button" type="button" onclick="window.pedigree.addFamily()">add</button>
       <br>
     </label>
@@ -165,7 +174,6 @@ function pedigree_render_families_fieldsets($families) {
     <?php foreach ($families as $family) { ?>
     <label id="pedigree_families_<?php echo $family ?>_container">
       <input type="text" readonly name="pedigree_families[<?php echo $family ?>]" value="<?php echo $family ?>" />
-      <button type="button" onclick="window.pedigree.setFamily('<?php echo $family ?>');" class="button">use</button>
       <?php if ($family != 'default') { ?> 
       <button type="button" onclick="window.pedigree.removeFamily('<?php echo $family ?>')" class="button">remove</button>
       <?php } ?>

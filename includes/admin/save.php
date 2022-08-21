@@ -30,6 +30,5 @@ function pedigree_save_person() {
     return pedigree_database_create_person($_POST);
   } else {
     return pedigree_database_update_person($_POST);
-    do_action( 'pedigree_success_feedback', __('Person updated.', 'pedigree'));
   }
 }

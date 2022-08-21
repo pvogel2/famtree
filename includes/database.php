@@ -143,7 +143,7 @@ function pedigree_database_update_person($person) {
   $birthday = sanitize_text_field($person['birthday']);
   $deathday = sanitize_text_field($person['deathday']);
 
-  $result = (boolean) $wpdb->update( 
+  $result = $wpdb->update( 
     $table_name, 
     array(
       'family' => $family,
@@ -160,5 +160,5 @@ function pedigree_database_update_person($person) {
       'id' => $personId,
     )
   );
-  return $result;
+  return is_numeric($result) || $result;
 }
