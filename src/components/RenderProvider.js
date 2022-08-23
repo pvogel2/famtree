@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { AmbientLight } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import { Renderer } from 'mwm-renderer';
@@ -26,8 +27,15 @@ function RenderProvider(props) {
       control: true,
       parentSelector: `#thepedegreerenderer`,
     });
+
+    newRenderer.setupLightsDone = true;
+
+    const ambientLight = new AmbientLight( 0xFFFFFF, 1 );
+    newRenderer.three.scene.add( ambientLight );
+
     newRenderer.three.gammaOutput = true;
     newRenderer.three.gammaFactor = 2.2;
+
     setRenderer(newRenderer);
   }, [position, target, renderer]);
 
