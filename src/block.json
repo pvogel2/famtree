@@ -19,6 +19,14 @@
 		"family": {
 			"type": "string",
 			"default": "default"
+		},
+		"familyFAB": {
+			"type": "boolean",
+			"default": "false"
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "#ffffff"
 		}
 	}
 }

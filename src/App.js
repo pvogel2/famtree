@@ -39,9 +39,12 @@ function App(props) {
   const {
     family = '',
     persons = null,
-    families = null
+    families = null,
+    familyFAB = false,
+    background = '#999999',
   } = props;
 
+  console.log('App', background);
   const cameraPosition= new Vector3(30.0, 30.0, 30.0);
   const cameraTarget = new Vector3(0, 0, 0);
 
@@ -69,10 +72,10 @@ function App(props) {
             position={ cameraPosition }
             target={ cameraTarget }
           >
-            <PedigreeRenderer />
+            <PedigreeRenderer background={ background } />
             <Intersector />
           </RenderProvider>
-          <LoadFamily />
+          {familyFAB && <LoadFamily /> }
           <InfoDialog />
         </Provider>
       </StyledEngineProvider>

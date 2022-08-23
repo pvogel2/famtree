@@ -5,5 +5,9 @@ import App from './App';
 
 window.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('testtest');
-  ReactDOM.render(<App family={ root.dataset.family } />, root);
+  ReactDOM.render(<App
+    family={ root.dataset.family }
+    familyFAB={ root.dataset.familyFab === 'true' }
+    background={ root.dataset.backgroundColor }
+  />, root);
 });

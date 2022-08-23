@@ -15,7 +15,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, ColorPicker } from '@wordpress/components';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -37,7 +37,7 @@ import { loadFamily } from './lib/Connect';
  * @return {WPElement} Element to render.
  */
 export default function Edit({ attributes, setAttributes  }) {
-	const { align, family } = attributes;
+	const { align, family, familyFAB, backgroundColor } = attributes;
 
 	const [families, setFamilies] = useState([]);
 	const [persons, setPersons] = useState([]);
@@ -73,25 +73,46 @@ export default function Edit({ attributes, setAttributes  }) {
 	if (!persons || !families) {
 		return null;
 	}
+
 	return (
 		<div { ...useBlockProps() }>
-			<InspectorControls key="setting">
-				  <PanelBody title="Attribute Settings" initialOpen={ true }>
-				    <SelectControl
-  					  label={ __( 'Current family', 'pedigree' ) }
-	  					labelPosition= 'side'
-                        value={ family }
-                        onChange={ ( v ) => setAttributes( { family: v } ) }
-				  		options={ getFamiliesOptions() }
-						/>
-				  </PanelBody>
+			<InspectorControls>
+				<PanelBody title="Attribute Settings" initialOpen={ true }>
+				  <SelectControl
+  			    label={ __( 'Current family', 'pedigree' ) }
+	  				labelPosition= 'side'
+             value={ family }
+             onChange={ ( f ) => setAttributes({ family: f }) }
+				  	options={ getFamiliesOptions() }
+					/>
+          <ToggleControl
+  			    label={ __( 'Show family FAB', 'pedigree' ) }
+	  				labelPosition= 'side'
+            checked={ familyFAB }
+            onChange={ () => setAttributes({ familyFAB: !familyFAB }) }
+					/>
+				</PanelBody>
+				<PanelBody title="Background Color" initialOpen={ false }>
+	        <ColorPicker
+					  label={ __( 'Show family FAB', 'pedigree' ) }
+            color={ backgroundColor }
+            onChange={ (c) => setAttributes({ backgroundColor: c }) }
+            defaultValue="#000000"
+          />
+				</PanelBody>
 			</InspectorControls>
 			<div style={
 			  { position: 'relative',
 			    minHeight: '640px',
 			  }}
 			>
-			  <App family={ family } families={ families } persons={ persons }/>
+			  <App
+				  family={ family }
+					families={ families }
+					persons={ persons }
+					familyFAB={ familyFAB }
+					background={ backgroundColor }
+				/>
 		  </div>
 		</div>
 	);
