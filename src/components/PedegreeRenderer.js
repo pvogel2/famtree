@@ -9,7 +9,7 @@ let setteled = false;
 
 function PedegreeRenderer(props) {
   const { renderer } = useContext(RenderContext);
-  const { background = '#000000' } = props;
+  const { background = '#FF0000' } = props;
 
   const root = useSelector((state) => {
     const configured = state.persons.find((p) => p.root);
@@ -21,7 +21,7 @@ function PedegreeRenderer(props) {
 
   useEffect(() => {
     if (renderer) {
-      renderer.three.renderer.setClearColor( new Color(background), 0.5);
+      renderer.three.renderer.setClearColor( new Color(background), 1);
     }
   }, [renderer, background]);
 

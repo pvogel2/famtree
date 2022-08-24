@@ -20,10 +20,12 @@ function getDataGroup(m) {
   return g;
 }
 
-export function getMesh() {
+export function getMesh(layout = {}) {
+  const foreground = layout.foreground ? layout.foreground : '#888888';
+  const color = new Color(foreground);
   const r = 0.5;
   const g = new SphereGeometry(r);
-  const m = new MeshBasicMaterial();
+  const m = new MeshBasicMaterial({ color });
   return new Mesh(g, m);
 }
 
@@ -31,12 +33,13 @@ export function addDataToMesh(m) {
   return getDataGroup(m);
 }
 
-export function addLabelText(p, label) {
+export function addLabelText(p, label, color = null) {
   const text = new ThreeText({
     text: label,
     position: new Vector3(1, -1, 0),
     rotation: new Vector3(0, Math.PI * 0.5, 0),
     scale: 0.4,
+    color,
   });
 
   text.attach(null, p);

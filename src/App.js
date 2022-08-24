@@ -18,6 +18,7 @@ import { setFamilyContext, loadFamily } from './lib/Connect';
 import { setPersons } from './store/personsReducer';
 import { setFamily } from './store/familyReducer';
 import { setFamilies } from './store/familiesReducer';
+import { setForeground } from './store/layoutReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
@@ -25,6 +26,7 @@ import Intersector from './components/Intersector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import layoutReducer from './store/layoutReducer';
 
 const store = configureStore({ reducer: {
   persons: personsReducer,
@@ -33,6 +35,7 @@ const store = configureStore({ reducer: {
   config: dialogsReducer,
   focusedPerson: focusedPersonReducer,
   runtime: runtimeReducer,
+  layout: layoutReducer,
 }});
 
 function App(props) {
@@ -42,6 +45,7 @@ function App(props) {
     families = null,
     familyFAB = false,
     background = '#999999',
+    foreground,
   } = props;
 
   const cameraPosition= new Vector3(30.0, 30.0, 30.0);
@@ -62,6 +66,12 @@ function App(props) {
       }
     }
   }, [family, persons, families]);
+
+  useEffect(async () => {
+    if (foreground) {
+      await store.dispatch(setForeground(foreground));
+    }
+  }, [foreground]);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
