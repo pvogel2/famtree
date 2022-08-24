@@ -9,5 +9,6 @@ window.addEventListener('DOMContentLoaded', () => {
     family={ root.dataset.family }
     familyFAB={ root.dataset.familyFab === 'true' }
     background={ root.dataset.backgroundColor }
+    foreground={ root.dataset.foregroundColor }
   />, root);
 });

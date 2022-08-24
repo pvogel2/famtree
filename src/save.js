@@ -23,11 +23,22 @@ import { useBlockProps } from '@wordpress/block-editor';
  * @return {WPElement} Element to render.
  */
 export default function Save({ attributes }) {
-	const { family = '', familyFAB = false, backgroundColor = '#000000' } = attributes;
+	const {
+	  family = '',
+	  familyFAB = false,
+	  backgroundColor = '#000000',
+	  foregroundColor = '#CCCCCC',
+	} = attributes;
 	return (
 		<p { ...useBlockProps.save() }>
 		  <div style="position:relative; min-height: 640px;">
-			  <div id="testtest" data-family={ family } data-family-fab={ familyFAB } data-background-color={ backgroundColor }/>
+			  <div
+			    id="testtest"
+				data-family={ family }
+				data-family-fab={ familyFAB }
+				data-background-color={ backgroundColor }
+				data-foreground-color={ foregroundColor }
+			  />
 		  </div>
 		</p>
 	);

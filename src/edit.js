@@ -118,6 +118,7 @@ export default function Edit({ attributes, setAttributes  }) {
 					persons={ persons }
 					familyFAB={ familyFAB }
 					background={ backgroundColor }
+					foreground={ foregroundColor }
 				/>
 		  </div>
 		</div>

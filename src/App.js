@@ -18,7 +18,7 @@ import { setFamilyContext, loadFamily } from './lib/Connect';
 import { setPersons } from './store/personsReducer';
 import { setFamily } from './store/familyReducer';
 import { setFamilies } from './store/familiesReducer';
-import { setForeground } from './store/layoutReducer';
+import { setForeground, setBackground } from './store/layoutReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
@@ -73,6 +73,12 @@ function App(props) {
     }
   }, [foreground]);
 
+  useEffect(async () => {
+    if (background) {
+      await store.dispatch(setBackground(background));
+    }
+  }, [background]);
+
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
       <StyledEngineProvider injectFirst>
@@ -81,7 +87,7 @@ function App(props) {
             position={ cameraPosition }
             target={ cameraTarget }
           >
-            <PedigreeRenderer background={ background } />
+            <PedigreeRenderer />
             <Intersector />
           </RenderProvider>
           {familyFAB && <LoadFamily /> }

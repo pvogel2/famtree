@@ -7,9 +7,10 @@ import Node from './Node';
 
 let setteled = false;
 
-function PedegreeRenderer(props) {
+const getBackground = (state) => state.layout.background;
+
+function PedegreeRenderer() {
   const { renderer } = useContext(RenderContext);
-  const { background = '#FF0000' } = props;
 
   const root = useSelector((state) => {
     const configured = state.persons.find((p) => p.root);
@@ -18,6 +19,8 @@ function PedegreeRenderer(props) {
     }
     return state.persons[0];
   });
+
+  const background = useSelector(getBackground);
 
   useEffect(() => {
     if (renderer) {
