@@ -25,6 +25,23 @@ function removeItem(arr = [], id) {
   }
 }
 
+function parseDate(d) {
+  if (!d) {
+    return null;
+  }
+
+  let result = '';
+  result = new Date(d);
+  if (!isNaN(result)) {
+    return `${result.getTime()}`;
+  }
+
+  result = parseInt(d);
+  if (!isNaN(result)) {
+    return `${result}`;
+  }
+  return null;
+}
 export default class Person {
   constructor(config = defaultConfig) {
     if (!isValidId(config.id)) {
@@ -33,11 +50,11 @@ export default class Person {
 
     this.pFirstName = config.firstName ?? defaultConfig.firstName;
     this.pLastName = config.lastName ?? defaultConfig.lastName;
-    this.pBirthday = isNaN(parseInt(config.birthday)) ? defaultConfig.birthday : config.birthday;
+    this.pBirthday = parseDate(config.birthday);
 
     this.pSurNames = config.surNames ?? defaultConfig.surNames;
     this.pBirthName = config.birthName ?? defaultConfig.birthName;
-    this.pDeathday = isNaN(parseInt(config.deathday)) ? defaultConfig.deathday : config.deathday;
+    this.pDeathday = parseDate(config.deathday);
 
     this.id = config.id || `${this.pFirstName}${this.pLastName}${this.pBirthday}`; // TODO: remove generated id stuff
     this.pChildren = getInitializedArray(config.children);
