@@ -143,6 +143,13 @@ function pedigree_database_update_person($person) {
   $birthday = sanitize_text_field($person['birthday']);
   $deathday = sanitize_text_field($person['deathday']);
 
+  if (empty($birthday)) {
+    $birthday = null;
+  };
+  if (empty($deathday)) {
+    $deathday = null;
+  };
+
   $result = $wpdb->update( 
     $table_name, 
     array(
