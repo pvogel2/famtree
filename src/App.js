@@ -44,6 +44,7 @@ function App(props) {
     persons = null,
     families = null,
     familyFAB = false,
+    readonly = false,
     background = '#999999',
     foreground,
   } = props;
@@ -90,7 +91,7 @@ function App(props) {
             <PedigreeRenderer />
             <Intersector />
           </RenderProvider>
-          {familyFAB && <LoadFamily /> }
+          {familyFAB && <LoadFamily readonly={ readonly } /> }
           <InfoDialog />
         </Provider>
       </StyledEngineProvider>

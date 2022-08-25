@@ -42,7 +42,7 @@ function pedigree_database_get_persons(WP_REST_Request $req = null) {
   global $wpdb;
   $id = '';
   if (isset($req)) {
-    $id = $req->get_param('id');
+    $id = urldecode($req->get_param('id'));
   }
 
   $table_name = $wpdb->prefix . 'pedigree';

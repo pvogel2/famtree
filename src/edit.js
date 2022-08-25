@@ -117,6 +117,7 @@ export default function Edit({ attributes, setAttributes  }) {
 					families={ families }
 					persons={ persons }
 					familyFAB={ familyFAB }
+					readonly={ true }
 					background={ backgroundColor }
 					foreground={ foregroundColor }
 				/>

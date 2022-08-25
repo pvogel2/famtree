@@ -66,8 +66,11 @@ export function focusNode(m) {
   } */
 }
 
-export function defocusNode(m) {
-  m.material.color = m.name.startsWith('node') ? new Color(1, 1, 1) : new Color(0.5, 0.5, 0.5);
+export function defocusNode(m, config) {
+  const {
+    foreground = '#FFFFFF',
+  } = config;
+  m.material.color = m.name.startsWith('node') ? new Color(foreground) : (new Color(foreground)).multiplyScalar(0.75);
   /* const text = findLabelText(m);
   if(text) {
     text.material.uniforms.scale.value = 0.4;

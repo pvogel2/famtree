@@ -1,5 +1,5 @@
 import { useState, useContext, useCallback, useEffect } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { showPersonDialog } from './../store/dialogsReducer';
 import { focusNode, defocusNode } from '../lib/nodes/utils';
 
@@ -8,6 +8,8 @@ import Person from '../lib/Person';
 import { setPerson, clearPerson } from '../store/focusedPersonReducer';
 import { setPoint } from '../store/runtimeReducer';
 
+const getForeground = (state) => state.layout.foreground;
+
 function Intersector(props) {
   const { persons = [] } = props;
   const { renderer } = useContext(RenderContext);
@@ -15,6 +17,7 @@ function Intersector(props) {
 
   const findPerson  = useCallback((id) => persons.find((p) => p.id === id), [persons]);
   const dispatch = useDispatch();
+  const foreground = useSelector(getForeground);
 
   useEffect(() => {
     const intersectCallback = () => {
@@ -34,12 +37,12 @@ function Intersector(props) {
 
     return () => {
       if (intersectedObj) {
-        defocusNode(intersectedObj);
+        defocusNode(intersectedObj, { foreground });
         dispatch(clearPerson());
         renderer.unregisterEventCallback('click', intersectCallback);
       }
     };
-   }, [renderer, intersectedObj, dispatch]);
+   }, [renderer, intersectedObj, dispatch, foreground]);
 
   useEffect(() => {
     if (!renderer) return;
