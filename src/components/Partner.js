@@ -10,10 +10,13 @@ import { getMesh, addDataToMesh } from '../lib/nodes/utils';
 
 const getForeground = (state) => state.layout.foreground;
 
+const getText = (state) => state.layout.text;
+
 function Partner(props) {
   const { person, parent, offset } = props;
 
   const foreground = useSelector(getForeground);
+  const text = useSelector(getText);
 
   const { renderer } = useContext(RenderContext);
 
@@ -36,23 +39,23 @@ function Partner(props) {
     renderer.addObject(meshId, m, true, parent);
 
     const dataGroup = addDataToMesh(m);
-    const text = new ThreeText({
+    const labelText = new ThreeText({
       text: usedPerson.name,
       position: new Vector3(1, -1, 0),
       rotation: new Vector3(0, Math.PI * 0.5, 0),
       scale: 0.4,
-      color: foreground,
+      color: text,
     });
 
-    text.attach(null, dataGroup);
-    text.textMesh.geometry.center();
+    labelText.attach(null, dataGroup);
+    labelText.textMesh.geometry.center();
 
     return () => {
       m.clear();
       renderer.removeObject(meshId);
-      text.remove(null, dataGroup);
+      labelText.remove(null, dataGroup);
     };
-  }, [renderer, person, offset, parent, foreground]);
+  }, [renderer, person, offset, parent, foreground, text]);
 
   return null;
 };

@@ -34,6 +34,10 @@
 		"foregroundColor": {
 			"type": "string",
 			"default": "#888888"
+		},
+		"textColor": {
+			"type": "string",
+			"default": "#333333"
 		}
 	}
 }

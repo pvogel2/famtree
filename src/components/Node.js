@@ -81,6 +81,8 @@ const getPersons = (state) => state.persons;
 
 const getForeground = (state) => state.layout.foreground;
 
+const getText = (state) => state.layout.text;
+
 function getChildSize(id, szs) {
   const s = szs[id];
   if (!s) {
@@ -114,6 +116,8 @@ function Node(props) {
 
   const persons = useSelector(getPersons);
   const foreground = useSelector(getForeground);
+  const text = useSelector(getText);
+
   const children = findMembers(person?.children, persons);
 
   const partners = findMembers(person?.partners, persons);
@@ -147,7 +151,7 @@ function Node(props) {
     addAssetsToMesh(m);
 
     const dataGroup = addDataToMesh(m);
-    const text = addLabelText(dataGroup, usedPerson.name, foreground);
+    const labelText = addLabelText(dataGroup, usedPerson.name, text);
 
     const childGroup = getChildrenGroup(m);
 
@@ -163,9 +167,9 @@ function Node(props) {
     return () => {
       m.clear();
       renderer.removeObject(meshId);
-      text.remove(null, dataGroup);
+      labelText.remove(null, dataGroup);
     };
-  }, [renderer, person, offset, parent, foreground]);
+  }, [renderer, person, offset, parent, foreground, text]);
 
   if (!mesh) {
     return null;

@@ -37,7 +37,7 @@ import { loadFamily } from './lib/Connect';
  * @return {WPElement} Element to render.
  */
 export default function Edit({ attributes, setAttributes  }) {
-	const { align, family, familyFAB, backgroundColor, foregroundColor } = attributes;
+	const { align, family, familyFAB, textColor, backgroundColor, foregroundColor } = attributes;
 
 	const [families, setFamilies] = useState([]);
 	const [persons, setPersons] = useState([]);
@@ -92,6 +92,13 @@ export default function Edit({ attributes, setAttributes  }) {
             onChange={ () => setAttributes({ familyFAB: !familyFAB }) }
 					/>
 				</PanelBody>
+				<PanelBody title="Text Color" initialOpen={ false }>
+	        <ColorPicker
+            color={ textColor }
+            onChange={ (c) => setAttributes({ textColor: c }) }
+            defaultValue="#333333"
+          />
+				</PanelBody>
 				<PanelBody title="Background Color" initialOpen={ false }>
 	        <ColorPicker
             color={ backgroundColor }
@@ -118,6 +125,7 @@ export default function Edit({ attributes, setAttributes  }) {
 					persons={ persons }
 					familyFAB={ familyFAB }
 					readonly={ true }
+          text={ textColor }
 					background={ backgroundColor }
 					foreground={ foregroundColor }
 				/>

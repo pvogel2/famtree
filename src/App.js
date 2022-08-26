@@ -18,7 +18,7 @@ import { setFamilyContext, loadFamily } from './lib/Connect';
 import { setPersons } from './store/personsReducer';
 import { setFamily } from './store/familyReducer';
 import { setFamilies } from './store/familiesReducer';
-import { setForeground, setBackground } from './store/layoutReducer';
+import { setForeground, setBackground, setText } from './store/layoutReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
@@ -45,7 +45,8 @@ function App(props) {
     families = null,
     familyFAB = false,
     readonly = false,
-    background = '#999999',
+    text,
+    background,
     foreground,
   } = props;
 
@@ -79,6 +80,12 @@ function App(props) {
       await store.dispatch(setBackground(background));
     }
   }, [background]);
+
+  useEffect(async () => {
+    if (text) {
+      await store.dispatch(setText(text));
+    }
+  }, [text]);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

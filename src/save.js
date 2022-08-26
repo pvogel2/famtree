@@ -28,6 +28,7 @@ export default function Save({ attributes }) {
 	  familyFAB = false,
 	  backgroundColor = '#000000',
 	  foregroundColor = '#CCCCCC',
+	  textColor = '#333333',
 	} = attributes;
 	return (
 		<p { ...useBlockProps.save() }>
@@ -38,6 +39,7 @@ export default function Save({ attributes }) {
 				data-family-fab={ familyFAB }
 				data-background-color={ backgroundColor }
 				data-foreground-color={ foregroundColor }
+				data-text-color={ textColor }
 			  />
 		  </div>
 		</p>
