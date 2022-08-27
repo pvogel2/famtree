@@ -57,8 +57,8 @@ function App(props) {
   const theme = createTheme({
     palette: {
       primary: {
-        // Purple and green play nicely together.
         main: foreground,
+        contrastText: '#ffffff',
       },
     },
   });
@@ -110,7 +110,7 @@ function App(props) {
             <Intersector />
           </RenderProvider>
           {familyFAB && <LoadFamily readonly={ readonly } /> }
-          <InfoDialog />
+          <InfoDialog readonly={ readonly } />
         </Provider>
       </StyledEngineProvider>
       </ThemeProvider>

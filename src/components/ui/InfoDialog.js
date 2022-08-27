@@ -11,12 +11,13 @@ import { showDate } from '../../lib/ui/utils';
 function InfoDialog(props) {
   const {
     focusedPerson = null,
+    readonly = false,
     position,
   } = props;
 
   const elementRef = useRef(null);
 
-  if (!focusedPerson) {
+  if (!focusedPerson || readonly) {
     return null;
   }
 

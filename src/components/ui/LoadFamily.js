@@ -50,8 +50,10 @@ function LoadFamily(props) {
   };
 
   const handleItemClick = async (event) => {
-    const { value } = event.currentTarget.dataset;
-    await updateFamily(value);
+    if (!readonly) {
+      const { value } = event.currentTarget.dataset;
+      await updateFamily(value);
+    }
     handleMenuClose();
   };
 
@@ -79,7 +81,6 @@ function LoadFamily(props) {
         color="primary"
         sx={{ position: 'absolute', bottom: 16, right: 16 }}
         onClick={ handleMenuClick }
-        disabled={ readonly }
       >
         <FamilyRestroom />
       </Fab>
