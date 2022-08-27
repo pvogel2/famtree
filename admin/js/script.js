@@ -22,7 +22,7 @@ window.addEventListener('DOMContentLoaded', () => {
       })
     );
   });
-  window.pedigree.setFamily();
+  // window.pedigree.setFamily();
 });
 
 window.pedigree.getPerson = (json) => {

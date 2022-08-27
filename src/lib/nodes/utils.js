@@ -56,8 +56,11 @@ export function findLabelText(m) {
 return null;
 }
 
-export function focusNode(m) {
-  m.material.color = new Color(1, 0, 0);
+export function focusNode(m, config = {}) {
+  const {
+    highlight = '#770000',
+  } = config;
+  m.material.color = new Color(highlight);
   m.material.needsUpdate = true;
   /* const text = findLabelText(m);
   if (text) {
@@ -66,7 +69,7 @@ export function focusNode(m) {
   } */
 }
 
-export function defocusNode(m, config) {
+export function defocusNode(m, config = {}) {
   const {
     foreground = '#FFFFFF',
   } = config;

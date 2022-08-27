@@ -51,6 +51,7 @@ function pedigree_section_options() {
 /* Register settings script. */
 function pedigree_admin_init() {
   wp_register_script( 'pedigree-admin-script', plugins_url('/../admin/js/script.js', __FILE__) );
+  wp_register_style( 'pedigree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
   pedigree_settings_init();
 }
 
@@ -59,6 +60,13 @@ function pedigree_admin_scripts() {
    * It will be called only on your plugin admin page, enqueue our script here
    */
   wp_enqueue_script( 'pedigree-admin-script' );
+}
+
+function pedigree_admin_styles() {
+  /*
+   * It will be called only on your plugin admin page, enqueue our script here
+   */
+  wp_enqueue_style( 'pedigree-admin-style' );
 }
 
 /**
@@ -73,6 +81,7 @@ function pedigree_options_page() {
     'pedigree_options_page_html'
   );
   add_action('admin_print_scripts-' . $page, 'pedigree_admin_scripts');
+  add_action('admin_print_styles-' . $page, 'pedigree_admin_styles');
 }
 
 /**
@@ -104,6 +113,8 @@ function pedigree_options_page_html() {
     return;
   }
 
+  $preselectfamily = '';
+
   if (!empty($_POST)) {
     $result = FALSE;
     $message = __('Undefined action', 'pedigree');
@@ -124,6 +135,8 @@ function pedigree_options_page_html() {
     } else {
       do_action( 'pedigree_error_feedback', $message);
     }
+    
+    $preselectfamily = pedigree_get_preselect_family();
   }
 
   // check if the user have submitted the settings
@@ -151,7 +164,7 @@ function pedigree_options_page_html() {
       $families = get_option( 'pedigree_families', array('default' => 'default') );
       $args = isset( $families ) ? (array) $families : array('default' => 'default');
     
-      pedigree_render_edit_person_form($args);
+      pedigree_render_edit_person_form($args, $preselectfamily);
       pedigree_render_delete_person_form();
       pedigree_render_update_root_form();
     ?>

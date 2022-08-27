@@ -11,6 +11,10 @@ function pedigree_update_family_root() {
   return pedigree_database_update_root($personId, $value);
 }
 
+function pedigree_get_preselect_family() {
+  return sanitize_text_field($_POST['family']);
+}
+
 function pedigree_is_delete_person() {
   return !empty($_POST['deleteId']);
 }

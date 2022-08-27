@@ -11,5 +11,6 @@ window.addEventListener('DOMContentLoaded', () => {
     background={ root.dataset.backgroundColor }
     text={ root.dataset.text }
     foreground={ root.dataset.foregroundColor }
+    highlight={ root.dataset.highlightColor }
   />, root);
 });

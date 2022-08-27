@@ -19,7 +19,7 @@ import { setFamilyContext, loadFamily } from './lib/Connect';
 import { setPersons } from './store/personsReducer';
 import { setFamily } from './store/familyReducer';
 import { setFamilies } from './store/familiesReducer';
-import { setForeground, setBackground, setText } from './store/layoutReducer';
+import { setForeground, setBackground, setText, setHighlight } from './store/layoutReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
@@ -49,6 +49,7 @@ function App(props) {
     text,
     background,
     foreground,
+    highlight,
   } = props;
 
   const cameraPosition= new Vector3(30.0, 30.0, 30.0);
@@ -96,6 +97,12 @@ function App(props) {
       await store.dispatch(setText(text));
     }
   }, [text]);
+
+  useEffect(async () => {
+    if (highlight) {
+      await store.dispatch(setHighlight(highlight));
+    }
+  }, [highlight]);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

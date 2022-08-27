@@ -6,6 +6,7 @@ const layoutSlice = createSlice({
     foreground: '#888888',
     background: '#CCCCCC',
     text: '#333333',
+    highlight: '#770000',
   },
   reducers: {
     setForeground(state, action) {
@@ -17,8 +18,11 @@ const layoutSlice = createSlice({
     setText(state, action) {
       return { ...state, text: action.payload };
     },
+    setHighlight(state, action) {
+      return { ...state, highlight: action.payload };
+    },
  },
 })
 
-export const { setForeground, setBackground, setText } = layoutSlice.actions;
+export const { setForeground, setBackground, setText, setHighlight } = layoutSlice.actions;
 export default layoutSlice.reducer;

@@ -1,0 +1,7 @@
+.button.icon {
+  min-width: 30px;
+  min-height: 30px;
+  line-height: initial;
+  border-radius: 50%;
+  padding: 0;
+}

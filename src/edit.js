@@ -13,9 +13,9 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, PanelColorSettings } from '@wordpress/block-editor';
 
-import { PanelBody, SelectControl, ToggleControl, ColorPicker } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -37,7 +37,7 @@ import { loadFamily } from './lib/Connect';
  * @return {WPElement} Element to render.
  */
 export default function Edit({ attributes, setAttributes  }) {
-	const { align, family, familyFAB, textColor, backgroundColor, foregroundColor } = attributes;
+	const { align, family, familyFAB, textColor, backgroundColor, foregroundColor, highlightColor } = attributes;
 
 	const [families, setFamilies] = useState([]);
 	const [persons, setPersons] = useState([]);
@@ -77,7 +77,10 @@ export default function Edit({ attributes, setAttributes  }) {
 	return (
 		<div { ...useBlockProps() }>
 			<InspectorControls>
-				<PanelBody title="Attribute Settings" initialOpen={ true }>
+				<PanelBody
+				  title={ __('General Settings') }
+					initialOpen={ true }
+				>
 				  <SelectControl
   			    label={ __( 'Current family', 'pedigree' ) }
 	  				labelPosition= 'side'
@@ -92,27 +95,31 @@ export default function Edit({ attributes, setAttributes  }) {
             onChange={ () => setAttributes({ familyFAB: !familyFAB }) }
 					/>
 				</PanelBody>
-				<PanelBody title="Text Color" initialOpen={ false }>
-	        <ColorPicker
-            color={ textColor }
-            onChange={ (c) => setAttributes({ textColor: c }) }
-            defaultValue="#333333"
-          />
-				</PanelBody>
-				<PanelBody title="Background Color" initialOpen={ false }>
-	        <ColorPicker
-            color={ backgroundColor }
-            onChange={ (c) => setAttributes({ backgroundColor: c }) }
-            defaultValue="#000000"
-          />
-				</PanelBody>
-				<PanelBody title="Foreground Color" initialOpen={ false }>
-	        <ColorPicker
-            color={ foregroundColor }
-            onChange={ (c) => setAttributes({ foregroundColor: c }) }
-            defaultValue="#000000"
-          />
-				</PanelBody>
+				<PanelColorSettings 
+					title={__('Color settings')}
+					colorSettings={[
+						{
+							value: backgroundColor,
+							onChange: (c) => setAttributes({ backgroundColor: c }),
+							label: __("Background Color"),
+						},
+						{
+							value: textColor,
+							onChange: (c) => setAttributes({ textColor: c }),
+							label: __('Text color')
+						},
+						{
+							value: foregroundColor,
+							onChange: (c) => setAttributes({ foregroundColor: c }),
+							label: __("Foreground Color"),
+						},
+						{
+							value: highlightColor,
+							onChange: (c) => setAttributes({ highlightColor: c }),
+							label: __("Highlight Color"),
+						},
+					]}
+				/>
 			</InspectorControls>
 			<div style={
 			  { position: 'relative',
@@ -128,6 +135,7 @@ export default function Edit({ attributes, setAttributes  }) {
           text={ textColor }
 					background={ backgroundColor }
 					foreground={ foregroundColor }
+					highlight={ highlightColor }
 				/>
 		  </div>
 		</div>

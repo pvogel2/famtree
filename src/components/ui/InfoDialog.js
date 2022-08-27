@@ -52,7 +52,7 @@ function InfoDialog(props) {
     qa="info-dialog"
     sx={{
       position: 'absolute',
-      opacity: rect ? 0.5 : 0,
+      opacity: rect ? 0.9 : 0,
       ...styles,
     }}
     ref={ elementRef }

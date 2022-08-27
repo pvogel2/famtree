@@ -9,6 +9,7 @@ import { setPerson, clearPerson } from '../store/focusedPersonReducer';
 import { setPoint } from '../store/runtimeReducer';
 
 const getForeground = (state) => state.layout.foreground;
+const getHighlight = (state) => state.layout.highlight;
 
 function Intersector(props) {
   const { persons = [] } = props;
@@ -18,6 +19,7 @@ function Intersector(props) {
   const findPerson  = useCallback((id) => persons.find((p) => p.id === id), [persons]);
   const dispatch = useDispatch();
   const foreground = useSelector(getForeground);
+  const highlight = useSelector(getHighlight);
 
   useEffect(() => {
     const intersectCallback = () => {
@@ -27,7 +29,7 @@ function Intersector(props) {
 
     if (intersectedObj) {
       renderer.registerEventCallback('click', intersectCallback);
-      focusNode(intersectedObj);
+      focusNode(intersectedObj, { highlight });
 
       const focusedPerson = findPerson(intersectedObj.userData.id);
       if (focusedPerson) {
@@ -42,7 +44,7 @@ function Intersector(props) {
         renderer.unregisterEventCallback('click', intersectCallback);
       }
     };
-   }, [renderer, intersectedObj, dispatch, foreground]);
+   }, [renderer, intersectedObj, dispatch, foreground, highlight]);
 
   useEffect(() => {
     if (!renderer) return;
