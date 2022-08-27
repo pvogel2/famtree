@@ -38,6 +38,14 @@ function pedigree_database_setup() {
 	add_option( 'jal_db_version', $jal_db_version );
 }
 
+function pedigree_database_get_persons_new() {
+  global $wpdb;
+
+  $table_name = $wpdb->prefix . 'pedigree';
+
+  return $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
+}
+
 function pedigree_database_get_persons(WP_REST_Request $req = null) {
   global $wpdb;
   $id = '';
