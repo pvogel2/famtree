@@ -4,6 +4,7 @@ import { Vector3 } from 'three';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { StyledEngineProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import personsReducer from './store/personsReducer';
 import focusedPersonReducer from './store/focusedPersonReducer';
@@ -53,6 +54,15 @@ function App(props) {
   const cameraPosition= new Vector3(30.0, 30.0, 30.0);
   const cameraTarget = new Vector3(0, 0, 0);
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        // Purple and green play nicely together.
+        main: foreground,
+      },
+    },
+  });
+
   useEffect(async () => {
     if (family) {
       setFamilyContext(family);
@@ -89,6 +99,7 @@ function App(props) {
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
+      <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
         <Provider store={ store }>
           <RenderProvider
@@ -102,6 +113,7 @@ function App(props) {
           <InfoDialog />
         </Provider>
       </StyledEngineProvider>
+      </ThemeProvider>
     </LocalizationProvider>
   );
 }

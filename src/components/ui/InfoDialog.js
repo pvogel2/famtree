@@ -27,6 +27,7 @@ function InfoDialog(props) {
   const currentHeight = elementRef.current?.clientHeight;
 
   const rect = elementRef.current?.offsetParent.getBoundingClientRect();
+
   const deltaX = rect?.left || 0;
   const deltaY = rect?.top || 0;  
   const styles = {
@@ -50,6 +51,7 @@ function InfoDialog(props) {
     qa="info-dialog"
     sx={{
       position: 'absolute',
+      opacity: rect ? 0.5 : 0,
       ...styles,
     }}
     ref={ elementRef }
@@ -58,22 +60,23 @@ function InfoDialog(props) {
       title={ currentPerson.name }
       icon={ <PersonIcon /> }
     />
-    <CardContent>
-    <Table
-      sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-    >
-      <TableBody>
-      <TableRow>
-        <TableCell>Birth</TableCell>
-        <TableCell>{ birthDate }</TableCell>
-      </TableRow>
-      { deathDate ? (<TableRow>
-        <TableCell>Death</TableCell>
-        <TableCell>{ deathDate }</TableCell>
-      </TableRow>) : null }
-      </TableBody>
-    </Table>
-    </CardContent>
+    { (birthDate || deathDate) ? (<CardContent>
+      <Table
+        size="small"
+        sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+      >
+        <TableBody>
+          { birthDate ? (<TableRow>
+            <TableCell>Birth</TableCell>
+            <TableCell>{ birthDate }</TableCell>
+          </TableRow>) : null }
+          { deathDate ? (<TableRow>
+            <TableCell>Death</TableCell>
+            <TableCell>{ deathDate }</TableCell>
+          </TableRow>) : null }
+        </TableBody>
+      </Table>
+    </CardContent>) : null }
   </Card>
 }
 
