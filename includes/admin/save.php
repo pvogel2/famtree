@@ -12,7 +12,10 @@ function pedigree_update_family_root() {
 }
 
 function pedigree_get_preselect_family() {
-  return sanitize_text_field($_POST['family']);
+  if (!empty($_POST['family'])) {
+    return sanitize_text_field($_POST['family']);
+  }
+  return '';
 }
 
 function pedigree_is_delete_person() {
