@@ -74,57 +74,25 @@ function pedigree_render_update_root_form() {
   <?php
 }
 
-function pedigree_render_persons_listing($ps) {
-  if ( $ps ) {
+function pedigree_render_persons_listing() {
+
+  // Creating an instance
+  $personsTable = new Persons_List_Table();
+
+  echo '<div class="wrap">';
+  // Prepare table
+  $personsTable->prepare_items();
+
   ?>
-  <table id="familyTable">
-    <thead>
-      <tr>
-        <td>id</td>
-        <td>family</td>
-        <td>firstname</td>
-        <td>surnames</td>
-        <td>lastname</td>
-        <td>birthname</td>
-        <td>birthday</td>
-        <td>deathday</td>
-        <td>children</td>
-        <td>partners</td>
-        <td>root</td>
-      </tr>
-    </thead>
-    <tbody>
-      <?php
-      foreach ( $ps as $p ) {
-      ?>
-      <tr>
-        <td><?php print ($p->id) ?></td>
-        <td><?php print ($p->family) ?></td>
-        <td><?php print ($p->firstName) ?></td>
-        <td><?php print ($p->surNames) ?></td>
-        <td><?php print ($p->lastName) ?></td>
-        <td><?php print ($p->birthName) ?></td>
-        <td><?php print ($p->birthday) ?></td>
-        <td><?php print ($p->deathday) ?></td>
-        <td><?php print ($p->children) ?></td>
-        <td><?php print ($p->partners) ?></td>
-        <td><input type="checkbox" <?php $p->root ? print('checked') : '' ?> onclick="window.pedigree.updateRoot(<?php print ($p->id) ?>)" /></td>
-        <td><button type="button" onclick="window.pedigree.togglePartner(<?php print ($p->id) ?>)" class="button">toggle as partner</button></td>
-        <td><button type="button" onclick="window.pedigree.toggleChild(<?php print ($p->id) ?>)" class="button">toggle as child</button></td>
-        <td><button type="button" onclick="window.pedigree.editPerson(<?php print ($p->id) ?>)" class="button icon"><span title="<?php print('edit') ?>" class="dashicons dashicons-edit"></span></button></td>
-        <td><button type="button" onclick="window.pedigree.removePerson(<?php print ($p->id) ?>)" class="button icon"><span title="<?php print('remove') ?>" class="dashicons dashicons-trash"></span></button></td>
-      </tr>
-      <?php
-      }
-      ?>
-    </tbody>
-  </table>
-  <?php
-  } else {
-  ?>
-  <p>No persons found</p>
-  <?php
-  }
+  <form method="post">
+        <input type="hidden" name="page" value="pedigree" />
+        <?php $personsTable->search_box('search', 'search_id'); ?>
+  </form>
+<?php
+
+  // Display table
+  $personsTable->display();
+  echo '</div>';
 }
 
 function pedigree_render_edit_person_form($families, $preselect) {

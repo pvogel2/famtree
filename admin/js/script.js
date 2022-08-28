@@ -3,22 +3,21 @@ window.pedigree = window.pedigree || {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
-  const rows = document.querySelectorAll('#familyTable tbody tr');
+  const rows = document.querySelectorAll('.wp-list-table tbody tr');
   rows.forEach(row => {
-    const fields = row.querySelectorAll('td');
     window.pedigree.persons.push(
       window.pedigree.getPerson({
-        id: Number(fields[0].textContent.trim()),
-        family: fields[1].textContent.trim(),
-        firstName: fields[2].textContent.trim(),
-        surNames: fields[3].textContent.trim(),
-        lastName: fields[4].textContent.trim(),
-        birthName: fields[5].textContent.trim(),
-        birthday: fields[6].textContent.trim(),
-        deathday: fields[7].textContent.trim(),
-        children: fields[8].textContent.trim(),
-        partners: fields[9].textContent.trim(),
-        root: fields[10].firstChild.checked,
+        id: Number(row.querySelector('.id').innerText.trim()),
+        family: row.querySelector('.family').textContent.trim(),
+        firstName: row.querySelector('.firstName').textContent.trim(),
+        surNames: row.querySelector('.surNames').textContent.trim(),
+        lastName: row.querySelector('.lastName').textContent.trim(),
+        birthName: row.querySelector('.birthName').textContent.trim(),
+        birthday: row.querySelector('.birthday').textContent.trim(),
+        deathday: row.querySelector('.deathday').textContent.trim(),
+        children: row.querySelector('.children').textContent.trim(),
+        partners: row.querySelector('.partners').textContent.trim(),
+        root: row.querySelector('.root').firstChild.checked,
       })
     );
   });
@@ -71,6 +70,7 @@ window.pedigree.toggleChild = (id) => {
 };
 
 window.pedigree.editPerson = (id) => {
+  console.log(id, window.pedigree.persons);
   const person = window.pedigree.persons.find((p) => p.id === id);
   if (person) {
     document.getElementById('family').value = person.family;
