@@ -46,7 +46,7 @@ function pedigree_database_get_persons_new($search) {
   if (empty($search)) {
     return $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
   } else {
-    return $wpdb->get_results( "SELECT * FROM $table_name WHERE family LIKE '%{$search}%'", ARRAY_A );
+    return $wpdb->get_results( "SELECT * FROM $table_name WHERE family LIKE '%{$search}%' OR firstName LIKE '%{$search}%' OR lastName LIKE '%{$search}%'", ARRAY_A );
   }
 }
 

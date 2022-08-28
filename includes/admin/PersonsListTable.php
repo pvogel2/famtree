@@ -30,7 +30,7 @@ class Persons_List_Table extends WP_List_Table {
 
       function usort_reorder($a, $b) {
         // If no sort, default to lastName
-        $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'lastName';
+        $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'birthday';
 
         // If no order, default to asc
         $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc';
@@ -67,13 +67,15 @@ class Persons_List_Table extends WP_List_Table {
 
       function get_sortable_columns() {
         $sortable_columns = array(
+          'birthday' => array('birthday', true),
+          'deathday' => array('deathday', true),
           'firstName'  => array('firstName', true),
           'lastName' => array('lastName', true),
           'birthName'   => array('birthName', true),
         );
         return $sortable_columns;
       }
-    
+
       // Bind table with columns, data and all
       function prepare_items() {
         if (isset($_POST['page']) && isset($_POST['s'])) {
