@@ -5,6 +5,7 @@ const defaultConfig = {
   surNames: '',
   birthName: '',
   deathday: null,
+  portraitUrl: null,
 };
 
 function isValidId(id) {
@@ -59,6 +60,8 @@ export default class Person {
     this.id = config.id || `${this.pFirstName}${this.pLastName}${this.pBirthday}`; // TODO: remove generated id stuff
     this.pChildren = getInitializedArray(config.children);
     this.pPartners = getInitializedArray(config.partners);
+
+    this.pPortraitUrl = config.portraitUrl ?? defaultConfig.portraitUrl;
   }
 
   get name() {
@@ -113,12 +116,20 @@ export default class Person {
     this.pSurNames = surNames;
   }
 
+  set portraitUrl(portraitUrl) {
+    this.pPortraitUrl = portraitUrl;
+  }
+
   get children() {
     return this.pChildren.slice();
   }
 
   get partners() {
     return this.pPartners.slice();
+  }
+
+  get portraitUrl() {
+    return this.pPortraitUrl;
   }
 
   hasChildren() {
@@ -164,6 +175,7 @@ export default class Person {
       deathday: this.pDeathday,
       partners: this.pPartners.slice(),
       children: this.pChildren.slice(),
+      portraitUrl: this.pPortraitUrl,
     };
   };
 };

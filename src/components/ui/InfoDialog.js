@@ -59,6 +59,7 @@ function InfoDialog(props) {
   >
     <ExtendedDialogTitle
       title={ currentPerson.name }
+      portrait={ currentPerson.portraitUrl }
       icon={ <PersonIcon /> }
     />
     { (birthDate || deathDate) ? (<CardContent>

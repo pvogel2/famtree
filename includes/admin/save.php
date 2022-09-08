@@ -5,10 +5,20 @@ function pedigree_is_update_family_root() {
   return !empty($_POST['rootId']);
 }
 
+function pedigree_is_update_portrait_image() {
+  return !empty($_POST['portrait-id']);
+}
+
+function pedigree_update_portrait_image() {
+  $portraitId = sanitize_text_field($_POST['portrait-id']);
+  $personId = sanitize_text_field($_POST['id']);
+  return pedigree_database_update_portrait_image($personId, $portraitId);
+}
+
 function pedigree_update_family_root() {
   $personId = sanitize_text_field($_POST['rootId']);
-  $value = sanitize_text_field($_POST['rootValue']);
-  return pedigree_database_update_root($personId, $value);
+  $isRoot = sanitize_text_field($_POST['rootValue']);
+  return pedigree_database_update_root($personId, $isRoot);
 }
 
 function pedigree_get_preselect_family() {

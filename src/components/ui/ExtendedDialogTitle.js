@@ -5,6 +5,7 @@ export default function ExtendedDialogTitle(props) {
   const {
     onClose = null,
     title = '',
+    portrait = null,
     icon = <Info />,
   } = props;
   return <DialogTitle>
@@ -13,11 +14,12 @@ export default function ExtendedDialogTitle(props) {
       alignItems: 'center',
     }}>
     <Avatar
+      src={ portrait }
       style={{
         marginRight: '16px',
       }}
     >
-      { icon }
+      { portrait ? null : icon }
     </Avatar>
     <div style={{
       flexGrow: 1,

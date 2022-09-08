@@ -97,33 +97,50 @@ function pedigree_render_persons_listing() {
 
 function pedigree_render_edit_person_form($families, $preselect) {
   ?>
-  <form method="post" action="?page=pedigree" id="editPersonForm">
-    <input readonly hidden type="text" name="id" id="personId" /><br/>
-    <table>
-  <tr>
-    <td><label for="family">Family:</label></td>
-    <td>
-      <select name="family" id="family">
-        <?php foreach ($families as $family) { ?>
-        <option value="<?php print($family) ?>" <?php if ($family == $preselect) print('selected="selected"') ?> ><?php print($family) ?></option>
-        <?php } ?>
-      </select>
-    </td>
-  </tr>  
+  <div style="display: flex;">
+    <div>
+    <form method="post" action="?page=pedigree" id="editPersonForm" class="form">
+      <input readonly hidden type="text" name="id" id="personId" /><br/>
+      <table>
+    <tr>
+      <td><label for="family">Family:</label></td>
+      <td>
+        <select name="family" id="family">
+          <?php foreach ($families as $family) { ?>
+          <option value="<?php print($family) ?>" <?php if ($family == $preselect) print('selected="selected"') ?> ><?php print($family) ?></option>
+          <?php } ?>
+        </select>
+      </td>
+    </tr>  
+    <?php
+        pedigree_form_text_field('firstName', 'First Name');
+        pedigree_form_text_field('surNames', 'Sur Names');
+        pedigree_form_text_field('lastName', 'Last Name');
+        pedigree_form_text_field('birthName', 'Birth Name');
+        pedigree_form_date_field('birthday', 'Birth day');
+        pedigree_form_date_field('deathday', 'Death day');
+        pedigree_form_array_field('children', 'Children');
+        pedigree_form_array_field('partners', 'Partners');
+        pedigree_form_buttons();
+        ?>
+      </table>
+    </form>
+    </div>
+    <div>
+    <?php printf(
+      '<img src="%1$s" id="person-portrait" width="100" height="100" style="object-fit: cover"/>',
+      plugins_url( '../../admin/images/default.jpg', __FILE__ )
+    ); ?>
+  
+    <form method="post" id="uploadPortraitForm">
+      <input hidden id="upload-media-id" type="text" name="portrait-id" class="form"/>
+      <input hidden id="upload-person-id" type="text" name="id" />
+      <input id="upload-button" type="button" class="button" value="Select Image" />
+      <input id="upload-submit"  type="submit" disabled value="Submit" class="button button-primary"/>
+    </form>
+    </div>
+  </div>
   <?php
-      pedigree_form_text_field('firstName', 'First Name');
-      pedigree_form_text_field('surNames', 'Sur Names');
-      pedigree_form_text_field('lastName', 'Last Name');
-      pedigree_form_text_field('birthName', 'Birth Name');
-      pedigree_form_date_field('birthday', 'Birth day');
-      pedigree_form_date_field('deathday', 'Death day');
-      pedigree_form_array_field('children', 'Children');
-      pedigree_form_array_field('partners', 'Partners');
-      pedigree_form_buttons();
-      ?>
-    </table>
-  </form>
-<?php
 }
 
 function pedigree_render_families_fieldsets($families) {

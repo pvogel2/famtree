@@ -1,7 +1,7 @@
 <?php
 
-global $jal_db_version;
-$jal_db_version = '1.0';
+global $pedigree_db_version;
+$pedigree_db_version = '2.0';
 
 function pedigree_persons_tablename() {
 	global $wpdb;
@@ -11,32 +11,45 @@ function pedigree_persons_tablename() {
 // https://codex.wordpress.org/Creating_Tables_with_Plugins
 function pedigree_database_setup() {
 	global $wpdb;
-  global $jal_db_version;
+  global $pedigree_db_version;
+  $installed_db_version = get_option( 'pedigree_db_version' );
 
-	$table_name = pedigree_persons_tablename();
+  if ($installed_db_version != $pedigree_db_version) {
+	  $table_name = pedigree_persons_tablename();
 
-	$charset_collate = $wpdb->get_charset_collate();
+	  $charset_collate = $wpdb->get_charset_collate();
 
     $sql = "CREATE TABLE $table_name (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-    family varchar(55) DEFAULT '' NOT NULL,
-    root BOOLEAN DEFAULT FALSE,
-		firstName varchar(55) DEFAULT '' NOT NULL,
-		surNames varchar(55) DEFAULT '' NOT NULL,
-		lastName varchar(55) DEFAULT '' NOT NULL,
-		birthName varchar(55) DEFAULT '' NOT NULL,
-		birthday DATE NULL DEFAULT NULL,
-		deathday DATE NULL DEFAULT NULL,
-		partners JSON NOT NULL,
-		children JSON NOT NULL,
-		PRIMARY KEY  (id)
-	) $charset_collate;";
+		  id mediumint(9) NOT NULL AUTO_INCREMENT,
+      family varchar(55) DEFAULT '' NOT NULL,
+      root boolean DEFAULT FALSE,
+		  firstName varchar(55) DEFAULT '' NOT NULL,
+		  surNames varchar(55) DEFAULT '' NOT NULL,
+		  lastName varchar(55) DEFAULT '' NOT NULL,
+		  birthName varchar(55) DEFAULT '' NOT NULL,
+		  birthday date NULL DEFAULT NULL,
+		  deathday date NULL DEFAULT NULL,
+		  partners json NOT NULL,
+		  children json NOT NULL,
+      portraitImageId mediumint(9) DEFAULT NULL,
+		  PRIMARY KEY  (id)
+	  ) $charset_collate;";
 
-  require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-	dbDelta( $sql );
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-	add_option( 'jal_db_version', $jal_db_version );
+    dbDelta( $sql );
+
+	  add_option( 'pedigree_db_version', $pedigree_db_version );
+  }
 }
+
+function pedigree_update_db_check() {
+  global $pedigree_db_version;
+  if ( get_site_option( 'pedigree_db_version' ) != $pedigree_db_version ) {
+    pedigree_database_setup();
+  }
+}
+add_action( 'plugins_loaded', 'pedigree_update_db_check' );
 
 function pedigree_database_get_persons_new($search) {
   global $wpdb;
@@ -65,8 +78,11 @@ function pedigree_database_get_persons(WP_REST_Request $req = null) {
     $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE family='$id'", OBJECT );
   }
 
+  foreach ($results as &$item) {
+    $item->portraitUrl = wp_get_attachment_image_url($item->portraitImageId, 'thumbnail');
+  }
   $families = get_option( 'pedigree_families', array('default' => 'default') );
-  // $json = json_encode($results);
+
   return array(
     'persons' => $results,
     'families' => $families,
@@ -80,6 +96,25 @@ function pedigree_database_delete_person($id) {
     return false;
   } else {
     return $wpdb -> delete( $table_name, array('id' => $id ));
+  }
+}
+
+function pedigree_database_update_portrait_image($id, $mediaId) {
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'pedigree';
+  if (empty($id)) {
+    return false;
+  } else {
+    $wpdb->update( 
+      $table_name,
+      array(
+        'portraitImageId' => filter_var($mediaId, FILTER_SANITIZE_NUMBER_INT),
+      ),
+      array(
+        'id' => $id,
+      )
+    );
+    return true;
   }
 }
 

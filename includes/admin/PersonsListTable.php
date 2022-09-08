@@ -7,9 +7,15 @@ require_once(PEDIGREE__PLUGIN_DIR . 'includes/database.php');
 
 class Persons_List_Table extends WP_List_Table {
   private $persons_data;
-      function get_columns() {
+    function single_row( $item ) {
+      echo '<tr data-id="' . $item['id'] . '">';
+      $this->single_row_columns( $item );
+      echo '</tr>';
+  }
+
+  function get_columns() {
         $columns = array(
-          'id' => 'Id',
+          'root'      => 'Is root',
           'firstName' => 'First name',
           'surNames'  => 'Sur names',
           'lastName'  => 'Last name',
@@ -18,7 +24,6 @@ class Persons_List_Table extends WP_List_Table {
           'deathday'  => 'Deathday',
           'children'  =>'Children',
           'partners'  => 'Partners',
-          'root'      => 'Is root',
           'togglePartner' => 'Toggle',
           'toggleChild' => 'Toggle',
           'edit' => 'Edit',
@@ -44,8 +49,9 @@ class Persons_List_Table extends WP_List_Table {
 
       function column_default($item, $column_name) {
         $id = $item['id'];
+        $portrait = $item['portraitImageId'];
         switch ($column_name) {
-          case 'id': return $item[$column_name];
+          case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.pedigree.updateRoot(' . $id . ')" />';
           case 'firstName': return $item[$column_name];
           case 'surNames': return $item[$column_name];
           case 'lastName': return $item[$column_name];
@@ -54,7 +60,6 @@ class Persons_List_Table extends WP_List_Table {
           case 'deathday': return $item[$column_name];
           case 'children': return $item[$column_name];
           case 'partners': return $item[$column_name];
-          case 'root': return '<input type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.pedigree.updateRoot(' . $id . ')" />';
           case 'togglePartner': return '<button type="button" onclick="window.pedigree.togglePartner('. $id . ')" class="button">as partner</button>';
           case 'toggleChild': return '<button type="button" onclick="window.pedigree.toggleChild('. $id . ')" class="button">as child</button>';
           case 'edit': return '<button type="button" onclick="window.pedigree.editPerson('. $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';

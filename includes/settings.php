@@ -61,6 +61,7 @@ function pedigree_admin_scripts() {
    * It will be called only on your plugin admin page, enqueue our script here
    */
   wp_enqueue_script( 'pedigree-admin-script' );
+  wp_enqueue_media();
 }
 
 function pedigree_admin_styles() {
@@ -120,7 +121,10 @@ function pedigree_options_page_html() {
     $result = FALSE;
     $message = __('Undefined pedigree settings action', 'pedigree');
 
-    if (pedigree_is_update_family_root()) {
+    if (pedigree_is_update_portrait_image()) {
+      $result = pedigree_update_portrait_image();
+      $message = __('Portrait image updated', 'pedigree');
+    } else if (pedigree_is_update_family_root()) {
       $result = pedigree_update_family_root();
       $message = __('Root updated', 'pedigree');
     } else if (pedigree_is_delete_person()) {
@@ -151,7 +155,7 @@ function pedigree_options_page_html() {
   <div class="pedigree wrap">
     <?php pedigree_render_page_title(__(get_admin_page_title(), 'pedigree')) ?>
   
-    <form action="options.php" method="post">
+    <form action="options.php" method="post" class="form">
       <?php
       settings_fields( 'pedigree-options' );
       do_settings_sections( 'pedigree' );
