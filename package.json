@@ -26,7 +26,6 @@
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.8.3",
-		"mwm-pedigree": "file:../../../../../../git/mwm-pedigree",
 		"react-redux": "^8.0.2"
 	}
 }

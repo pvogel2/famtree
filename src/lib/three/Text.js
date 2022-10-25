@@ -1,4 +1,15 @@
-import * as THREE from 'three';
+import { Vector3, Color,
+  BufferGeometry,
+  Float32BufferAttribute,
+  RepeatWrapping,
+  ShaderMaterial,
+  DoubleSide,
+  Mesh,
+  TextureLoader,
+  WireframeGeometry,
+  LineBasicMaterial,
+  LineSegments,
+} from 'three';
 import FONT_PNG from './images/font.png';
 
 class ThreeText {
@@ -9,9 +20,9 @@ class ThreeText {
     this.text = config.text || '';
     this.objId = config.id || 'theText';
     this.debug = !!config.debug;
-    this.position = config.position || new THREE.Vector3(0, 0, 0);
-    this.rotation = config.rotation || new THREE.Vector3(0, 0, 0);
-    this.color = new THREE.Color(config.color || 0xffffff);
+    this.position = config.position || new Vector3(0, 0, 0);
+    this.rotation = config.rotation || new Vector3(0, 0, 0);
+    this.color = new Color(config.color || 0xffffff);
     this.scale = config.scale || 1.0;
     this.alpha = config.alpha || 1.0;
   }
@@ -116,11 +127,11 @@ class ThreeText {
     });
   
 
-    const g = new THREE.BufferGeometry();
+    const g = new BufferGeometry();
     g.setIndex( index );
-    g.setAttribute( 'position', new THREE.Float32BufferAttribute( position, 3 ) );
-    g.setAttribute( 'uv', new THREE.Float32BufferAttribute( uv, 2 ) );
-    g.setAttribute( 'char', new THREE.Float32BufferAttribute( char, 2 ) );
+    g.setAttribute( 'position', new Float32BufferAttribute( position, 3 ) );
+    g.setAttribute( 'uv', new Float32BufferAttribute( uv, 2 ) );
+    g.setAttribute( 'char', new Float32BufferAttribute( char, 2 ) );
 
     return g;
   }
@@ -141,7 +152,7 @@ class ThreeText {
       color: {type: "vec3", value: this.color.toArray()},
       fontTexture:   { type: "t", value: ThreeText.TEXTURE },
     });
-    u.fontTexture.value.wrapS = u.fontTexture.value.wrapT = THREE.RepeatWrapping;
+    u.fontTexture.value.wrapS = u.fontTexture.value.wrapT = RepeatWrapping;
 
     return u;
   }
@@ -152,21 +163,21 @@ class ThreeText {
     const o = {
       uniforms,
       depthWrite: false,
-      side: THREE.DoubleSide,
+      side: DoubleSide,
       transparent: true,
     };
-    const m = new THREE.ShaderMaterial( this.setShader(o) );
-    m.side = THREE.DoubleSide;
+    const m = new ShaderMaterial( this.setShader(o) );
+    m.side = DoubleSide;
     m.color = this.color;
     return m;
   }
 
 
   addWireframe() {
-    const g = new THREE.WireframeGeometry( this.textMesh.geometry );
+    const g = new WireframeGeometry( this.textMesh.geometry );
     //g.scale(this.scale, this.scale, this.scale)
-    const m = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 1 } );
-    const wireframe = new THREE.LineSegments( g, m );
+    const m = new LineBasicMaterial( { color: 0xff0000, linewidth: 1 } );
+    const wireframe = new LineSegments( g, m );
     wireframe.renderOrder = 1; // make sure wireframes are rendered 2nd
     this.textMesh.add( wireframe );
   }
@@ -186,7 +197,7 @@ class ThreeText {
     const textGeometry = this.getGeometry();
     const textMaterial = this.getMaterial();
 
-    this.textMesh = new THREE.Mesh( textGeometry, textMaterial );
+    this.textMesh = new Mesh( textGeometry, textMaterial );
 
     this.setPosition();
     this.setRotation();
@@ -385,7 +396,7 @@ ThreeText.CHAR_MAP = [
   /*127:   */ {i:5, j:9, w:1, o: 0},
 ];
 
-ThreeText.TEXTURE = new THREE.TextureLoader().load( FONT_PNG );
+ThreeText.TEXTURE = new TextureLoader().load( FONT_PNG );
 
 ThreeText.TEXTURE_ROWS = 10;
 ThreeText.TEXTURE_COLS = 10;

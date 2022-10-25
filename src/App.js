@@ -5,30 +5,30 @@ import { Provider } from 'react-redux';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import personsReducer from 'mwm-pedigree/src/store/personsReducer';
-import focusedPersonReducer from 'mwm-pedigree/src/store/focusedPersonReducer';
-import familyReducer from 'mwm-pedigree/src/store/familyReducer';
-import familiesReducer from 'mwm-pedigree/src/store/familiesReducer';
-import dialogsReducer from 'mwm-pedigree/src/store/dialogsReducer';
-import runtimeReducer from 'mwm-pedigree/src/store/runtimeReducer';
-import relationsReducer from 'mwm-pedigree/src/store/relationsReducer';
-import RenderProvider from 'mwm-pedigree/src/components/RenderProvider';
-import PedigreeRenderer from 'mwm-pedigree/src/components/PedegreeRenderer';
+import personsReducer from './store/personsReducer';
+import focusedPersonReducer from './store/focusedPersonReducer';
+import familyReducer from './store/familyReducer';
+import familiesReducer from './store/familiesReducer';
+import dialogsReducer from './store/dialogsReducer';
+import runtimeReducer from './store/runtimeReducer';
+import relationsReducer from './store/relationsReducer';
+import RenderProvider from './components/RenderProvider';
+import PedigreeRenderer from './components/PedegreeRenderer';
 import { setFamilyContext, loadFamily } from './mylib/Connect';
 
-import { setPersons } from 'mwm-pedigree/src/store/personsReducer';
-import { setFamily } from 'mwm-pedigree/src/store/familyReducer';
-import { setFamilies } from 'mwm-pedigree/src/store/familiesReducer';
-import { setForeground, setBackground, setText, setHighlight } from 'mwm-pedigree/src/store/layoutReducer';
-import { setRelations } from 'mwm-pedigree/src/store/relationsReducer';
+import { setPersons } from './store/personsReducer';
+import { setFamily } from './store/familyReducer';
+import { setFamilies } from './store/familiesReducer';
+import { setForeground, setBackground, setText, setHighlight } from './store/layoutReducer';
+import { setRelations } from './store/relationsReducer';
 
-import LoadFamily from 'mwm-pedigree/src/components/ui/LoadFamily';
-import InfoDialog from 'mwm-pedigree/src/components/ui/InfoDialog';
-import Intersector from 'mwm-pedigree/src/components/Intersector';
+import LoadFamily from './components/ui/LoadFamily';
+import InfoDialog from './components/ui/InfoDialog';
+import Intersector from './components/Intersector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import layoutReducer from 'mwm-pedigree/src/store/layoutReducer';
+import layoutReducer from './store/layoutReducer';
 
 const store = configureStore({ reducer: {
   persons: personsReducer,

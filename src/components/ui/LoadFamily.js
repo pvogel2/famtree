@@ -22,6 +22,7 @@ function LoadFamily(props) {
   const dispatch = useDispatch();
  
   const families = useSelector((state) => state.families);
+
   const handleLoad = async () => {
     try {
       const { persons, relations } = await loadFamily();
