@@ -61,6 +61,8 @@ export default class Person {
     this.pChildren = getInitializedArray(config.children);
     this.pPartners = getInitializedArray(config.partners);
 
+    this.pRelations = getInitializedArray(config.relations);
+
     this.pPortraitUrl = config.portraitUrl ?? defaultConfig.portraitUrl;
   }
 
@@ -128,6 +130,10 @@ export default class Person {
     return this.pPartners.slice();
   }
 
+  get relations() {
+    return this.pRelations.slice();
+  }
+
   get portraitUrl() {
     return this.pPortraitUrl;
   }
@@ -138,6 +144,10 @@ export default class Person {
   
   hasPartners() {
     return !!this.pPartners.length;
+  }
+
+  hasRelations() {
+    return !!this.pRelations.length;
   }
 
   equals(p = {}) {
@@ -160,8 +170,18 @@ export default class Person {
     }
   }
 
+  addRelation(newId) {
+    if (!this.pRelations.find((id) => newId === id) && isValidId(newId)) {
+      this.pRelations.push(newId);
+    }
+  }
+
   removePartner(id) {
     removeItem(this.pPartners, id);
+  }
+
+  removeRelation(id) {
+    removeItem(this.pRelations, id);
   }
 
   serialize() {
@@ -175,6 +195,7 @@ export default class Person {
       deathday: this.pDeathday,
       partners: this.pPartners.slice(),
       children: this.pChildren.slice(),
+      relations: this.pRelations.slice(),
       portraitUrl: this.pPortraitUrl,
     };
   };

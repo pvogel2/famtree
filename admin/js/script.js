@@ -1,57 +1,61 @@
-const personEditor = {
-  edit: {
-    form: '#editPersonForm',
-    getForm() {
-      return document.querySelector(this.form);
-    },
-  },
-  portrait: {
-    img: '#person-portrait',
-    idInput: 'portrait-id',
-    uploadButton: '#upload-submit',
-    default: '',
-    form: '#uploadPortraitForm',
-    getForm() {
-      return document.querySelector(this.form);
-    },
-
-    setSource(s) {
-      const img = document.querySelector(this.img);
-      if (!this.default) {
-        this.default = img.src;
-      }
-      img.src = s || this.default;
-    },
-
-    reset() {
-      if (this.default) {
-        this.setSource(this.default);
-      }
-
-      const form = this.getForm();
-      const inp = form[this.idInput];
-      const subm = form.querySelector(this.uploadButton);
-      inp.value = '';
-      subm.disabled = true;
-    },
-
-    update(data) {
-      this.setSource(data.url);
-
-      const form = this.getForm();
-      const inp = form[this.idInput];
-      const subm = form.querySelector(this.uploadButton);
-      inp.value = data.id;
-      subm.disabled = false;
-    },
-  },
-};
-
 window.pedigree = window.pedigree || {
   persons: [],
 };
 
-window.addEventListener('DOMContentLoaded', () => {
+window.pedigree.saveRelations = function() {
+  const rls = personEditor.edit.relations.filter((rl) => rl.modified);
+  const ps = [];
+
+  rls.forEach((rl) => {
+    const family = rls[0].family;
+    const deleted = rl.deleted === true;
+    if (rl.id < 0 && deleted) { // new relation directly removed in edit mode, nothing to save
+      return;
+    }
+
+    const options = {
+      path: `pedigree/v1/relation/${deleted ? rl.id : family}`,
+      type: deleted ? 'DELETE' : 'POST',
+    };
+
+    if (!deleted) {
+      options.data = rl.serialize();
+      if (options.data.id < 0) { // new relation
+        delete options.data.id;
+      }
+    };
+
+    ps.push(wp.apiRequest(options));
+  });
+
+  return ps;
+}
+
+window.pedigree.saveAll = function() {
+  const ps = window.pedigree.saveRelations();
+  ps.push(window.pedigree.savePerson());
+
+  Promise.allSettled(ps).then((ress) => {
+    document.location.reload();
+  });
+}
+
+window.pedigree.savePerson = function() {
+  const person = personEditor.edit.getPerson();
+  if (!person.firstName || !person.lastName || !person.family) {
+    return;
+  };
+
+  const options = {
+    path: `pedigree/v1/person${person.id ? `/${person.id}` : ''}`,
+    type: 'POST',
+    data: { ...person },
+  };
+
+  return wp.apiRequest(options);
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
   const rows = document.querySelectorAll('.wp-list-table tbody tr');
   rows.forEach(row => {
     window.pedigree.persons.push(
@@ -65,8 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
         birthName: row.querySelector('.birthName').textContent.trim(),
         birthday: row.querySelector('.birthday').textContent.trim(),
         deathday: row.querySelector('.deathday').textContent.trim(),
-        children: row.querySelector('.children').textContent.trim(),
-        partners: row.querySelector('.partners').textContent.trim(),
+        relations: row.querySelector('.relations').textContent.trim(),
         portraitUrl: row.querySelector('.root').firstChild.dataset.portraitUrl,
       })
     );
@@ -84,62 +87,104 @@ window.pedigree.getPerson = (json) => {
     birthName: json.birthName || '',
     birthday: json.birthday ||null,
     deathday: json.deathday || null,
-    partners: json.partners ? JSON.parse(json.partners) : [],
-    children: json.children ? JSON.parse(json.children) : [],
+    partners: [], // legacy
+    children: [], // legacy
     portraitUrl: json.portraitUrl || '',
   };
 };
 
-window.pedigree.togglePartner = (id) => {
-  const field = document.getElementById('partners');
-  if (!field._values) {
-    field._values = [];
+window.pedigree.partnerSelected = () => {
+  const form = personEditor.edit.getForm();
+  const partnersSelect = form.partners;
+
+  const relation = window.pedigree.relations.find((r) => r.id == partnersSelect.value);
+  if (relation) {
+    personEditor.edit.setRelation(new Relation(relation));
   }
-  const idx = field._values.findIndex(_id => _id === id);
-  if (idx === -1) {
-    field._values.push(id);
-  } else {
-    field._values.splice(idx, 1);
-  }
-  field.value = field._values.join(', ');
 };
 
-window.pedigree.toggleChild = (id) => {
-  const field = document.getElementById('children');
-  if (!field._values) {
-    field._values = [];
+window.pedigree.removePartner = () => {
+  const form = personEditor.edit.getForm();
+  const partnersSelect = form.partners;
+  const rId = parseInt(partnersSelect.value);
+  if (rId) {
+    const options = [...partnersSelect.options];
+    const option = options.find(o =>parseInt(o.value) === rId);
+  
+    // remove option
+    if (option) {
+      partnersSelect.removeChild(option);
+      const idx = window.pedigree.relations.findIndex((_idx) => _idx == rId);
+      if (idx > -1) {
+        window.pedigree.relations.splice(idx, 1);
+      }
+      personEditor.edit.removeRelation(rId);
+    }
   }
+}
 
-  const idx = field._values.findIndex(_id => _id === id);
-  if (idx === -1) {
-    field._values.push(id);
-  } else {
-    field._values.splice(idx, 1);
+window.pedigree.addPartner = (id) => {
+  let pId = parseInt(id);
+  if (isNaN(pId)) {
+    const cSelect = document.getElementById('addCandidate');
+    pId =  parseInt(cSelect.value);
   }
-  field.value = field._values.join(', ');
+  if (isNaN(pId)) return;
+
+  const form = personEditor.edit.getForm();
+  const partnersSelect = form.partners;
+
+  let relation = null;
+  personEditor.edit.relations.forEach((rId) => {
+    const rel = window.pedigree.relations.find((r) => r.id == rId);
+    if (rel.members.find((mId) => mId == pId)) {
+      relation = { ...rel };
+    }
+  });
+
+  const options = [...partnersSelect.options];
+  const option = options.find(o => o.value == relation?.id);
+
+  if (!option) {
+    // new relation
+    relation = {
+      family: form.family.value,
+      start: null,
+      end: null,
+      children: [],
+      members: [form.id.value, pId],
+    };
+    const rId = personEditor.edit.addRelation(relation);
+    const newOption = document.createElement('option');
+    const partnerPerson = window.pedigree.persons.find((p) => p.id === pId);
+    newOption.setAttribute('value', rId);
+    newOption.text = `${partnerPerson.firstName} ${partnerPerson.lastName} (p:${partnerPerson.id}, r:${rId})`;
+    partnersSelect.appendChild(newOption);
+    partnersSelect.setAttribute('value', rId);
+    relation.id = rId;
+    window.pedigree.relations.push({ ...relation, members: [...relation.members], children: [...relation.children] });
+  }
+};
+
+window.pedigree.removeChild = () => {
+  if (!personEditor.edit.relation) return;
+  personEditor.edit.removeChild();
+}
+
+window.pedigree.addChild = (id) => {
+  let cId = parseInt(id);
+  if (isNaN(cId)) {
+    const cSelect = document.getElementById('addCandidate');
+    cId =  parseInt(cSelect.value);
+  }
+  if (!personEditor.edit.relation || isNaN(cId)) return;
+  personEditor.edit.addChild(cId);
 };
 
 window.pedigree.editPerson = (id) => {
   const person = window.pedigree.persons.find((p) => p.id === id);
   if (person) {
-    const form = personEditor.edit.getForm();
-    form.family.value = person.family;
-    form.id.value = person.id;
-    form.firstName.value = person.firstName;
-    form.surNames.value = person.surNames;
-    form.lastName.value = person.lastName;
-    form.birthName.value = person.birthName;
-
-    form.birthday.value = person.birthday;
-    form.deathday.value = person.deathday;
-
-    const partners = form.partners;
-    partners._values = [...person.partners];
-    partners.value = partners._values.join(', ');
-
-    const children = form.children;
-    children._values = [...person.children];
-    children.value = children._values.join(', ');
+    personEditor.edit.setPerson(person);
 
     const portraitForm = personEditor.portrait.getForm();
 
@@ -149,22 +194,41 @@ window.pedigree.editPerson = (id) => {
 };
 
 window.pedigree.resetPerson = () => {
-  const form = personEditor.edit.getForm();
-  form.reset();
-
-  const partners = form.partners;
-  partners._values = [];
-
-  const children = form.children;
-  children._values = [];
-
+  personEditor.edit.reset();
   personEditor.portrait.reset();
 };
 
-window.pedigree.removePerson = async (id) => {
-  const form = document.getElementById('deletePersonForm');
-  form['deleteId'].value = id;
-  form.requestSubmit();
+window.pedigree.deletePerson = async () => {
+  const person = personEditor.edit.getPerson();
+  const pId = person.id;
+  if (!pId) return;
+
+  const options = {
+    path: `pedigree/v1/person/${pId}`,
+    type: 'DELETE',
+  };
+
+  wp.apiRequest(options).then(() => {
+    // remove from global list
+    const idx = window.pedigree.persons.findIndex((p) => p.id === pId);
+    if (idx > -1) {
+      window.pedigree.persons.splice(idx, 1);
+    }
+
+    // remove from person editor
+    if (personEditor.edit.getPerson().id === pId) {
+      window.pedigree.resetPerson();
+    }
+
+    // remove from html
+    const tBody = document.getElementById('the-list');
+    const tr = tBody.querySelector(`[data-id="${pId}"]`);
+    if (tr) {
+      tBody.removeChild(tr);
+    };
+    console.log('all updated');
+  });
+
 }
 
 window.pedigree.addFamily = () => {

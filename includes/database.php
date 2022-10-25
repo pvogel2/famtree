@@ -1,11 +1,28 @@
 <?php
 
 global $pedigree_db_version;
-$pedigree_db_version = '2.0';
+$pedigree_db_version = '3.0';
 
 function pedigree_persons_tablename() {
 	global $wpdb;
-  return $wpdb->prefix . 'pedigree';
+  return $wpdb->prefix . 'pedigree_persons';
+}
+
+function pedigree_relations_tablename() {
+	global $wpdb;
+  return $wpdb->prefix . 'pedigree_relations';
+}
+
+function pedigree_rename_persons_table() {
+  global $wpdb;
+  $old_table_name = $wpdb->prefix . 'pedigree';
+  $table_name = pedigree_persons_tablename();
+  if ($old_table_name != $table_name) {
+    $ok = $wpdb->query("RENAME TABLE " . $old_table_name . " TO " . $table_name);
+    if( !$ok ) {
+      echo 'Failed to rename table. Last DB error: ' . $wpdb->last_error;
+    }
+  }
 }
 
 // https://codex.wordpress.org/Creating_Tables_with_Plugins
@@ -15,7 +32,9 @@ function pedigree_database_setup() {
   $installed_db_version = get_option( 'pedigree_db_version' );
 
   if ($installed_db_version != $pedigree_db_version) {
-	  $table_name = pedigree_persons_tablename();
+    pedigree_rename_persons_table();
+
+    $table_name = pedigree_persons_tablename();
 
 	  $charset_collate = $wpdb->get_charset_collate();
 
@@ -29,8 +48,6 @@ function pedigree_database_setup() {
 		  birthName varchar(55) DEFAULT '' NOT NULL,
 		  birthday date NULL DEFAULT NULL,
 		  deathday date NULL DEFAULT NULL,
-		  partners json NOT NULL,
-		  children json NOT NULL,
       portraitImageId mediumint(9) DEFAULT NULL,
 		  PRIMARY KEY  (id)
 	  ) $charset_collate;";
@@ -39,7 +56,25 @@ function pedigree_database_setup() {
 
     dbDelta( $sql );
 
+	  $table_name = pedigree_relations_tablename();
+
+	  $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+		  id mediumint(9) NOT NULL AUTO_INCREMENT,
+      family varchar(55) DEFAULT '' NOT NULL,
+      type varchar(55) NULL DEFAULT NULL,
+      start date NULL DEFAULT NULL,
+      end date NULL DEFAULT NULL,
+		  members json NOT NULL,
+		  children json NOT NULL,
+		  PRIMARY KEY  (id)
+	  ) $charset_collate;";
+
+    dbDelta( $sql );
+
 	  add_option( 'pedigree_db_version', $pedigree_db_version );
+	  update_option( 'pedigree_db_version', $pedigree_db_version );
   }
 }
 
@@ -51,16 +86,42 @@ function pedigree_update_db_check() {
 }
 add_action( 'plugins_loaded', 'pedigree_update_db_check' );
 
+function pedigree_extend_persons_result(&$p, $key, $rs) {
+  $pId = $p['id'];
+  $relations = '';
+
+  $copy = new ArrayObject($p);
+  foreach ($rs as $r) {
+    $members = json_decode($r['members']);
+    if (in_array($pId, $members)) {
+      if ($relations != '') {
+        $relations = $relations . ',';
+      }
+      $relations = $relations . $r['id'];
+    }
+  }
+  $copy['relations'] = '[' . $relations . ']';
+  $p = $copy;
+}
+
 function pedigree_database_get_persons_new($search) {
   global $wpdb;
 
-  $table_name = $wpdb->prefix . 'pedigree';
+  $table_name = pedigree_persons_tablename();
 
   if (empty($search)) {
-    return $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
+    $pResults = $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
   } else {
-    return $wpdb->get_results( "SELECT * FROM $table_name WHERE family LIKE '%{$search}%' OR firstName LIKE '%{$search}%' OR lastName LIKE '%{$search}%'", ARRAY_A );
+    $pResults = $wpdb->get_results( "SELECT * FROM $table_name WHERE family LIKE '%{$search}%' OR firstName LIKE '%{$search}%' OR lastName LIKE '%{$search}%'", ARRAY_A );
   }
+
+  $table_name = pedigree_relations_tablename();
+  $rResults = $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
+
+  // TODO: bad performance find better solution 
+  array_walk($pResults, 'pedigree_extend_persons_result', $rResults);
+  // var_dump($pResults);
+  return $pResults;
 }
 
 function pedigree_database_get_persons(WP_REST_Request $req = null) {
@@ -70,28 +131,49 @@ function pedigree_database_get_persons(WP_REST_Request $req = null) {
     $id = urldecode($req->get_param('id'));
   }
 
-  $table_name = $wpdb->prefix . 'pedigree';
-
+  $table_name = pedigree_persons_tablename();
+  // to add relations to the result directly from db
+  // SELECT p.*,r.id relations FROM `wp_testpedigree_persons` AS p LEFT JOIN `wp_testpedigree_relations` AS r ON JSON_CONTAINS(r.members, CONCAT('[',p.id,']'))
   if (empty($id)) {
-    $results = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
+    $pRresults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
   } else {
-    $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE family='$id'", OBJECT );
+    $pRresults = $wpdb->get_results( "SELECT * FROM $table_name WHERE family='$id'", OBJECT );
   }
 
-  foreach ($results as &$item) {
+  foreach ($pRresults as &$item) {
     $item->portraitUrl = wp_get_attachment_image_url($item->portraitImageId, 'thumbnail');
   }
   $families = get_option( 'pedigree_families', array('default' => 'default') );
 
+
+  $table_name = pedigree_relations_tablename();
+
+  if (empty($id)) {
+    $rResults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
+  } else {
+    $rResults = $wpdb->get_results( "SELECT * FROM $table_name WHERE family='$id'", OBJECT );
+  }
+
   return array(
-    'persons' => $results,
+    'persons' => $pRresults,
     'families' => $families,
+    'relations' => $rResults,
   );
+}
+
+function pedigree_database_delete_relation($id) {
+  global $wpdb;
+  $table_name = pedigree_relations_tablename();
+  if (empty($id)) {
+    return false;
+  } else {
+    return $wpdb -> delete( $table_name, array('id' => $id ));
+  }
 }
 
 function pedigree_database_delete_person($id) {
   global $wpdb;
-  $table_name = $wpdb->prefix . 'pedigree';
+  $table_name = pedigree_persons_tablename();
   if (empty($id)) {
     return false;
   } else {
@@ -101,7 +183,7 @@ function pedigree_database_delete_person($id) {
 
 function pedigree_database_update_portrait_image($id, $mediaId) {
   global $wpdb;
-  $table_name = $wpdb->prefix . 'pedigree';
+  $table_name = pedigree_persons_tablename();
   if (empty($id)) {
     return false;
   } else {
@@ -120,7 +202,7 @@ function pedigree_database_update_portrait_image($id, $mediaId) {
 
 function pedigree_database_update_root($id, $value) {
   global $wpdb;
-  $table_name = $wpdb->prefix . 'pedigree';
+  $table_name = pedigree_persons_tablename();
   if (empty($id)) {
     return false;
   } else {
@@ -137,39 +219,33 @@ function pedigree_database_update_root($id, $value) {
   }
 }
 
+function pedigree_database_modify_relation() {
+  $relationId = sanitize_text_field($_POST['relationId']);
+}
+
+function pedigree_database_remove_relation() {
+  $relationId = sanitize_text_field($_POST['relationId']);
+}
+
+function pedigree_person_fields($person) {
+  return array(
+    'family' => $person['family'],
+    'firstName' => $person['firstName'],
+    'surNames' => $person['surNames'],
+    'lastName' => $person['lastName'],
+    'birthName' => $person['birthName'],
+    'birthday' => $person['birthday'],
+    'deathday' => $person['deathday'],
+  );
+}
+
 function pedigree_database_create_person($person) {
 	global $wpdb;
 	$table_name = pedigree_persons_tablename();
 
-  $family = sanitize_text_field($person['family']);
-  $firstName = sanitize_text_field($person['firstName']);
-  $surNames = sanitize_text_field($person['surNames']);
-  $lastName = sanitize_text_field($person['lastName']);
-  $birthName = sanitize_text_field($person['birthName']);
-  $children = sanitize_text_field($person['children']);
-  $partners = sanitize_text_field($person['partners']);
-
-  $birthday = sanitize_text_field($person['birthday']);
-  $deathday = sanitize_text_field($person['deathday']);
-  if (empty($birthday)) {
-    $birthday = null;
-  };
-  if (empty($deathday)) {
-    $deathday = null;
-  };
   $result = (boolean) $wpdb->insert( 
     $table_name, 
-    array(
-      'family' => $family,
-      'firstName' => $firstName,
-      'surNames' => $surNames,
-      'lastName' => $lastName,
-      'birthName' => $birthName,
-      'birthday' => $birthday,
-      'deathday' => $deathday,
-      'partners' => '[' . $partners . ']',
-      'children' => '[' . $children . ']',
-    )
+    pedigree_person_fields($person)
   );
   return $result;
 }
@@ -178,40 +254,47 @@ function pedigree_database_update_person($person) {
 	global $wpdb;
 	$table_name = pedigree_persons_tablename();
 
-  $personId = sanitize_text_field($person['id']);
-  $family = sanitize_text_field($person['family']);
-  $firstName = sanitize_text_field($person['firstName']);
-  $surNames = sanitize_text_field($person['surNames']);
-  $lastName = sanitize_text_field($person['lastName']);
-  $birthName = sanitize_text_field($person['birthName']);
-  $children = sanitize_text_field($person['children']);
-  $partners = sanitize_text_field($person['partners']);
-
-  $birthday = sanitize_text_field($person['birthday']);
-  $deathday = sanitize_text_field($person['deathday']);
-
-  if (empty($birthday)) {
-    $birthday = null;
-  };
-  if (empty($deathday)) {
-    $deathday = null;
-  };
-
   $result = $wpdb->update( 
-    $table_name, 
-    array(
-      'family' => $family,
-      'firstName' => $firstName,
-      'surNames' => $surNames,
-      'lastName' => $lastName,
-      'birthName' => $birthName,
-      'birthday' => $birthday,
-      'deathday' => $deathday,
-      'partners' => '[' . $partners . ']',
-      'children' => '[' . $children . ']',
-    ),
+    $table_name,
+    pedigree_person_fields($person),
     array(
       'id' => $personId,
+    )
+  );
+  return is_numeric($result) || $result;
+}
+
+function pedigree_relation_fields($relation) {
+  return array(
+    'family' => $relation['family'],
+    'type' => $relation['type'],
+    'start' => $relation['start'],
+    'end' => $relation['end'],
+    'members' => json_encode($relation['members']),
+    'children' => json_encode($relation['children']),
+  );
+}
+
+function pedigree_database_create_relation($relation) {
+	global $wpdb;
+	$table_name = pedigree_relations_tablename();
+
+  $result = (boolean) $wpdb->insert( 
+    $table_name, 
+    pedigree_relation_fields($relation)
+  );
+  return $result;
+}
+
+function pedigree_database_update_relation($relation) {
+	global $wpdb;
+	$table_name = pedigree_relations_tablename();
+
+  $result = (boolean) $wpdb->update( 
+    $table_name, 
+    pedigree_relation_fields($relation),
+    array(
+      'id' => $relation['id'],
     )
   );
   return is_numeric($result) || $result;

@@ -22,13 +22,9 @@ class Persons_List_Table extends WP_List_Table {
           'birthName' => 'Birth name',
           'birthday'  => 'Birthday',
           'deathday'  => 'Deathday',
-          'children'  =>'Children',
-          'partners'  => 'Partners',
-          'togglePartner' => 'Toggle',
-          'toggleChild' => 'Toggle',
-          'edit' => 'Edit',
-          'remove' => 'Remove',
+          'relations'  => 'Relations',
           'family'    => 'Family',
+          'edit' => 'Edit',
         );
         return $columns;
       }
@@ -50,6 +46,7 @@ class Persons_List_Table extends WP_List_Table {
       function column_default($item, $column_name) {
         $id = $item['id'];
         $portrait = $item['portraitImageId'];
+
         switch ($column_name) {
           case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.pedigree.updateRoot(' . $id . ')" />';
           case 'firstName': return $item[$column_name];
@@ -58,13 +55,9 @@ class Persons_List_Table extends WP_List_Table {
           case 'birthName': return $item[$column_name];
           case 'birthday': return $item[$column_name];
           case 'deathday': return $item[$column_name];
-          case 'children': return $item[$column_name];
-          case 'partners': return $item[$column_name];
-          case 'togglePartner': return '<button type="button" onclick="window.pedigree.togglePartner('. $id . ')" class="button">as partner</button>';
-          case 'toggleChild': return '<button type="button" onclick="window.pedigree.toggleChild('. $id . ')" class="button">as child</button>';
-          case 'edit': return '<button type="button" onclick="window.pedigree.editPerson('. $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
-          case 'remove': return '<button type="button" onclick="window.pedigree.removePerson('. $id . ')" class="button icon"><span class="dashicons dashicons-trash"></span></button>';
+          case 'relations': return $item[$column_name];
           case 'family': return $item[$column_name];
+          case 'edit': return '<button type="button" onclick="window.pedigree.editPerson('. $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
           default:
             return print_r($item, true); //Show the whole array for troubleshooting purposes
             }

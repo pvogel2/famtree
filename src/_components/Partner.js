@@ -13,7 +13,7 @@ const getForeground = (state) => state.layout.foreground;
 const getText = (state) => state.layout.text;
 
 function Partner(props) {
-  const { person, parent, offset } = props;
+  const { person, parent, offsetY = 0, offsetZ = 0 } = props;
 
   const foreground = useSelector(getForeground);
   const text = useSelector(getText);
@@ -24,6 +24,8 @@ function Partner(props) {
     if (!renderer || !person?.id) return;
 
     const usedPerson = new Person(person);
+
+    const meshOffset = new Vector3(0, offsetY, offsetZ);
     const meshId = `partner${usedPerson.id}`;
 
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
@@ -32,9 +34,7 @@ function Partner(props) {
     m.name = meshId;
     m.userData.id = usedPerson.id;
 
-    if (offset) {
-      m.position.add(offset);
-    }
+    m.position.add(meshOffset);
 
     renderer.addObject(meshId, m, true, parent);
 
@@ -55,7 +55,7 @@ function Partner(props) {
       renderer.removeObject(meshId);
       labelText.remove(null, dataGroup);
     };
-  }, [renderer, person, offset, parent, foreground, text]);
+  }, [renderer, person, parent, foreground, text, offsetY, offsetZ]);
 
   return null;
 };

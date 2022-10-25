@@ -26,6 +26,8 @@ export function getMesh(layout = {}) {
   const r = 0.5;
   const g = new SphereGeometry(r);
   const m = new MeshBasicMaterial({ color });
+
+  g.computeBoundingSphere();
   return new Mesh(g, m);
 }
 

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setPersons } from '../../store/personsReducer';
 import { setFamily } from '../../store/familyReducer';
+import { setRelations } from '../../store/relationsReducer';
 import { loadFamily, setFamilyContext } from './../../lib/Connect';
 
 // const families = ['twoChilds', 'test', 'default', 'dummy'];
@@ -21,12 +22,13 @@ function LoadFamily(props) {
   const dispatch = useDispatch();
  
   const families = useSelector((state) => state.families);
-
   const handleLoad = async () => {
     try {
-      const { persons } = await loadFamily();
+      const { persons, relations } = await loadFamily();
 
       await dispatch(setPersons(persons));
+      await dispatch(setRelations(relations));
+
       handleMenuClose();
     } catch(err) {
       console.log(err);

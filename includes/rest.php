@@ -20,15 +20,39 @@ function pedigree_rest_register_routes() {
     'permission_callback' => 'pedigree_rest_permission_read',
   ));
 
+  register_rest_route( $namespace, '/person', array(
+    'methods' => WP_REST_Server::CREATABLE,
+    'callback' => 'pedigree_save_person',
+    'permission_callback' => 'pedigree_rest_permission_write',
+  ));
+
   register_rest_route( $namespace, '/person/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::DELETABLE,
-    'callback' => 'pedigree_database_remove_person',
+    'callback' => 'pedigree_delete_person',
+    'permission_callback' => 'pedigree_rest_permission_write',
+  ));
+
+  register_rest_route( $namespace, '/person/(?P<id>[\w%]+)', array(
+    'methods' => WP_REST_Server::EDITABLE,
+    'callback' => 'pedigree_save_person',
     'permission_callback' => 'pedigree_rest_permission_write',
   ));
 
   register_rest_route( $namespace, '/root/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::EDITABLE,
-    'callback' => 'pedigree_database_update_root',
+    'callback' => 'pedigree_update_family_root',
+    'permission_callback' => 'pedigree_rest_permission_write',
+  ));
+
+  register_rest_route( $namespace, '/relation/(?P<id>[\w%]+)', array(
+    'methods' => WP_REST_Server::EDITABLE,
+    'callback' => 'pedigree_save_relation',
+    'permission_callback' => 'pedigree_rest_permission_write',
+  ));
+
+  register_rest_route( $namespace, '/relation/(?P<id>[\w%]+)', array(
+    'methods' => WP_REST_Server::DELETABLE,
+    'callback' => 'pedigree_delete_relation',
     'permission_callback' => 'pedigree_rest_permission_write',
   ));
 }

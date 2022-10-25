@@ -25,20 +25,21 @@ function getRelationLines(s, t, config = { color: 0xffffff }) {
 const getForeground = (state) => state.layout.foreground;
 
 function ChildRelation(props) {
-  const { source, target, parent } = props;
+  const { sourceX = 0, sourceY = 0, sourceZ = 0, targetX = 0, targetY = 0, targetZ = 0, parent } = props;
   const { renderer } = useContext(RenderContext);
   const foreground = useSelector(getForeground);
 
   useEffect(() => {
-    if (!renderer || !target || !parent) return;
-    const s = source ? source.clone() : new Vector3();
+    if (!renderer || !parent) return;
+    const target = new Vector3(targetX, targetY, targetZ);
+    const source = new Vector3(sourceX, sourceY, sourceZ);
 
-    const lines = getRelationLines(s, target, { color: foreground });
+    const lines = getRelationLines(source, target, { color: foreground });
     parent.add(lines);
     return () => {
       parent.remove(lines);
     };
-  }, [renderer, source, target, parent, foreground]);
+  }, [renderer, sourceX, sourceY, sourceZ, targetX, targetY, targetZ, parent, foreground]);
 
   return null;
 };

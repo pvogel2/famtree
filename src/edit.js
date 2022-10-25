@@ -26,7 +26,7 @@ import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import './editor.scss';
 
 import App from './App';
-import { loadFamily } from './lib/Connect';
+import { loadFamily } from './mylib/Connect';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -40,6 +40,7 @@ export default function Edit({ attributes, setAttributes  }) {
 	const { align, family, familyFAB, textColor, backgroundColor, foregroundColor, highlightColor } = attributes;
 
 	const [families, setFamilies] = useState([]);
+	const [relations, setRelations] = useState([]);
 	const [persons, setPersons] = useState([]);
 
 	useEffect(() => {
@@ -56,6 +57,7 @@ export default function Edit({ attributes, setAttributes  }) {
 			  const data = await loadFamily(family);
 				setFamilies(data.families);
 				setPersons(data.persons);
+				setRelations(data.relations);
 			} catch(err) {
 				console.log(err);
 			}
@@ -130,6 +132,7 @@ export default function Edit({ attributes, setAttributes  }) {
 				  family={ family }
 					families={ families }
 					persons={ persons }
+					relations={ relations }
 					familyFAB={ familyFAB }
 					readonly={ true }
           text={ textColor }

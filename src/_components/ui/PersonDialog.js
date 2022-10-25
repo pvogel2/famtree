@@ -2,23 +2,23 @@ import { useState, useEffect, useCallback } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Dialog, DialogActions, DialogContent } from '@mui/material';
 import { FormGroup, FormControl } from '@mui/material';
-import { Select, TextField, MenuItem, Button, Grid, Divider, InputAdornment } from '@mui/material';
+import { Select, TextField, MenuItem, Button, Grid, InputAdornment } from '@mui/material';
 import { Flare, Church, Person as PersonIcon } from '@mui/icons-material';
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import RelationSelector from './RelationSelector';
 
-import DeletableList from './DeletableList';
 import ExtendedDialogTitle from './ExtendedDialogTitle';
 import Person from '../../lib/Person';
 import { DATE_FORMAT } from '../../lib/ui/utils';
 import { addPerson, updatePerson } from '../../store/personsReducer';
 import { showPersonDialog, hidePersonDialog } from '../../store/dialogsReducer';
 import { clearPerson } from '../../store/focusedPersonReducer';
+import { updatePerson as updateConnectPerson, savePerson as saveConnectPerson } from './../../lib/Connect';
 
 function PersonDialog(props) {
-  const { persons = [] } = props;
+  const { persons = [], relations = [], family } = props;
 
   const [editedPerson, setEditedPerson] = useState({});
 
@@ -34,6 +34,16 @@ function PersonDialog(props) {
   const [surNames, setSurNames] = useState('');
 
   const findPerson  = useCallback((id) => persons.find((p) => p.id === id), [persons]);
+
+  function getFreePersonId() {
+    let id = persons.length;
+    persons.forEach((p) => {
+      if (p.id >= id) {
+        id = p.id + 1;
+      }
+    });
+    return id;
+  }
 
   const editableStringProps = [
     { name: 'firstName', value: firstName, setter: setFirstName },
@@ -91,12 +101,11 @@ function PersonDialog(props) {
     dispatch(hidePersonDialog());
   };
 
+  const currentRelations = relations.filter((r) => r.members.includes(editedPerson.id));
+
   const personItems = persons.map((item) => {
     return <MenuItem value={ item.id } key={ item.id }>{ item.name }</MenuItem>
   });
-
-  const children = persons.filter((item) => editedPerson.children?.includes(item.id));
-  const partners = persons.filter((item) => editedPerson.partners?.includes(item.id));
 
   const handleEditedPersonChange = (event) => {
     const p = findPerson(event.target.value);
@@ -110,19 +119,21 @@ function PersonDialog(props) {
     setEditedPerson(new Person(p));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     let person;
     if (!editedPerson.id) {
       person = new Person({
-        id: `p${persons.length}`,
+        id: getFreePersonId(),
         firstName,
         lastName,
         birthday,
         deathday,
         birthName,
         surNames,
+        family,
       });
-      dispatch(addPerson(person.serialize()));
+      await dispatch(addPerson(person.serialize()));
+      saveConnectPerson(person.serialize());
     } else {
       person = new Person(findPerson(editedPerson.id));
       person.firstName = firstName;
@@ -131,8 +142,9 @@ function PersonDialog(props) {
       person.deathday = deathday;
       person.birthName = birthName;
       person.surNames = surNames;
-      dispatch(updatePerson(person.serialize()));
-    }
+      await dispatch(updatePerson(person.serialize()));
+      updateConnectPerson(person.serialize());
+  }
     setEditedPerson(person);
   };
 
@@ -165,17 +177,11 @@ function PersonDialog(props) {
     )
   );
 
-  const handleChildClicked = (item) => {
-    editedPerson.removeChild(item.id);
-    dispatch(updatePerson(editedPerson.serialize()));
-    setEditedPerson(new Person(editedPerson.serialize()));
-  };
-
-  const handlePartnerClicked = (item) => {
+  /* const handlePartnerClicked = (item) => {
     editedPerson.removePartner(item.id);
     dispatch(updatePerson(editedPerson.serialize()));
     setEditedPerson(new Person(editedPerson.serialize()));
-  };
+  }; */
 
   return (
        <Dialog
@@ -210,14 +216,7 @@ function PersonDialog(props) {
               </FormGroup>
             </Grid>
             <Grid item xs={6}>
-              <RelationSelector targetPerson={ findPerson(editedPerson.id) } />
-              <Divider />
-              <FormGroup>
-                <FormControl>
-                  <DeletableList label="current children" items={ children } itemClicked={ handleChildClicked }/>
-                  <DeletableList label="current partners" items={ partners } itemClicked={ handlePartnerClicked }/>
-                </FormControl>
-              </FormGroup>
+              <RelationSelector relations={ currentRelations } targetPerson={ findPerson(editedPerson.id) } />
            </Grid>
           </Grid>
         </DialogContent>
@@ -231,7 +230,9 @@ function PersonDialog(props) {
 
 function mapStateToProps(state) {
   const persons = state.persons.map((data) => new Person(data));
-  return { persons };
+  const relations = state.relations;
+  const family = state.family;
+  return { persons, relations, family };
 }
 
 export default connect(mapStateToProps)(PersonDialog);

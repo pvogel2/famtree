@@ -1,33 +1,34 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { Vector3 } from 'three';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import personsReducer from './store/personsReducer';
-import focusedPersonReducer from './store/focusedPersonReducer';
-import familyReducer from './store/familyReducer';
-import familiesReducer from './store/familiesReducer';
-import dialogsReducer from './store/dialogsReducer';
-import runtimeReducer from './store/runtimeReducer';
-import RenderProvider from './components/RenderProvider';
-import PedigreeRenderer from './components/PedegreeRenderer';
-import { setFamilyContext, loadFamily } from './lib/Connect';
+import personsReducer from 'mwm-pedigree/src/store/personsReducer';
+import focusedPersonReducer from 'mwm-pedigree/src/store/focusedPersonReducer';
+import familyReducer from 'mwm-pedigree/src/store/familyReducer';
+import familiesReducer from 'mwm-pedigree/src/store/familiesReducer';
+import dialogsReducer from 'mwm-pedigree/src/store/dialogsReducer';
+import runtimeReducer from 'mwm-pedigree/src/store/runtimeReducer';
+import relationsReducer from 'mwm-pedigree/src/store/relationsReducer';
+import RenderProvider from 'mwm-pedigree/src/components/RenderProvider';
+import PedigreeRenderer from 'mwm-pedigree/src/components/PedegreeRenderer';
+import { setFamilyContext, loadFamily } from './mylib/Connect';
 
-import { setPersons } from './store/personsReducer';
-import { setFamily } from './store/familyReducer';
-import { setFamilies } from './store/familiesReducer';
-import { setForeground, setBackground, setText, setHighlight } from './store/layoutReducer';
+import { setPersons } from 'mwm-pedigree/src/store/personsReducer';
+import { setFamily } from 'mwm-pedigree/src/store/familyReducer';
+import { setFamilies } from 'mwm-pedigree/src/store/familiesReducer';
+import { setForeground, setBackground, setText, setHighlight } from 'mwm-pedigree/src/store/layoutReducer';
+import { setRelations } from 'mwm-pedigree/src/store/relationsReducer';
 
-import LoadFamily from './components/ui/LoadFamily';
-import InfoDialog from './components/ui/InfoDialog';
-import Intersector from './components/Intersector';
+import LoadFamily from 'mwm-pedigree/src/components/ui/LoadFamily';
+import InfoDialog from 'mwm-pedigree/src/components/ui/InfoDialog';
+import Intersector from 'mwm-pedigree/src/components/Intersector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import layoutReducer from './store/layoutReducer';
+import layoutReducer from 'mwm-pedigree/src/store/layoutReducer';
 
 const store = configureStore({ reducer: {
   persons: personsReducer,
@@ -37,6 +38,7 @@ const store = configureStore({ reducer: {
   focusedPerson: focusedPersonReducer,
   runtime: runtimeReducer,
   layout: layoutReducer,
+  relations: relationsReducer,
 }});
 
 function App(props) {
@@ -44,6 +46,7 @@ function App(props) {
     family = '',
     persons = null,
     families = null,
+    relations = null, // TODO needed?
     familyFAB = false,
     readonly = false,
     text,
@@ -52,8 +55,8 @@ function App(props) {
     highlight,
   } = props;
 
-  const cameraPosition= new Vector3(30.0, 30.0, 30.0);
-  const cameraTarget = new Vector3(0, 0, 0);
+  const cameraPosition= { x: 30.0, y: 30.0, z: 30.0 };
+  const cameraTarget = { x: 0, y: 0, z: 0 };
 
   const theme = createTheme({
     palette: {
@@ -69,16 +72,18 @@ function App(props) {
       setFamilyContext(family);
       await store.dispatch(setFamily(family));
 
-      if (!persons || !families) {
+      if (!persons || !families || !relations) {
         const loadedData = await loadFamily();
         await store.dispatch(setPersons(loadedData.persons));
         await store.dispatch(setFamilies(loadedData.families));
+        await store.dispatch(setRelations(loadedData.relations));
       } else {
         await store.dispatch(setPersons(persons));
         await store.dispatch(setFamilies(families));
+        await store.dispatch(setRelations(relations));
       }
     }
-  }, [family, persons, families]);
+  }, [family, persons, families, relations]);
 
   useEffect(async () => {
     if (foreground) {

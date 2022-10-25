@@ -6,7 +6,7 @@ import { getByRole, getAllByRole, fireEvent } from '@testing-library/react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-import RenderContext from './../../components/RenderContext';
+import RenderContext from '../../_components/RenderContext';
 import personsReducer, { setPersons } from '../../store/personsReducer';
 import focusedPersonReducer, { setPerson } from '../../store/focusedPersonReducer';
 import dialogsReducer, { showPersonDialog } from '../../store/dialogsReducer';

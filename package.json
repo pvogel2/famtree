@@ -22,11 +22,11 @@
 		"@mui/x-date-pickers": "^5.0.0-beta.2",
 		"@wordpress/scripts": "^23.5.0",
 		"date-fns": "^2.29.1",
-		"mwm-renderer": "file:../../../../../../git/mwm-renderer",
 		"three": "^0.142.0"
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.8.3",
+		"mwm-pedigree": "file:../../../../../../git/mwm-pedigree",
 		"react-redux": "^8.0.2"
 	}
 }
