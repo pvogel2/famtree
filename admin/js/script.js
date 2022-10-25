@@ -126,7 +126,7 @@ window.pedigree.removePartner = () => {
 window.pedigree.addPartner = (id) => {
   let pId = parseInt(id);
   if (isNaN(pId)) {
-    const cSelect = document.getElementById('addCandidate');
+    const cSelect = document.getElementById('candidates');
     pId =  parseInt(cSelect.value);
   }
   if (isNaN(pId)) return;
@@ -174,7 +174,7 @@ window.pedigree.removeChild = () => {
 window.pedigree.addChild = (id) => {
   let cId = parseInt(id);
   if (isNaN(cId)) {
-    const cSelect = document.getElementById('addCandidate');
+    const cSelect = document.getElementById('candidates');
     cId =  parseInt(cSelect.value);
   }
   if (!personEditor.edit.relation || isNaN(cId)) return;
