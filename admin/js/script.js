@@ -5,15 +5,13 @@ window.pedigree = window.pedigree || {
 window.pedigree.saveRelations = function() {
   const rls = personEditor.edit.relations.filter((rl) => rl.modified);
   const ps = [];
+
   // replace current relation in array
-  if (!rls.length) {
-    rls.push(personEditor.edit.relation.clone());
+  const rIndex = rls.findIndex((rl) => rl.id === personEditor.edit.relation?.id);
+  if (rIndex > -1) {
+    rls.splice(rIndex, 1, personEditor.edit.relation.clone());
   } else {
-    rls.forEach((rl) => {
-      if (personEditor.edit.relation?.id === rl.id) {
-        rl = personEditor.edit.relation.clone();
-      }
-    });
+    rls.push(personEditor.edit.relation.clone());
   }
 
   rls.forEach((rl) => {

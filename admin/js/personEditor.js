@@ -204,6 +204,10 @@ const personEditor = {
     setRelation(rl = null) {
       const f = this.getForm();
       this.resetChildrenSelect();
+      f.relStart.value = null;
+      f.relEnd.value = null;
+      f.relType.value = null;
+
       this.relation = rl;
 
       if (this.relation) {
