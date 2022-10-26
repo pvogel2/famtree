@@ -4,11 +4,38 @@ class Relation {
     this.family = r.family;
     this._members = r.members.map((m) => parseInt(m));
     this._children = r.children.map((c) => parseInt(c));
-    this.start = r.start || null;
-    this.end = r.end || null;
-    this.type = r.type || null;
+    this._start = r.start || null;
+    this._end = r.end || null;
+    this._type = r.type || null;
     this._deleted = false;
     this._modified = false;
+  }
+
+  get start() {
+    return this._start;
+  }
+
+  set start(start) {
+    this._start = start;
+    this.modified = true;
+  }
+
+  get end() {
+    return this._end;
+  }
+
+  set end(end) {
+    this._end = end;
+    this.modified = true;
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  set type(type) {
+    this._type = type;
+    this.modified = true;
   }
 
   get children() {
@@ -70,9 +97,9 @@ class Relation {
     return {
       family: this.family,
       id: this.id,
-      start: this.start,
-      end: this.end,
-      type: this.type,
+      start: this._start,
+      end: this._end,
+      type: this._type,
       members: [...this._members],
       children: [...this.children],
     };

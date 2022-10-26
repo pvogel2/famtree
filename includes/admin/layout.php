@@ -18,11 +18,11 @@ function pedigree_form_text_field($name, $label) {
   <?php
 }
 
-function pedigree_form_date_field($name, $label) {
+function pedigree_form_date_field($name, $label, $callback = NULL) {
   ?>
   <tr>
     <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-    <td><input type="date" name="<?php print ($name) ?>" min="1700-01-01" id="<?php print ($name) ?>" /></td>
+    <td><input type="date" name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.pedigree.' . $callback . '()"') ?> min="1700-01-01" id="<?php print ($name) ?>" /></td>
   </tr>
   <?php
 }
@@ -160,6 +160,22 @@ function pedigree_render_edit_person_form($families, $preselect) {
               <?php pedigree_form_select_field('children', 'Children') ?>
               <td><?php render_remove_button('removeChild', '') ?></td>
             </tr>
+            <?php
+            pedigree_form_date_field('relStart', 'Begin', 'relMetaChanged');
+            pedigree_form_date_field('relEnd', 'End', 'relMetaChanged');
+            ?>
+            <tr>
+              <td><label for="relType"><?php echo __('Kind of:', 'pedigree') ?></label></td>
+              <td>
+                <select name="relType" id="relType" class="ped-form__data" onchange="window.pedigree.relMetaChanged()">
+                  <option value="marriage"><?php echo __('marriage', 'pedigree') ?></option>
+                  <option value="partnership"><?php echo __('partnership', 'pedigree') ?></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><br/></td>
+            </tr>
             <tr>
               <?php pedigree_form_select_field('candidates', 'add Person') ?>
             </tr>
@@ -167,8 +183,8 @@ function pedigree_render_edit_person_form($families, $preselect) {
               <td>
               </td>
               <td>
-                <button type="button" onclick="window.pedigree.addChild()" class="button ped-form__button">as child</button>
-                <button type="button" onclick="window.pedigree.addPartner()" class="button ped-form__button">as partner</button>
+                <button type="button" onclick="window.pedigree.addChild()" class="button ped-form__button"><?php echo __('as child', 'pedigree') ?></button>
+                <button type="button" onclick="window.pedigree.addPartner()" class="button ped-form__button"><?php echo __('as partner', 'pedigree') ?></button>
               </td>
             </tr>
            </table>
@@ -216,7 +232,7 @@ function pedigree_render_families_fieldsets($families) {
   ?>
   <fieldset>
     <label>
-      <input type="text" id="pedigreeFamiliesInput" placeholder="<?php echo __('new family', 'pedigree') ?>"value="" />
+      <input type="text" id="pedigreeFamiliesInput" placeholder="<?php echo __('new family', 'pedigree') ?>" value="" />
       <button class="button" type="button" onclick="window.pedigree.addFamily()">add</button>
       <br>
     </label>

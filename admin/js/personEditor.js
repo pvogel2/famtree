@@ -202,11 +202,15 @@ const personEditor = {
     },
 
     setRelation(rl = null) {
+      const f = this.getForm();
       this.resetChildrenSelect();
       this.relation = rl;
 
       if (this.relation) {
         this.setChildrenSelect(rl.children);
+        f.relStart.value = r.start;
+        f.relEnd.value = r.end;
+        f.relType.value = r.type;
       }
     },
   

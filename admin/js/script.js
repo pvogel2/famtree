@@ -5,6 +5,16 @@ window.pedigree = window.pedigree || {
 window.pedigree.saveRelations = function() {
   const rls = personEditor.edit.relations.filter((rl) => rl.modified);
   const ps = [];
+  // replace current relation in array
+  if (!rls.length) {
+    rls.push(personEditor.edit.relation.clone());
+  } else {
+    rls.forEach((rl) => {
+      if (personEditor.edit.relation?.id === rl.id) {
+        rl = personEditor.edit.relation.clone();
+      }
+    });
+  }
 
   rls.forEach((rl) => {
     const family = rls[0].family;
@@ -100,6 +110,15 @@ window.pedigree.partnerSelected = () => {
   const relation = window.pedigree.relations.find((r) => r.id == partnersSelect.value);
   if (relation) {
     personEditor.edit.setRelation(new Relation(relation));
+  }
+};
+
+window.pedigree.relMetaChanged = () => {
+  if (personEditor.edit.relation) {
+    const f = personEditor.edit.getForm();
+    personEditor.edit.relation.start = f.relStart.value;
+    personEditor.edit.relation.end = f.relEnd.value;
+    personEditor.edit.relation.type = f.relType.value;
   }
 };
 
