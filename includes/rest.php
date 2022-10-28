@@ -14,6 +14,12 @@ function pedigree_rest_register_routes() {
   $version = '1';
   $namespace = 'pedigree/v' . $version;
 
+  register_rest_route( $namespace, '/family/', array(
+    'methods' => WP_REST_Server::READABLE,
+    'callback' => 'pedigree_database_get_persons',
+    'permission_callback' => 'pedigree_rest_permission_read',
+  ));
+
   register_rest_route( $namespace, '/family/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::READABLE,
     'callback' => 'pedigree_database_get_persons',

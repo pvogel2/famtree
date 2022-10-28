@@ -57,7 +57,7 @@ const personEditor = {
       f.birthday.value = p.birthday;
       f.deathday.value = p.deathday;
 
-      const rs = window.pedigree.relations.filter((r) => r.members.includes(p.id));
+      const rs = Relation.filter((r) => r.members.includes(p.id));
       this.setRelations(rs);
       this.setCandidates();
     },

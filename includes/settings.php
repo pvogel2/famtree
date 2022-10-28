@@ -113,31 +113,6 @@ add_filter( 'pedigree_capability_pedigree-options', 'pedigree_settings_capabilit
 add_action( 'pedigree_success_feedback', 'pedigree_render_success_feedback' );
 add_action( 'pedigree_error_feedback', 'pedigree_render_error_feedback' );
 
-// TODO: find better way, this is POC
-function pedigree_setup_js_data() {
-  $data = pedigree_database_get_persons();
-  ?>
-  <script>
-    window.pedigree = window.pedigree || {};
-    window.pedigree.relations = [];
-    let r;
-  <?php
-  foreach($data['relations'] as $r) {
-  ?>
-    r = {
-      id: '<?php echo $r->id ?>',
-      family: '<?php echo $r->family ?>',
-      type: '<?php echo $r->type ?>',
-      start: '<?php echo $r->start ?>',
-      end: '<?php echo $r->end ?>', 
-      children: <?php echo $r->children ?>,
-      members: <?php echo $r->members ?>,
-    };
-    window.pedigree.relations.push({...r});
-    <?php
-  }
-  ?></script><?php
-}
 /**
  * Top level menu callback function
  */
@@ -197,8 +172,6 @@ function pedigree_options_page_html() {
     
       pedigree_render_edit_person_form($args, $preselectfamily);
       pedigree_render_update_root_form();
-
-      pedigree_setup_js_data();
     ?>
   </div>
   <?php

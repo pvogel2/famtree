@@ -1,4 +1,31 @@
 class Relation {
+  static all = {};
+
+  static add(data) {
+    data.id = parseInt(data.id);
+    if (!Array.isArray(data.children)) {
+      data.children = JSON.parse(data.children);
+    }
+    if (!Array.isArray(data.members)) {
+      data.members = JSON.parse(data.members);
+    }
+
+    Relation.all[data.id] = data;
+  }
+
+  static find(id) {
+    return Relation.all[id] || null;
+  }
+
+  static remove(id) {
+    Relation.all[id] = undefined;
+  }
+
+  static filter(filter) {
+    if (!filter) return [];
+    return Object.values(Relation.all).filter(filter);
+  }
+
   constructor(r) {
     this._id = parseInt(r.id) || null;
     this.family = r.family;

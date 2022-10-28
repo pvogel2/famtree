@@ -46,6 +46,15 @@ window.pedigree.saveAll = function() {
   });
 }
 
+window.pedigree.loadRelations = async () => {
+  const options = {
+    path: 'pedigree/v1/family/',
+    type: 'GET',
+  };
+
+  return wp.apiRequest(options);
+}
+
 window.pedigree.savePerson = function() {
   const person = personEditor.edit.getPerson();
   if (!person.firstName || !person.lastName || !person.family) {
@@ -64,6 +73,13 @@ window.pedigree.savePerson = function() {
 window.addEventListener('DOMContentLoaded', async () => {
   const rows = document.querySelectorAll('.wp-list-table tbody tr');
   const rSelects = [];
+
+  const { relations } = await window.pedigree.loadRelations();
+
+  relations.forEach((r) => {
+    Relation.add(r);
+  });
+
   rows.forEach(row => {
     const id = Number(row.dataset.id);
     const rSelect = row.querySelector('.relations select');
@@ -90,7 +106,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   rSelects.forEach((rs) => {
     const rIds = JSON.parse(rs.getAttribute('value'));
     rIds.forEach((rId) => {
-      const rl = window.pedigree.relations.find((r) => r.id == rId);
+      const rl = Relation.find(rId);
       if (rl) {
         // find partner
         const pId = rs.dataset.pid != rl.members[0] ? rl.members[0] : rl.members[1];
@@ -133,7 +149,7 @@ window.pedigree.partnerSelected = () => {
   const form = personEditor.edit.getForm();
   const partnersSelect = form.partners;
 
-  const relation = window.pedigree.relations.find((r) => r.id == partnersSelect.value);
+  const relation = Relation.find(partnersSelect.value);
   if (relation) {
     personEditor.edit.setRelation(new Relation(relation));
   }
@@ -159,10 +175,7 @@ window.pedigree.removePartner = () => {
     // remove option
     if (option) {
       partnersSelect.removeChild(option);
-      const idx = window.pedigree.relations.findIndex((_idx) => _idx == rId);
-      if (idx > -1) {
-        window.pedigree.relations.splice(idx, 1);
-      }
+      Relation.remove(rId);
       personEditor.edit.removeRelation(rId);
     }
   }
@@ -181,7 +194,7 @@ window.pedigree.addPartner = (id) => {
 
   let relation = null;
   personEditor.edit.relations.forEach((rId) => {
-    const rel = window.pedigree.relations.find((r) => r.id == rId);
+    const rel = Relation.find(rId);
     if (rel.members.find((mId) => mId == pId)) {
       relation = { ...rel };
     }
@@ -207,7 +220,7 @@ window.pedigree.addPartner = (id) => {
     partnersSelect.appendChild(newOption);
     partnersSelect.setAttribute('value', rId);
     relation.id = rId;
-    window.pedigree.relations.push({ ...relation, members: [...relation.members], children: [...relation.children] });
+    Relation.add({ ...relation, members: [...relation.members], children: [...relation.children] });
   }
 };
 
