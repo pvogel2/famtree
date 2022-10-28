@@ -3,7 +3,8 @@ const personEditor = {
     stageCounter: -1,
     relations: [], // Relation class instances
     relation: null, //Relation class instance
-      form: '#editPersonForm',
+    form: '#editPersonForm',
+
     getForm() {
       return document.querySelector(this.form);
     },
@@ -11,7 +12,9 @@ const personEditor = {
     setRelations(rs) {
       const f = this.getForm();
       const pSelcet = f.partners;
+      const relType = f.relType;
       const pId = f['id'].value;
+      relType.disabled = false;
 
       if (!pId) {
         return;
@@ -23,7 +26,7 @@ const personEditor = {
 
       rs.forEach((r, idx) => {
         const ps = r.members.filter((id) => id != parseInt(pId));
-        const person = window.pedigree.persons.find((p) => p.id === ps[0]);
+        const person = Person.find(ps[0]);
 
         this._addOption(pSelcet, person, r.id);
         
@@ -64,7 +67,7 @@ const personEditor = {
       const candidates = f.candidates;
       const family = f.family.value;
       const id = parseInt(f.id.value);
-      const cs = window.pedigree.persons.filter((p) => (p.family === family && id !== p.id));
+      const cs = Person.filter((p) => (p.family === family && id !== p.id));
 
       cs.forEach((p, idx) => {
         this._addOption(candidates, p);
@@ -79,14 +82,14 @@ const personEditor = {
       const id = f['id'].value;
 
       const p = {
-        family: f['family'].value,
+        family: f.family.value,
         id: (id ? parseInt(id) : ''),
-        firstName: f['firstName'].value,
-        surNames: f['surNames'].value,
-        lastName: f['lastName'].value,
-        birthName:f['birthName'].value,
-        birthday: f['birthday'].value,
-        deathday: f['deathday'].value,
+        firstName: f.firstName.value,
+        surNames: f.surNames.value,
+        lastName: f.lastName.value,
+        birthName:f.birthName.value,
+        birthday: f.birthday.value,
+        deathday: f.deathday.value,
       };
       return p;
     },
@@ -97,17 +100,18 @@ const personEditor = {
       this.resetChildrenSelect();
       this.resetPartnersSelect();
       this.resetCandidatesSelect();
-      this.relation = [];
+      this.relation = null;
       this.relations = [];
 
     },
 
-    removeRelation(id) {
-      const rl = this.relations.find(rl => rl.id === id);
+    removeRelation() {
+      if (!this.relation) return;
+      const rId = this.relation.id;
+      this.relation = null;
+
+      const rl = this.relations.find(rl => rl.id === rId);
       if (rl) {
-        if (this.relation?.id == id) {
-          this.relation = null;
-        }
         rl.deleted = true;
       }
       this.resetChildrenSelect();
@@ -139,7 +143,7 @@ const personEditor = {
 
         // update form children options
         [...childrenSelect.options]
-          .findAll((o) => parseInt(o.value) === cId)
+          .filter((o) => parseInt(o.value) === cId)
           .forEach((o) => childrenSelect.remove(o))
         ;
       }
@@ -187,7 +191,7 @@ const personEditor = {
       const children = this.getForm().children;
 
       cnIds.forEach((cId)=>{
-        const person = window.pedigree.persons.find((p) => p.id === cId);
+        const person = Person.find(cId);
         if (!person) {
           return;
         }
@@ -212,9 +216,9 @@ const personEditor = {
 
       if (this.relation) {
         this.setChildrenSelect(rl.children);
-        f.relStart.value = r.start;
-        f.relEnd.value = r.end;
-        f.relType.value = r.type;
+        f.relStart.value = this.relation.start;
+        f.relEnd.value = this.relation.end;
+        f.relType.value = this.relation.type;
       }
     },
   
@@ -233,7 +237,7 @@ const personEditor = {
 
       // add to form child options
       const children = this.getForm().children;
-      const person = window.pedigree.persons.find((p) => p.id === id);
+      const person = Person.find(id);
 
       this._addOption(children, person);
       children.value = id;

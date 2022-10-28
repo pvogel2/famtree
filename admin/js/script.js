@@ -1,6 +1,4 @@
-window.pedigree = window.pedigree || {
-  persons: [],
-};
+window.pedigree = window.pedigree || {};
 
 window.pedigree.saveRelations = function() {
   const rls = personEditor.edit.relations.filter((rl) => rl.modified);
@@ -10,7 +8,7 @@ window.pedigree.saveRelations = function() {
   const rIndex = rls.findIndex((rl) => rl.id === personEditor.edit.relation?.id);
   if (rIndex > -1) {
     rls.splice(rIndex, 1, personEditor.edit.relation.clone());
-  } else {
+  } else if (personEditor.edit.relation) {
     rls.push(personEditor.edit.relation.clone());
   }
 
@@ -65,10 +63,16 @@ window.pedigree.savePerson = function() {
 
 window.addEventListener('DOMContentLoaded', async () => {
   const rows = document.querySelectorAll('.wp-list-table tbody tr');
+  const rSelects = [];
   rows.forEach(row => {
-    window.pedigree.persons.push(
-      window.pedigree.getPerson({
-        id: Number(row.dataset.id),
+    const id = Number(row.dataset.id);
+    const rSelect = row.querySelector('.relations select');
+    if (rSelect.getAttribute('value') !== '[]') {
+      rSelect.dataset.pid = id;
+      rSelects.push(rSelect);
+    }
+    Person.add(window.pedigree.getPerson({
+        id: id,
         root: row.querySelector('.root').firstChild.checked,
         family: row.querySelector('.family').textContent.trim(),
         firstName: row.querySelector('.firstName').textContent.trim(),
@@ -77,10 +81,34 @@ window.addEventListener('DOMContentLoaded', async () => {
         birthName: row.querySelector('.birthName').textContent.trim(),
         birthday: row.querySelector('.birthday').textContent.trim(),
         deathday: row.querySelector('.deathday').textContent.trim(),
-        relations: row.querySelector('.relations').textContent.trim(),
+        relations: rSelect.value.trim(),
         portraitUrl: row.querySelector('.root').firstChild.dataset.portraitUrl,
       })
     );
+  });
+
+  rSelects.forEach((rs) => {
+    const rIds = JSON.parse(rs.getAttribute('value'));
+    rIds.forEach((rId) => {
+      const rl = window.pedigree.relations.find((r) => r.id == rId);
+      if (rl) {
+        // find partner
+        const pId = rs.dataset.pid != rl.members[0] ? rl.members[0] : rl.members[1];
+        const p = Person.find(pId);
+        const o = document.createElement('option');
+        o.value = p.id;
+        o.innerText = `${p.firstName} ${p.lastName}`; 
+        rs.appendChild(o);
+        rs.disabled = false;
+        rl.children.forEach((cId) => {
+          const p = Person.find(cId);
+          const o = document.createElement('option');
+          o.value = p.id;
+          o.innerText = `>  ${p.firstName} ${p.lastName}`; 
+          rs.appendChild(o);
+        });
+      }
+    });
   });
 });
 
@@ -143,7 +171,7 @@ window.pedigree.removePartner = () => {
 window.pedigree.addPartner = (id) => {
   let pId = parseInt(id);
   if (isNaN(pId)) {
-    const cSelect = document.getElementById('addCandidate');
+    const cSelect = document.getElementById('candidates');
     pId =  parseInt(cSelect.value);
   }
   if (isNaN(pId)) return;
@@ -173,7 +201,7 @@ window.pedigree.addPartner = (id) => {
     };
     const rId = personEditor.edit.addRelation(relation);
     const newOption = document.createElement('option');
-    const partnerPerson = window.pedigree.persons.find((p) => p.id === pId);
+    const partnerPerson = Person.find(pId);
     newOption.setAttribute('value', rId);
     newOption.text = `${partnerPerson.firstName} ${partnerPerson.lastName} (p:${partnerPerson.id}, r:${rId})`;
     partnersSelect.appendChild(newOption);
@@ -191,7 +219,7 @@ window.pedigree.removeChild = () => {
 window.pedigree.addChild = (id) => {
   let cId = parseInt(id);
   if (isNaN(cId)) {
-    const cSelect = document.getElementById('addCandidate');
+    const cSelect = document.getElementById('candidates');
     cId =  parseInt(cSelect.value);
   }
   if (!personEditor.edit.relation || isNaN(cId)) return;
@@ -199,7 +227,7 @@ window.pedigree.addChild = (id) => {
 };
 
 window.pedigree.editPerson = (id) => {
-  const person = window.pedigree.persons.find((p) => p.id === id);
+  const person = Person.find(id);
   if (person) {
     personEditor.edit.setPerson(person);
 
@@ -227,10 +255,7 @@ window.pedigree.deletePerson = async () => {
 
   wp.apiRequest(options).then(() => {
     // remove from global list
-    const idx = window.pedigree.persons.findIndex((p) => p.id === pId);
-    if (idx > -1) {
-      window.pedigree.persons.splice(idx, 1);
-    }
+    Person.remove(pId);
 
     // remove from person editor
     if (personEditor.edit.getPerson().id === pId) {
@@ -283,7 +308,7 @@ window.pedigree.removeFamily = (id) => {
 
 window.pedigree.updateRoot = async (id) => {
   const form = document.getElementById('updateRootForm');
-  const person = window.pedigree.persons.find((p) => p.id === id);
+  const person = Person.find(id);
   if (!person) {
     return;
   }

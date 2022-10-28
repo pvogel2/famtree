@@ -53,6 +53,7 @@ function pedigree_section_options() {
 function pedigree_admin_init() {
   wp_register_script( 'pedigree-admin-script-s', plugins_url('/../admin/js/script.js', __FILE__) );
   wp_register_script( 'pedigree-admin-script-r', plugins_url('/../admin/js/relation.js', __FILE__) );
+  wp_register_script( 'pedigree-admin-script-p', plugins_url('/../admin/js/person.js', __FILE__) );
   wp_register_script( 'pedigree-admin-script-e', plugins_url('/../admin/js/personEditor.js', __FILE__) );
   wp_register_style( 'pedigree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
   pedigree_settings_init();
@@ -63,6 +64,7 @@ function pedigree_admin_scripts() {
    * It will be called only on your plugin admin page, enqueue our script here
    */
   wp_enqueue_script( 'pedigree-admin-script-r' );
+  wp_enqueue_script( 'pedigree-admin-script-p' );
   wp_enqueue_script( 'pedigree-admin-script-e' );
   wp_enqueue_script( 'pedigree-admin-script-s' );
   wp_enqueue_script( 'wp-api-request' ); // include backbone wp api

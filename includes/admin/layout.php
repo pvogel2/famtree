@@ -27,11 +27,18 @@ function pedigree_form_date_field($name, $label, $callback = NULL) {
   <?php
 }
 
-function pedigree_form_select_field($name, $label, $callback = NULL) {
+function pedigree_form_select_field($name, $label, $callback = NULL, $options = NULL) {
   ?>
   <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
   <td>
     <select name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.pedigree.' . $callback . '()"') ?> id="<?php print ($name) ?>" class="ped-form__data" disabled="disabled">
+    <?php
+      if(isset($options)) {
+        foreach ($options as $option) {
+          ?><option value="<?php print ($option) ?>"><?php echo __($option, 'pedigree') ?></option><?php
+        }
+      }
+    ?>
     </select>
   </td>
   <?php
@@ -165,13 +172,7 @@ function pedigree_render_edit_person_form($families, $preselect) {
             pedigree_form_date_field('relEnd', 'End', 'relMetaChanged');
             ?>
             <tr>
-              <td><label for="relType"><?php echo __('Kind of:', 'pedigree') ?></label></td>
-              <td>
-                <select name="relType" id="relType" class="ped-form__data" onchange="window.pedigree.relMetaChanged()">
-                  <option value="marriage"><?php echo __('marriage', 'pedigree') ?></option>
-                  <option value="partnership"><?php echo __('partnership', 'pedigree') ?></option>
-                </select>
-              </td>
+              <?php pedigree_form_select_field('relType', 'Kind of:', 'relMetaChanged', ['marriage', 'partnership']) ?>
             </tr>
             <tr>
               <td><br/></td>
@@ -202,7 +203,7 @@ function pedigree_render_edit_person_form($families, $preselect) {
         <fieldset class="last">
           <input hidden id="upload-media-id" type="text" name="portrait-id" class="form"/>
           <input hidden id="upload-person-id" type="text" name="id" />
-          <?php pedigree_render_legend('Visual aspects') ?>
+          <?php pedigree_render_legend('Additional files') ?>
           <table>  
             <tr>
               <td><label>Portrait:</label></td>
