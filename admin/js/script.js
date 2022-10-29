@@ -271,14 +271,27 @@ window.pedigree.deletePerson = async () => {
 window.pedigree.addFamily = () => {
   const input = document.getElementById('pedigreeFamiliesInput');
   const container = document.getElementById('pedigreeKnownFamilies');
+  const select = document.getElementById('families');
+  const pFamily = document.getElementById('family');
+
   const newFamily = input.value;
   if (newFamily) {
-    const newLabel = document.createElement('label');
-    newLabel.id=`pedigree_families_${newFamily}_container`;
-    newLabel.innerHTML = `
-      <input type="text" readonly name="pedigree_families[${newFamily}]" value="${newFamily}" />
-    `;
-    container.appendChild(newLabel);
+    const inp = document.createElement('input');
+    inp.id = `pedigree_families_${newFamily}`;
+    inp.type = 'hidden';
+    inp.setAttribute('readonly', 'readonly');
+    inp.name = `pedigree_families[${newFamily}]`;
+    inp.value = newFamily;
+
+    container.appendChild(inp);
+
+    const o = document.createElement('option');
+    o.value = newFamily;
+    o.text = newFamily;
+    select.appendChild(o.cloneNode(true));
+    select.selectedIndex = select.options.length - 1;
+
+    pFamily.appendChild(o);
   }
 };
 
@@ -289,14 +302,32 @@ window.pedigree.setFamily = (id = 'default') => {
   }
 };
 
-window.pedigree.removeFamily = (id) => {
-  // alert(`remove family ${id}`)
-  const row = document.getElementById(`pedigree_families_${id}_container`);
-  row.remove();
-  const family = document.getElementById('family');
-  family.querySelectorAll('option').forEach((o) => {
-    if (o.value === id) {
-      family.removeChild(o);
+window.pedigree.checkFamily = () => {
+  const select = document.getElementById('families');
+  const button = document.getElementById('deleteFamily');
+
+  const family = select.value;
+  button.disabled = family === 'default' ? true : undefined;
+}
+
+window.pedigree.removeFamily = () => {
+  const select = document.getElementById('families');
+  const family = select.value;
+  if (family === 'default') {
+    return;
+  }
+  const inp = document.getElementById(`pedigree_families_${family}`);
+  inp.parentNode.removeChild(inp);
+
+  const pFamily = document.getElementById('family');
+  select.querySelectorAll('option').forEach((o) => {
+    if (o.value === family) {
+      select.removeChild(o);
+    }
+  });
+  pFamily.querySelectorAll('option').forEach((o) => {
+    if (o.value === family) {
+      pFamily.removeChild(o);
     }
   });
 }

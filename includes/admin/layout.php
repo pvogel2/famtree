@@ -226,22 +226,20 @@ function pedigree_render_families_fieldsets($families) {
     <label>
       <input type="text" id="pedigreeFamiliesInput" placeholder="<?php echo __('new family', 'pedigree') ?>" value="" />
       <button class="button" type="button" onclick="window.pedigree.addFamily()">add</button>
-      <br>
     </label>
-  </fieldset>
-  <fieldset>
-    <label></label>
   </fieldset>
   <fieldset id="pedigreeKnownFamilies">
-    <?php foreach ($families as $family) { ?>
-    <label id="pedigree_families_<?php echo $family ?>_container">
-      <input type="text" readonly name="pedigree_families[<?php echo $family ?>]" value="<?php echo $family ?>" />
-      <?php if ($family != 'default') { ?> 
-      <button type="button" onclick="window.pedigree.removeFamily('<?php echo $family ?>')" class="button icon"><span title="<?php print('remove') ?>" class="dashicons dashicons-trash"></span></button>
-      <?php } ?>
+    <label>
+      <select class="ped-form__data" id="families" onchange="window.pedigree.checkFamily()">
+        <?php foreach ($families as $family) { ?>
+        <option value="<?php echo $family ?>"><?php echo $family ?></option>
+        <?php } ?>
+      </select>
+      <button type="button" id="deleteFamily" onclick="window.pedigree.removeFamily()" class="button icon"><span title="<?php print('remove') ?>" class="dashicons dashicons-trash"></span></button>
     </label>
-    <br>
-  <?php } ?>
+    <?php foreach ($families as $family) { ?>
+    <input type="hidden" readonly id="pedigree_families_<?php echo $family ?>" name="pedigree_families[<?php echo $family ?>]" value="<?php echo $family ?>"/>
+    <?php } ?>
   </fieldset>
   <?php
 }

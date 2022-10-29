@@ -46,7 +46,7 @@ function pedigree_field_families_cb() {
 }
 
 function pedigree_section_options() {
-  print(__('Here familes can be added and removed. Each person currently can be related to one family. The pedigree block shows persons relations of one family.', 'pedigree'));
+  print(__('Here families can be added and removed. Each person currently can be related to one family. The pedigree block shows persons relations of one family.', 'pedigree'));
 }
 
 /* Register settings script. */
