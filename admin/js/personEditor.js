@@ -11,7 +11,6 @@ const personEditor = {
 
     setRelations(rs) {
       const f = this.getForm();
-      const pSelcet = f.partners;
       const relType = f.relType;
       const pId = f['id'].value;
       relType.disabled = false;
@@ -23,20 +22,27 @@ const personEditor = {
       this.relations = rs.map((r) => new Relation(r));
 
       this.resetPartnersSelect();
-
-      rs.forEach((r, idx) => {
-        const ps = r.members.filter((id) => id != parseInt(pId));
-        const person = Person.find(ps[0]);
-
-        this._addOption(pSelcet, person, r.id);
-        
-        if (idx === 0) {
-          pSelcet.setAttribute('value', r.id);
-          this.setRelation(new Relation(r));
-        }
-      });
+      this.setPartnersSelect();
+      if (this.relations.length) {
+        this.setRelation(this.relations[0].clone());
+      }
     },
 
+    setPartnersSelect() {
+      const f = this.getForm();
+      const select = f.partners;
+      const pId = parseInt(f['id'].value);
+
+      this.relations.forEach((r) => {
+        const ps = r.members.filter((id) => id !== pId);
+        const person = Person.find(ps[0]);
+  
+        this._addOption(select, person, r.id);
+      });
+
+      select.selectedIndex = 0;
+    },
+  
     updateRelations() {
       this.relations = this.relations.filter((rl) => !rl.deleted);
       this.relations.forEach((rl) => {
@@ -59,22 +65,21 @@ const personEditor = {
 
       const rs = Relation.filter((r) => r.members.includes(p.id));
       this.setRelations(rs);
-      this.setCandidates();
+      this.setCandidatesSelect();
     },
 
-    setCandidates() {
+    setCandidatesSelect() {
       const f = this.getForm();
-      const candidates = f.candidates;
+      const select = f.candidates;
       const family = f.family.value;
       const id = parseInt(f.id.value);
       const cs = Person.filter((p) => (p.family === family && id !== p.id));
 
       cs.forEach((p, idx) => {
-        this._addOption(candidates, p);
-        if (idx === 0) {
-          candidates.setAttribute('value', p.id);
-        }
+        this._addOption(select, p);
       });
+
+      select.selectedIndex = 0;
     },
 
     getPerson() {
@@ -170,7 +175,7 @@ const personEditor = {
       const v = this._isId(value) ? value : person.id;
 
       o.setAttribute('value', v);
-      o.text = `${person.firstName} ${person.lastName} (${v})`;
+      o.text = `${person.name} (${v})`;
       select.appendChild(o);
       select.disabled = false;
     },
@@ -188,7 +193,7 @@ const personEditor = {
     },
 
     setChildrenSelect(cnIds) {
-      const children = this.getForm().children;
+      const select = this.getForm().children;
 
       cnIds.forEach((cId)=>{
         const person = Person.find(cId);
@@ -196,13 +201,10 @@ const personEditor = {
           return;
         }
 
-        this._addOption(children, person);
+        this._addOption(select, person);
       });
 
-      if (cnIds.length) {
-        children.value = cnIds[0];
-        children.disabled = false;
-      }
+      select.selectedIndex = 0;
     },
 
     setRelation(rl = null) {

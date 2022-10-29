@@ -46,7 +46,7 @@ window.pedigree.saveAll = function() {
   });
 }
 
-window.pedigree.loadRelations = async () => {
+window.pedigree.loadFamilies = async () => {
   const options = {
     path: 'pedigree/v1/family/',
     type: 'GET',
@@ -71,79 +71,61 @@ window.pedigree.savePerson = function() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const rows = document.querySelectorAll('.wp-list-table tbody tr');
-  const rSelects = [];
-
-  const { relations } = await window.pedigree.loadRelations();
+  const { relations, persons } = await window.pedigree.loadFamilies();
 
   relations.forEach((r) => {
     Relation.add(r);
   });
 
-  rows.forEach(row => {
-    const id = Number(row.dataset.id);
-    const rSelect = row.querySelector('.relations select');
-    if (rSelect.getAttribute('value') !== '[]') {
-      rSelect.dataset.pid = id;
-      rSelects.push(rSelect);
+  const relatedPersons = [];
+
+  persons.forEach((p) => {
+    const rls = relations
+      .filter((r) => !!r.members.filter((mId) => mId === parseInt(p.id)).length)
+      .map((r) => r.id)
+    ;
+
+    p.relations = rls;
+    Person.add(p);
+  
+    if (p.relations.length) {
+      relatedPersons.push(p.id);
     }
-    Person.add(window.pedigree.getPerson({
-        id: id,
-        root: row.querySelector('.root').firstChild.checked,
-        family: row.querySelector('.family').textContent.trim(),
-        firstName: row.querySelector('.firstName').textContent.trim(),
-        surNames: row.querySelector('.surNames').textContent.trim(),
-        lastName: row.querySelector('.lastName').textContent.trim(),
-        birthName: row.querySelector('.birthName').textContent.trim(),
-        birthday: row.querySelector('.birthday').textContent.trim(),
-        deathday: row.querySelector('.deathday').textContent.trim(),
-        relations: rSelect.value.trim(),
-        portraitUrl: row.querySelector('.root').firstChild.dataset.portraitUrl,
-      })
-    );
   });
 
-  rSelects.forEach((rs) => {
-    const rIds = JSON.parse(rs.getAttribute('value'));
-    rIds.forEach((rId) => {
+  relatedPersons.forEach((pId) => {
+    const person = Person.find(pId);
+    const select = document.querySelector(`.wp-list-table tbody tr[data-id="${pId}"] .relations select`);
+
+    if (!person || !select) {
+      return;
+    }
+
+    person.relations.forEach((rId) => {
       const rl = Relation.find(rId);
-      if (rl) {
-        // find partner
-        const pId = rs.dataset.pid != rl.members[0] ? rl.members[0] : rl.members[1];
-        const p = Person.find(pId);
+
+      if (!rl)  return;
+
+      // find member
+      const mId = pId != rl.members[0] ? rl.members[0] : rl.members[1];
+      const ps = Person.find(mId);
+
+      const o = document.createElement('option');
+      o.value = ps.id;
+      o.innerText = `${ps.name}`; 
+      select.appendChild(o);
+      select.disabled = false;
+
+      rl.children.forEach((cId) => {
+        const ps = Person.find(cId);
         const o = document.createElement('option');
-        o.value = p.id;
-        o.innerText = `${p.firstName} ${p.lastName}`; 
-        rs.appendChild(o);
-        rs.disabled = false;
-        rl.children.forEach((cId) => {
-          const p = Person.find(cId);
-          const o = document.createElement('option');
-          o.value = p.id;
-          o.innerText = `>  ${p.firstName} ${p.lastName}`; 
-          rs.appendChild(o);
-        });
-      }
+        o.value = ps.id;
+        o.innerText = `>  ${ps.name}`; 
+        select.appendChild(o);
+      });
     });
   });
 });
-
-window.pedigree.getPerson = (json) => {
-  return {
-    id: json.id,
-    family: json.family || '',
-    root: !!json.root,
-    firstName: json.firstName || '',
-    surNames: json.surNames || '',
-    lastName: json.lastName || '',
-    birthName: json.birthName || '',
-    birthday: json.birthday ||null,
-    deathday: json.deathday || null,
-    partners: [], // legacy
-    children: [], // legacy
-    portraitUrl: json.portraitUrl || '',
-  };
-};
 
 window.pedigree.partnerSelected = () => {
   const form = personEditor.edit.getForm();
@@ -216,7 +198,7 @@ window.pedigree.addPartner = (id) => {
     const newOption = document.createElement('option');
     const partnerPerson = Person.find(pId);
     newOption.setAttribute('value', rId);
-    newOption.text = `${partnerPerson.firstName} ${partnerPerson.lastName} (p:${partnerPerson.id}, r:${rId})`;
+    newOption.text = `${partnerPerson.name} (p:${partnerPerson.id}, r:${rId})`;
     partnersSelect.appendChild(newOption);
     partnersSelect.setAttribute('value', rId);
     relation.id = rId;
@@ -327,7 +309,7 @@ window.pedigree.updateRoot = async (id) => {
   }
 
   form['rootId'].value = id;
-  form['rootValue'].value = !person.root;
+  form['rootValue'].value = person.isRoot();
   form.requestSubmit();
 }
 

@@ -69,6 +69,10 @@ class Relation {
     return [...this._children];
   }
 
+  get members() {
+    return [...this._members];
+  }
+
   set children(cn) {
     this._children = cn.splice(0);
     this.modified = true;

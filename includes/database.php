@@ -86,24 +86,6 @@ function pedigree_update_db_check() {
 }
 add_action( 'plugins_loaded', 'pedigree_update_db_check' );
 
-function pedigree_extend_persons_result(&$p, $key, $rs) {
-  $pId = $p['id'];
-  $relations = '';
-
-  $copy = new ArrayObject($p);
-  foreach ($rs as $r) {
-    $members = json_decode($r['members']);
-    if (in_array($pId, $members)) {
-      if ($relations != '') {
-        $relations = $relations . ',';
-      }
-      $relations = $relations . $r['id'];
-    }
-  }
-  $copy['relations'] = '[' . $relations . ']';
-  $p = $copy;
-}
-
 function pedigree_database_get_persons_new($search) {
   global $wpdb;
 
@@ -118,9 +100,6 @@ function pedigree_database_get_persons_new($search) {
   $table_name = pedigree_relations_tablename();
   $rResults = $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
 
-  // TODO: bad performance find better solution 
-  array_walk($pResults, 'pedigree_extend_persons_result', $rResults);
-  // var_dump($pResults);
   return $pResults;
 }
 

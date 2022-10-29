@@ -44,15 +44,6 @@ function pedigree_form_select_field($name, $label, $callback = NULL, $options = 
   <?php
 }
 
-function pedigree_form_array_field($name, $label) {
-  ?>
-  <tr>
-    <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-    <td><input readonly type="text" name="<?php print ($name) ?>" id="<?php print ($name) ?>" /></td>
-</tr>
-  <?php
-}
-
 function pedigree_form_buttons() {
   ?>
   <tr>
