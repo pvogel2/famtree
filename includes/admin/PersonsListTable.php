@@ -22,7 +22,7 @@ class Persons_List_Table extends WP_List_Table {
           'birthName' => 'Birth name',
           'birthday'  => 'Birthday',
           'deathday'  => 'Deathday',
-          'relations'  => 'Relations',
+          'relations' => 'Relations',
           'family'    => 'Family',
           'edit' => 'Edit',
         );
@@ -55,9 +55,9 @@ class Persons_List_Table extends WP_List_Table {
           case 'birthName': return $item[$column_name];
           case 'birthday': return $item[$column_name];
           case 'deathday': return $item[$column_name];
-          case 'relations': return $item[$column_name];
+          case 'relations': return '<select disabled="disabled"></select>';
           case 'family': return $item[$column_name];
-          case 'edit': return '<button type="button" onclick="window.pedigree.editPerson('. $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
+          case 'edit': return '<button type="button" onclick="window.pedigree.editPerson(' . $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
           default:
             return print_r($item, true); //Show the whole array for troubleshooting purposes
             }

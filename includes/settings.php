@@ -46,13 +46,14 @@ function pedigree_field_families_cb() {
 }
 
 function pedigree_section_options() {
-  print(__('Here familes can be added and removed. Each person currently can be related to one family. The pedigree block shows persons relations of one family.', 'pedigree'));
+  print(__('Here families can be added and removed. Each person currently can be related to one family. The pedigree block shows persons relations of one family.', 'pedigree'));
 }
 
 /* Register settings script. */
 function pedigree_admin_init() {
   wp_register_script( 'pedigree-admin-script-s', plugins_url('/../admin/js/script.js', __FILE__) );
   wp_register_script( 'pedigree-admin-script-r', plugins_url('/../admin/js/relation.js', __FILE__) );
+  wp_register_script( 'pedigree-admin-script-p', plugins_url('/../admin/js/person.js', __FILE__) );
   wp_register_script( 'pedigree-admin-script-e', plugins_url('/../admin/js/personEditor.js', __FILE__) );
   wp_register_style( 'pedigree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
   pedigree_settings_init();
@@ -63,6 +64,7 @@ function pedigree_admin_scripts() {
    * It will be called only on your plugin admin page, enqueue our script here
    */
   wp_enqueue_script( 'pedigree-admin-script-r' );
+  wp_enqueue_script( 'pedigree-admin-script-p' );
   wp_enqueue_script( 'pedigree-admin-script-e' );
   wp_enqueue_script( 'pedigree-admin-script-s' );
   wp_enqueue_script( 'wp-api-request' ); // include backbone wp api
@@ -111,31 +113,6 @@ add_filter( 'pedigree_capability_pedigree-options', 'pedigree_settings_capabilit
 add_action( 'pedigree_success_feedback', 'pedigree_render_success_feedback' );
 add_action( 'pedigree_error_feedback', 'pedigree_render_error_feedback' );
 
-// TODO: find better way, this is POC
-function pedigree_setup_js_data() {
-  $data = pedigree_database_get_persons();
-  ?>
-  <script>
-    window.pedigree = window.pedigree || {};
-    window.pedigree.relations = [];
-    let r;
-  <?php
-  foreach($data['relations'] as $r) {
-  ?>
-    r = {
-      id: '<?php echo $r->id ?>',
-      family: '<?php echo $r->family ?>',
-      type: '<?php echo $r->type ?>',
-      start: '<?php echo $r->start ?>',
-      end: '<?php echo $r->end ?>', 
-      children: <?php echo $r->children ?>,
-      members: <?php echo $r->members ?>,
-    };
-    window.pedigree.relations.push({...r});
-    <?php
-  }
-  ?></script><?php
-}
 /**
  * Top level menu callback function
  */
@@ -195,8 +172,6 @@ function pedigree_options_page_html() {
     
       pedigree_render_edit_person_form($args, $preselectfamily);
       pedigree_render_update_root_form();
-
-      pedigree_setup_js_data();
     ?>
   </div>
   <?php

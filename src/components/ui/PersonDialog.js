@@ -177,12 +177,6 @@ function PersonDialog(props) {
     )
   );
 
-  /* const handlePartnerClicked = (item) => {
-    editedPerson.removePartner(item.id);
-    dispatch(updatePerson(editedPerson.serialize()));
-    setEditedPerson(new Person(editedPerson.serialize()));
-  }; */
-
   return (
        <Dialog
         qa="person-dialog"
