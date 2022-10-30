@@ -202,6 +202,7 @@ window.pedigree.addPartner = (id) => {
     newOption.setAttribute('value', rId);
     newOption.text = `${partnerPerson.name} (p:${partnerPerson.id}, r:${rId})`;
     partnersSelect.appendChild(newOption);
+    partnersSelect.disabled = false;
     partnersSelect.setAttribute('value', rId);
     relation.id = rId;
     Relation.add({ ...relation, members: [...relation.members], children: [...relation.children] });

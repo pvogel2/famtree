@@ -231,13 +231,17 @@ function pedigree_database_create_person($person) {
 
 function pedigree_database_update_person($person) {
 	global $wpdb;
-	$table_name = pedigree_persons_tablename();
+  $id = $person['id'];
 
+  if (empty($id)) {
+    return false;
+  }
+	$table_name = pedigree_persons_tablename();
   $result = $wpdb->update( 
     $table_name,
     pedigree_person_fields($person),
     array(
-      'id' => $personId,
+      'id' => $id,
     )
   );
   return is_numeric($result) || $result;

@@ -1,6 +1,6 @@
 {
 	"name": "pedigree",
-	"version": "0.5.0-beta",
+	"version": "0.5.1-beta",
 	"description": "Still experimental block to manage and visualize family trees (Scaffolded with Create Block tool).",
 	"author": "Peter Vogel",
 	"license": "GPL-2.0-or-later",
