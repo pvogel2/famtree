@@ -125,6 +125,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       });
     });
   });
+
+  window.pedigree.checkFamily();
 });
 
 window.pedigree.partnerSelected = () => {

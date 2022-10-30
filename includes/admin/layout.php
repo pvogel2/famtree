@@ -27,7 +27,7 @@ function pedigree_form_date_field($name, $label, $callback = NULL) {
   <?php
 }
 
-function pedigree_form_select_field($name, $label, $callback = NULL, $options = NULL) {
+function pedigree_form_select_field($name, $label, $callback = NULL, $options = NULL, $rmCb = NULL) {
   ?>
   <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
   <td>
@@ -40,6 +40,9 @@ function pedigree_form_select_field($name, $label, $callback = NULL, $options = 
       }
     ?>
     </select>
+    <?php if(isset($rmCb)) {
+      render_remove_button($rmCb);
+    } ?>
   </td>
   <?php
 }
@@ -88,9 +91,9 @@ function pedigree_render_update_root_form() {
   <?php
 }
 
-function render_remove_button($callback, $param) { //removeFamily // $family
+function render_remove_button($callback) { //removeFamily // $family
   ?>
-  <button type="button" onclick="window.pedigree.<?php echo $callback ?>('<?php echo $param ?>')" class="button icon">
+  <button type="button" onclick="window.pedigree.<?php echo $callback ?>()" class="button icon">
     <span title="<?php echo __('remove', 'pedigree') ?>" class="dashicons dashicons-trash"></span>
   </button>
   <?php
@@ -151,12 +154,10 @@ function pedigree_render_edit_person_form($families, $preselect) {
         <?php pedigree_render_legend('Relations') ?>
           <table>  
             <tr>
-              <?php pedigree_form_select_field('partners', 'Partners', 'partnerSelected') ?>
-              <td><?php render_remove_button('removePartner', '') ?></td>
+              <?php pedigree_form_select_field('partners', 'Partners', 'partnerSelected', NULL, 'removePartner') ?>
             </tr>
             <tr>
-              <?php pedigree_form_select_field('children', 'Children') ?>
-              <td><?php render_remove_button('removeChild', '') ?></td>
+              <?php pedigree_form_select_field('children', 'Children', NULL, NULL, 'removeChild') ?>
             </tr>
             <?php
             pedigree_form_date_field('relStart', 'Begin', 'relMetaChanged');
@@ -235,7 +236,7 @@ function pedigree_render_families_fieldsets($families) {
         <option value="<?php echo $family ?>"><?php echo $family ?></option>
         <?php } ?>
       </select>
-      <button type="button" id="deleteFamily" onclick="window.pedigree.removeFamily()" class="button icon"><span title="<?php print('remove') ?>" class="dashicons dashicons-trash"></span></button>
+      <button type="button" disabled="disabled" id="deleteFamily" onclick="window.pedigree.removeFamily()" class="button icon"><span title="<?php print('remove') ?>" class="dashicons dashicons-trash"></span></button>
     </label>
     <?php foreach ($families as $family) { ?>
     <input type="hidden" readonly id="pedigree_families_<?php echo $family ?>" name="pedigree_families[<?php echo $family ?>]" value="<?php echo $family ?>"/>
