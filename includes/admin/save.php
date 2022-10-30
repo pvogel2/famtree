@@ -15,10 +15,17 @@ function pedigree_update_portrait_image() {
   return pedigree_database_update_portrait_image($personId, $portraitId);
 }
 
-function pedigree_update_family_root() {
-  $personId = sanitize_text_field($_POST['rootId']);
-  $isRoot = sanitize_text_field($_POST['rootValue']);
-  return pedigree_database_update_root($personId, $isRoot);
+function pedigree_update_family_root(WP_REST_Request $req = null) {
+  $personId = '';
+  if (isset($req)) {
+    $result = preg_match('/\/root\/([0-9]+)$/', urldecode($req->get_route()), $matches);
+    if ($result == 1) {
+      $personId = $matches[1];
+    }
+  }
+
+  $root = sanitize_text_field($_POST['root']);
+  return pedigree_database_update_root($personId, $root);
 }
 
 function pedigree_get_preselect_family() {

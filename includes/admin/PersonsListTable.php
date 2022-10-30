@@ -48,7 +48,7 @@ class Persons_List_Table extends WP_List_Table {
         $portrait = $item['portraitImageId'];
 
         switch ($column_name) {
-          case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.pedigree.updateRoot(' . $id . ')" />';
+          case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.pedigree.updateRoot(this, ' . $id . ')" />';
           case 'firstName': return $item[$column_name];
           case 'surNames': return $item[$column_name];
           case 'lastName': return $item[$column_name];

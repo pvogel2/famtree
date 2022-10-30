@@ -61,6 +61,12 @@ window.pedigree.savePerson = function() {
     return;
   };
 
+  // get root information from table, the only place where it is modified
+  const input = document.querySelector(`.wp-list-table tbody tr[data-id="${person.id}"] .root input`);
+  if (input) {
+    person.root = input.checked;
+  }
+
   const options = {
     path: `pedigree/v1/person${person.id ? `/${person.id}` : ''}`,
     type: 'POST',
@@ -335,16 +341,16 @@ window.pedigree.removeFamily = () => {
   });
 }
 
-window.pedigree.updateRoot = async (id) => {
-  const form = document.getElementById('updateRootForm');
-  const person = Person.find(id);
-  if (!person) {
-    return;
-  }
+window.pedigree.updateRoot = async (elem, pId) => {
+  const root = elem.checked;
 
-  form['rootId'].value = id;
-  form['rootValue'].value = person.isRoot();
-  form.requestSubmit();
+  const options = {
+    path: `pedigree/v1/root/${pId}`,
+    type: 'POST',
+    data: { root },
+  };
+
+  return wp.apiRequest(options);
 }
 
 jQuery(function($){

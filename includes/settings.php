@@ -131,9 +131,6 @@ function pedigree_options_page_html() {
     if (pedigree_is_update_portrait_image()) {
       $result = pedigree_update_portrait_image();
       $message = __('Portrait image updated', 'pedigree');
-    } else if (pedigree_is_update_family_root()) {
-      $result = pedigree_update_family_root();
-      $message = __('Root updated', 'pedigree');
     }
 
     if ($result == TRUE) {
