@@ -4,7 +4,7 @@
  * Description:       Still experimental block to manage and visualize family trees (Scaffolded with Create Block tool).
  * Requires at least: 5.9
  * Requires PHP:      7.0
- * Version:           0.4.2-beta
+ * Version:           0.5.0-beta
  * Author:            Peter Vogel
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
