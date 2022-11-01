@@ -31,8 +31,8 @@ class Person {
     this._birthday = p.birthday || null;
     this._deathday = p.deathday || null;
 
-    this._portraitImageId = p.portraitImageId || null;
-    this._portraitImageUrl = p.portraitImageUrl || '';
+    this._portraitId = p.portraitImageId || null;
+    this._portraitUrl = p.portraitUrl || '';
     this._relations = p.relations || [];
     this._root = !!p.root;
     this._modified = false;
@@ -73,6 +73,14 @@ class Person {
 
   get relations() {
     return [...this._relations];
+  }
+
+  get portraitUrl() {
+    return this._portraitUrl;
+  }
+
+  get portraitId() {
+    return this._portraitId;
   }
 
   isRoot() {
