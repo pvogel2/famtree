@@ -13,11 +13,10 @@ function PedegreeRenderer() {
   const { renderer } = useContext(RenderContext);
 
   const root = useSelector((state) => {
-    const configured = state.persons.find((p) => p.root);
-    if (configured) {
-      return configured;
-    }
-    return state.persons[0];
+    const fId = state.founder;
+    console.log('FID', fId);
+
+    return state.persons.find((p) => p.id === fId);
   });
 
   const background = useSelector(getBackground);

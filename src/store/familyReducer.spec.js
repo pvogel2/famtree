@@ -4,7 +4,7 @@ it('should return the initial state', () => {
   expect(familyReducer(undefined, {})).toEqual('default');
 });
 
-it('should set the current family', () => {
+it('should set the current founder', () => {
   const previeousState = '';
   expect(familyReducer(previeousState, setFamily('book'))).toEqual('book');
 });

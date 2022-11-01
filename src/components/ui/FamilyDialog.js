@@ -14,7 +14,7 @@ const families = ['twoChilds', 'test', 'default', 'dummy'];
 
 export default function FamilyDialog(props) {
   const persons = useSelector((state) => state.persons);
-  const family = useSelector((state) => state.family);
+  const founder = useSelector((state) => state.founder);
 
   const {
     open = false,
@@ -52,6 +52,7 @@ export default function FamilyDialog(props) {
 
   const handleFamilyChange = async (event) => {
     const value = event.target.value;
+    console.log('handleFamilyChange');
     if (families.find((f) => f === value)) {
       setFamilyContext(value);
       await dispatch(setFamily(value));
@@ -64,7 +65,7 @@ export default function FamilyDialog(props) {
 
   return (
       <Dialog
-        qa="family-dialog"
+        qa="founder-dialog"
         open={open}
         onClose={handleClose}
         PaperProps={{ sx: { position: 'absolute', top: '20px', right: '20px' } }}
@@ -82,8 +83,8 @@ export default function FamilyDialog(props) {
               <FormGroup>
                 <FormControl>
                   <Select
-                    qa="family-selector"
-                    value={ family || '' }
+                    qa="founder-selector"
+                    value={ founder || '' }
                     onChange={ handleFamilyChange }
                   >
                     { familyItems }
@@ -94,8 +95,8 @@ export default function FamilyDialog(props) {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button qa="family-load" disableElevation onClick={ handleLoad }>Load</Button>
-          <Button qa="family-save" variant="contained" disableElevation onClick={ handleSave }>Save</Button>
+          <Button qa="founder-load" disableElevation onClick={ handleLoad }>Load</Button>
+          <Button qa="founder-save" variant="contained" disableElevation onClick={ handleSave }>Save</Button>
         </DialogActions>
       </Dialog>
   );

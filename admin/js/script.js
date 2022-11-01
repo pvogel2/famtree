@@ -13,14 +13,13 @@ window.pedigree.saveRelations = function() {
   }
 
   rls.forEach((rl) => {
-    const family = rls[0].family;
     const deleted = rl.deleted === true;
     if (rl.id < 0 && deleted) { // new relation directly removed in edit mode, nothing to save
       return;
     }
 
     const options = {
-      path: `pedigree/v1/relation/${deleted ? rl.id : family}`,
+      path: `pedigree/v1/relation/${rl.id >= 0 ? rl.id : ''}`,
       type: deleted ? 'DELETE' : 'POST',
     };
 
@@ -57,7 +56,7 @@ window.pedigree.loadFamilies = async () => {
 
 window.pedigree.savePerson = function() {
   const person = personEditor.edit.getPerson();
-  if (!person.firstName || !person.lastName || !person.family) {
+  if (!person.firstName || !person.lastName) {
     return;
   };
 
@@ -131,8 +130,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       });
     });
   });
-
-  window.pedigree.checkFamily();
 });
 
 window.pedigree.partnerSelected = () => {
@@ -196,7 +193,6 @@ window.pedigree.addPartner = (id) => {
   if (!option) {
     // new relation
     relation = {
-      family: form.family.value,
       start: null,
       end: null,
       children: [],
@@ -275,70 +271,6 @@ window.pedigree.deletePerson = async () => {
     console.log('all updated');
   });
 
-}
-
-window.pedigree.addFamily = () => {
-  const input = document.getElementById('pedigreeFamiliesInput');
-  const container = document.getElementById('pedigreeKnownFamilies');
-  const select = document.getElementById('families');
-  const pFamily = document.getElementById('family');
-
-  const newFamily = input.value;
-  if (newFamily) {
-    const inp = document.createElement('input');
-    inp.id = `pedigree_families_${newFamily}`;
-    inp.type = 'hidden';
-    inp.setAttribute('readonly', 'readonly');
-    inp.name = `pedigree_families[${newFamily}]`;
-    inp.value = newFamily;
-
-    container.appendChild(inp);
-
-    const o = document.createElement('option');
-    o.value = newFamily;
-    o.text = newFamily;
-    select.appendChild(o.cloneNode(true));
-    select.selectedIndex = select.options.length - 1;
-
-    pFamily.appendChild(o);
-  }
-};
-
-window.pedigree.setFamily = (id = 'default') => {
-  const personInput = document.getElementById('family');
-  if (id) {
-    personInput.value = id;
-  }
-};
-
-window.pedigree.checkFamily = () => {
-  const select = document.getElementById('families');
-  const button = document.getElementById('deleteFamily');
-
-  const family = select.value;
-  button.disabled = family === 'default' ? true : undefined;
-}
-
-window.pedigree.removeFamily = () => {
-  const select = document.getElementById('families');
-  const family = select.value;
-  if (family === 'default') {
-    return;
-  }
-  const inp = document.getElementById(`pedigree_families_${family}`);
-  inp.parentNode.removeChild(inp);
-
-  const pFamily = document.getElementById('family');
-  select.querySelectorAll('option').forEach((o) => {
-    if (o.value === family) {
-      select.removeChild(o);
-    }
-  });
-  pFamily.querySelectorAll('option').forEach((o) => {
-    if (o.value === family) {
-      pFamily.removeChild(o);
-    }
-  });
 }
 
 window.pedigree.updateRoot = async (elem, pId) => {

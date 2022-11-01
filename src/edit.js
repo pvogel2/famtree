@@ -37,9 +37,8 @@ import { loadFamily } from './mylib/Connect';
  * @return {WPElement} Element to render.
  */
 export default function Edit({ attributes, setAttributes  }) {
-	const { align, family, familyFAB, textColor, backgroundColor, foregroundColor, highlightColor } = attributes;
-
-	const [families, setFamilies] = useState([]);
+	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor } = attributes;
+  const [families, setFamilies] = useState([]);
 	const [relations, setRelations] = useState([]);
 	const [persons, setPersons] = useState([]);
 
@@ -48,28 +47,25 @@ export default function Edit({ attributes, setAttributes  }) {
 	}, [align]);
 
 	useEffect(() => {
-	  if (!family) {
-	    return;
-	  }
-
 	  const fetchData = async () => {
       try {
-			  const data = await loadFamily(family);
-				setFamilies(data.families);
+			  const data = await loadFamily();
 				setPersons(data.persons);
 				setRelations(data.relations);
+
+				const founders = data.persons.filter((p)=> p.root).map((p) => p.id);
+				setFamilies(founders);
 			} catch(err) {
 				console.log(err);
 			}
 	  };
 
 	  fetchData().catch(console.error);
-	}, [family]);
+	}, [founder]);
 
 	function getFamiliesOptions() {
-	  return families.map((value) => {
-	    return { label: value, value };
-	  });
+	  const familyRoots = persons.filter((p) => p.root === true);
+	  return familyRoots.map((r) => ({ label: `${r.firstName} ${r.lastName}`, value: r.id })); 
 	}
 
 	if (!persons || !families) {
@@ -84,17 +80,17 @@ export default function Edit({ attributes, setAttributes  }) {
 					initialOpen={ true }
 				>
 				  <SelectControl
-  			    label={ __( 'Current family', 'pedigree' ) }
+  			    label={ __( 'Current founder', 'pedigree' ) }
 	  				labelPosition= 'side'
-             value={ family }
-             onChange={ ( f ) => setAttributes({ family: f }) }
+            value={ parseInt(founder) }
+            onChange={ ( f ) => setAttributes({ founder: parseInt(f) }) }
 				  	options={ getFamiliesOptions() }
 					/>
           <ToggleControl
-  			    label={ __( 'Show family FAB', 'pedigree' ) }
+  			    label={ __( 'Show founder FAB', 'pedigree' ) }
 	  				labelPosition= 'side'
-            checked={ familyFAB }
-            onChange={ () => setAttributes({ familyFAB: !familyFAB }) }
+            checked={ founderFAB }
+            onChange={ () => setAttributes({ founderFAB: !founderFAB }) }
 					/>
 				</PanelBody>
 				<PanelColorSettings 
@@ -129,11 +125,11 @@ export default function Edit({ attributes, setAttributes  }) {
 			  }}
 			>
 			  <App
-				  family={ family }
+				  founder={ founder }
 					families={ families }
 					persons={ persons }
 					relations={ relations }
-					familyFAB={ familyFAB }
+					founderFAB={ founderFAB }	
 					readonly={ true }
           text={ textColor }
 					background={ backgroundColor }

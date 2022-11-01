@@ -1,18 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const familySlice = createSlice({
-  name: 'family',
-  initialState: 'default',
+const founderSlice = createSlice({
+  name: 'founder',
+  initialState: null,
   reducers: {
-    setFamily(state, action) {
-      const newFamily = action.payload;
-      if (newFamily && typeof newFamily === 'string') {
-        return newFamily;
+    setFounder(state, action) {
+      const newFounder = action.payload;
+      if (newFounder) {
+        return parseInt(newFounder);
       }
       return state;
     },
   },
 })
 
-export const { setFamily } = familySlice.actions;
-export default familySlice.reducer;
+export const { setFounder } = founderSlice.actions;
+export default founderSlice.reducer;

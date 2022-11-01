@@ -3,12 +3,7 @@ import { Fab, Menu, MenuItem } from '@mui/material';
 import { FamilyRestroom } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setPersons } from '../../store/personsReducer';
-import { setFamily } from '../../store/familyReducer';
-import { setRelations } from '../../store/relationsReducer';
-import { loadFamily, setFamilyContext } from './../../lib/Connect';
-
-// const families = ['twoChilds', 'test', 'default', 'dummy'];
+import { setFounder } from '../../store/familyReducer';
 
 function LoadFamily(props) {
   const {
@@ -21,32 +16,11 @@ function LoadFamily(props) {
 
   const dispatch = useDispatch();
  
-  const families = useSelector((state) => state.families);
-
-  const handleLoad = async () => {
-    try {
-      const { persons, relations } = await loadFamily();
-
-      await dispatch(setPersons(persons));
-      await dispatch(setRelations(relations));
-
-      handleMenuClose();
-    } catch(err) {
-      console.log(err);
-    }
-  };
+  const { families, persons } = useSelector((state) => state);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
-  const updateFamily = async (value) => {
-    if (families.find((f) => f === value)) {
-      setFamilyContext(value);
-      await dispatch(setFamily(value));
-      handleLoad();
-    }
-  }
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,8 +28,11 @@ function LoadFamily(props) {
 
   const handleItemClick = async (event) => {
     if (!readonly) {
-      const { value } = event.currentTarget.dataset;
-      await updateFamily(value);
+      const value = parseInt(event.currentTarget.dataset.value);
+
+      if (families.find((f) => f === value)) {
+        await dispatch(setFounder(value));
+      }
     }
     handleMenuClose();
   };
@@ -64,8 +41,13 @@ function LoadFamily(props) {
     return document.getElementById('thepedegreerenderer');
   };
 
-  const familyItems = families.map((item) => {
-    return <MenuItem data-value={ item } key={ item } onClick={ handleItemClick }>{ item }</MenuItem>
+  const founderItems = families.map((item) => {
+    const person = persons.find((p) => p.id === item);
+    if (!person) {
+      return null;
+    }
+    const name = `${person.firstName} ${person.lastName}`;
+    return <MenuItem data-value={ item } key={ item } onClick={ handleItemClick }>{ name }</MenuItem>
   });
 
   useEffect(() => {
@@ -101,7 +83,7 @@ function LoadFamily(props) {
         disableScrollLock={ true }
         container={ getContainer }
       >
-        { familyItems }
+        { founderItems }
       </Menu>
     </>
   );

@@ -6,7 +6,7 @@ import { loadFamily, savePerson, updatePerson } from "../../lib/Connect";
 import FamilyDialog from './FamilyDialog';
 
 function getDialog(base) {
-  return base.querySelector('[qa="family-dialog"]');
+  return base.querySelector('[qa="founder-dialog"]');
 }
 
 function getCloseButton(dialog) {
@@ -34,7 +34,7 @@ it('has a close button', () => {
 it.each(['save', 'load'])('has a %s button', (type) => {
   const { baseElement, container } = U.renderWithContext(<FamilyDialog open={ true } />);
   const dialogElement = getDialog(baseElement, container);
-  const button = dialogElement.querySelector(`[qa="family-${type}"]`);
+  const button = dialogElement.querySelector(`[qa="founder-${type}"]`);
 
   expect(button).toBeInTheDocument();
 });
@@ -53,12 +53,12 @@ describe('FamilyDialog close button', () => {
 });
 
 describe('FamilyDialog load button', () => {
-  it('loads a family from database', async () => {
+  it('loads a founder from database', async () => {
     loadFamily.mockResolvedValueOnce([U.getPerson().serialize(), U.getPerson().serialize()]);
     const { baseElement, container } = U.renderWithContext(<FamilyDialog open={ true } />);
     const dialogElement = getDialog(baseElement, container);
   
-    const loadButton = dialogElement.querySelector('[qa="family-load"]');
+    const loadButton = dialogElement.querySelector('[qa="founder-load"]');
     await act(() => {
       fireEvent.click(loadButton);
     });
@@ -73,7 +73,7 @@ describe('FamilyDialog load button', () => {
     const { baseElement, container } = U.renderWithContext(<FamilyDialog open={ true } setOpen={ setFamilyOpen } />);
     const dialogElement = getDialog(baseElement, container);
   
-    const loadButton = dialogElement.querySelector('[qa="family-load"]');
+    const loadButton = dialogElement.querySelector('[qa="founder-load"]');
     await act(() => {
       fireEvent.click(loadButton);
     });
@@ -90,7 +90,7 @@ it('save button clicked creates data for new person', async () => {
   const { baseElement, container } = U.renderWithContext(<FamilyDialog open={ true } />, [personA]);
   const dialogElement = getDialog(baseElement, container);
 
-  const saveButton = dialogElement.querySelector('[qa="family-save"]');
+  const saveButton = dialogElement.querySelector('[qa="founder-save"]');
   await act(() => {
     fireEvent.click(saveButton);
   });
@@ -106,8 +106,8 @@ it('action save clicked stores data for known person', async () => {
   const { baseElement, container } = U.renderWithContext(<FamilyDialog open={ true } />, [personA]);
   const dialogElement = getDialog(baseElement, container);
 
-  const saveButton = dialogElement.querySelector('[qa="family-save"]');
-  const loadButton = dialogElement.querySelector('[qa="family-load"]');
+  const saveButton = dialogElement.querySelector('[qa="founder-save"]');
+  const loadButton = dialogElement.querySelector('[qa="founder-load"]');
 
   await act(() => {
     fireEvent.click(loadButton);
@@ -120,12 +120,12 @@ it('action save clicked stores data for known person', async () => {
   expect(updatePerson).toHaveBeenCalledTimes(1);
 });
 
-describe('family selector',() => {
+describe('founder selector',() => {
   it('is in the document',  async () => {
     const { baseElement, container } = U.renderWithContext(<FamilyDialog open={ true } />);
     const dialogElement = getDialog(baseElement, container);
   
-    const selector = dialogElement.querySelector('[qa="family-selector"]');
+    const selector = dialogElement.querySelector('[qa="founder-selector"]');
     expect(selector).toBeInTheDocument();
   });
 });

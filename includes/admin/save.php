@@ -28,13 +28,6 @@ function pedigree_update_family_root(WP_REST_Request $req = null) {
   return pedigree_database_update_root($personId, $root);
 }
 
-function pedigree_get_preselect_family() {
-  if (!empty($_POST['family'])) {
-    return sanitize_text_field($_POST['family']);
-  }
-  return '';
-}
-
 function pedigree_delete_relation(WP_REST_Request $req = null) {
   $relationId = '';
   if (isset($req)) {
@@ -50,7 +43,6 @@ function pedigree_delete_relation(WP_REST_Request $req = null) {
 function pedigree_sanitize_relation($flag) {
   $relationArgs = array(
     'id' => FILTER_VALIDATE_INT,
-    'family' => FILTER_SANITIZE_STRING,
     'type' => FILTER_SANITIZE_STRING,
     'start' => FILTER_SANITIZE_STRING,
     'end' => FILTER_SANITIZE_STRING,
@@ -86,7 +78,6 @@ function pedigree_sanitize_relation($flag) {
 function pedigree_sanitize_person($flag) {
   $personArgs = array(
     'id' => FILTER_VALIDATE_INT,
-    'family' => FILTER_SANITIZE_STRING,
     'firstName' => FILTER_SANITIZE_STRING,
     'surNames' => FILTER_SANITIZE_STRING,
     'lastName' => FILTER_SANITIZE_STRING,

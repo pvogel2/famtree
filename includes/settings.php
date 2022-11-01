@@ -4,49 +4,11 @@ require_once(PEDIGREE__PLUGIN_DIR . 'includes/database.php');
 require_once(PEDIGREE__PLUGIN_DIR . 'includes/admin/layout.php');
 require_once(PEDIGREE__PLUGIN_DIR . 'includes/admin/PersonsListTable.php');
 
-// Register a new setting for "pedigree" page.
-function pedigree_settings_init() {
-  $args = array(
-    'type' => 'array',
-    'default' => array(
-      'families' => array(
-        'default' => 'default',
-      ),
-    ),
-  );
-  register_setting( 'pedigree-options', 'pedigree_families',  $args);
-
-  // Register a new section in the "pedigree" page.
-  add_settings_section(
-    'pedigree-options',
-    __( 'Family configuration', 'pedigree' ), 'pedigree_section_options',
-    'pedigree'
-  );
-
-  // Register a new field in the "pedigree-options" section.
-  add_settings_field(
-    'pedigree_field_families', // As of WP 4.6 this value is used only internally.
-    __( 'Families', 'pedigree' ),
-    'pedigree_field_families_cb',
-    'pedigree',
-    'pedigree-options',
-    array(
-     'label_for'         => 'pedigree_field_families', // Use $args' label_for to populate the id inside the callback.
-     'class'             => 'pedigree_row',
-     'pedigree_custom_data' => 'custom',
-    )
-  );
-}
-
 function pedigree_field_families_cb() {
   $families = get_option( 'pedigree_families', array('default' => 'default') );
 	$args = isset( $families ) ? (array) $families : array('default' => 'default');
 
   pedigree_render_families_fieldsets($args);
-}
-
-function pedigree_section_options() {
-  print(__('Here families can be added and removed. Each person currently can be related to one family. The pedigree block shows persons relations of one family.', 'pedigree'));
 }
 
 /* Register settings script. */
@@ -56,7 +18,6 @@ function pedigree_admin_init() {
   wp_register_script( 'pedigree-admin-script-p', plugins_url('/../admin/js/person.js', __FILE__) );
   wp_register_script( 'pedigree-admin-script-e', plugins_url('/../admin/js/personEditor.js', __FILE__) );
   wp_register_style( 'pedigree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
-  pedigree_settings_init();
 }
 
 function pedigree_admin_scripts() {
@@ -122,8 +83,6 @@ function pedigree_options_page_html() {
     return;
   }
 
-  $preselectfamily = '';
-
   if (!empty($_POST) && !isset($_POST['page'])) {
     $result = FALSE;
     $message = __('Undefined pedigree settings action', 'pedigree');
@@ -138,8 +97,6 @@ function pedigree_options_page_html() {
     } else {
       do_action( 'pedigree_error_feedback', $message);
     }
-    
-    $preselectfamily = pedigree_get_preselect_family();
   }
 
   // check if the user have submitted the settings
@@ -155,9 +112,9 @@ function pedigree_options_page_html() {
   
     <form action="options.php" method="post" class="form">
       <?php
-      settings_fields( 'pedigree-options' );
-      do_settings_sections( 'pedigree' );
-      submit_button( 'Save Families' );
+      // settings_fields( 'pedigree-options' );
+      // do_settings_sections( 'pedigree' );
+      // submit_button( 'Save Families' );
       ?>
     </form>
 
@@ -167,7 +124,7 @@ function pedigree_options_page_html() {
       $families = get_option( 'pedigree_families', array('default' => 'default') );
       $args = isset( $families ) ? (array) $families : array('default' => 'default');
     
-      pedigree_render_edit_person_form($args, $preselectfamily);
+      pedigree_render_edit_person_form();
       pedigree_render_update_root_form();
     ?>
   </div>

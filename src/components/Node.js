@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState, Fragment } from 'react';
-import { Vector3, Group, Box3 } from 'three';
+import { Vector3, Group } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
@@ -210,7 +210,7 @@ function Node(props) {
     let childMinZ = 0;
 
     childPosition.add(new Vector3(0, genDist - 4, 0));
-
+    console.log('relations', relations);
     return relations.map((r, idx) => {
       const partner = findPartner(r, persons);
       if (!partner) {
@@ -295,7 +295,7 @@ function Node(props) {
           </Fragment>
         );
       });
-
+console.log(person);
       return (
         <Fragment key={ `relation${r.id}` }>
           { partnerNode }

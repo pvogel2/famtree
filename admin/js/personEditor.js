@@ -54,7 +54,6 @@ const personEditor = {
       this.reset();
 
       const f = this.getForm();
-      f.family.value = p.family;
       f.id.value = p.id;
       f.firstName.value = p.firstName;
       f.surNames.value = p.surNames;
@@ -71,11 +70,10 @@ const personEditor = {
     setCandidatesSelect() {
       const f = this.getForm();
       const select = f.candidates;
-      const family = f.family.value;
       const id = parseInt(f.id.value);
-      const cs = Person.filter((p) => (p.family === family && id !== p.id));
+      const cs = Person.filter((p) => (id !== p.id));
 
-      cs.forEach((p, idx) => {
+      cs.forEach((p) => {
         this._addOption(select, p);
       });
 
@@ -87,7 +85,6 @@ const personEditor = {
       const id = f['id'].value;
 
       const p = {
-        family: f.family.value,
         id: (id ? parseInt(id) : ''),
         firstName: f.firstName.value,
         surNames: f.surNames.value,

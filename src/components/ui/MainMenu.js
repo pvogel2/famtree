@@ -9,7 +9,7 @@ import FamilyDialog from './FamilyDialog';
 
 
 const actions = [
-  { icon: <FamilyRestroom />, name: 'Family' },
+  { icon: <FamilyRestroom />, name: 'Founder' },
   { icon: <Person />, name: 'Person' },
 ];
 
@@ -19,7 +19,7 @@ function MainMenu() {
   const dispatch = useDispatch();
 
   const handleActionClick = async function(action) {
-    if (action === 'family') {
+    if (action === 'founder') {
       setFamilyOpen(true);
     } else if (action === 'person') {
       dispatch(showPersonDialog());

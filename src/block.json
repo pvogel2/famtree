@@ -19,11 +19,11 @@
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
 	"attributes": {
-		"family": {
-			"type": "string",
-			"default": "default"
+		"founder": {
+			"type": "number",
+			"default": "-1"
 		},
-		"familyFAB": {
+		"founderFAB": {
 			"type": "boolean",
 			"default": "false"
 		},

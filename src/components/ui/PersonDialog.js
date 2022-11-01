@@ -18,7 +18,7 @@ import { clearPerson } from '../../store/focusedPersonReducer';
 import { updatePerson as updateConnectPerson, savePerson as saveConnectPerson } from './../../lib/Connect';
 
 function PersonDialog(props) {
-  const { persons = [], relations = [], family } = props;
+  const { persons = [], relations = [], founder } = props;
 
   const [editedPerson, setEditedPerson] = useState({});
 
@@ -130,7 +130,7 @@ function PersonDialog(props) {
         deathday,
         birthName,
         surNames,
-        family,
+        founder,
       });
       await dispatch(addPerson(person.serialize()));
       saveConnectPerson(person.serialize());
@@ -225,8 +225,8 @@ function PersonDialog(props) {
 function mapStateToProps(state) {
   const persons = state.persons.map((data) => new Person(data));
   const relations = state.relations;
-  const family = state.family;
-  return { persons, relations, family };
+  const founder = state.founder;
+  return { persons, relations, founder };
 }
 
 export default connect(mapStateToProps)(PersonDialog);

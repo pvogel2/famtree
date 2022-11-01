@@ -42,7 +42,7 @@ it('has two action items', () => {
   expect(actions).toHaveLength(2);
 });
 
-describe.each(['person', 'family'])('main menu action %s', (action) => {
+describe.each(['person', 'founder'])('main menu action %s', (action) => {
   it('has a button', () => {
     const { container } = U.renderWithContext(<MainMenu />);
     const actionItem = container.querySelector(`[qa="main-menu-action-${action}"]`);

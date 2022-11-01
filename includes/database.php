@@ -40,7 +40,6 @@ function pedigree_database_setup() {
 
     $sql = "CREATE TABLE $table_name (
 		  id mediumint(9) NOT NULL AUTO_INCREMENT,
-      family varchar(55) DEFAULT '' NOT NULL,
       root boolean DEFAULT FALSE,
 		  firstName varchar(55) DEFAULT '' NOT NULL,
 		  surNames varchar(55) DEFAULT '' NOT NULL,
@@ -62,7 +61,6 @@ function pedigree_database_setup() {
 
     $sql = "CREATE TABLE $table_name (
 		  id mediumint(9) NOT NULL AUTO_INCREMENT,
-      family varchar(55) DEFAULT '' NOT NULL,
       type varchar(55) NULL DEFAULT NULL,
       start date NULL DEFAULT NULL,
       end date NULL DEFAULT NULL,
@@ -94,7 +92,7 @@ function pedigree_database_get_persons_new($search) {
   if (empty($search)) {
     $pResults = $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
   } else {
-    $pResults = $wpdb->get_results( "SELECT * FROM $table_name WHERE family LIKE '%{$search}%' OR firstName LIKE '%{$search}%' OR lastName LIKE '%{$search}%'", ARRAY_A );
+    $pResults = $wpdb->get_results( "SELECT * FROM $table_name WHERE firstName LIKE '%{$search}%' OR lastName LIKE '%{$search}%'", ARRAY_A );
   }
 
   $table_name = pedigree_relations_tablename();
@@ -103,39 +101,24 @@ function pedigree_database_get_persons_new($search) {
   return $pResults;
 }
 
-function pedigree_database_get_persons(WP_REST_Request $req = null) {
+function pedigree_database_get_persons() {
   global $wpdb;
-  $id = '';
-  if (isset($req)) {
-    $id = urldecode($req->get_param('id'));
-  }
 
   $table_name = pedigree_persons_tablename();
   // to add relations to the result directly from db
   // SELECT p.*,r.id relations FROM `wp_testpedigree_persons` AS p LEFT JOIN `wp_testpedigree_relations` AS r ON JSON_CONTAINS(r.members, CONCAT('[',p.id,']'))
-  if (empty($id)) {
-    $pRresults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
-  } else {
-    $pRresults = $wpdb->get_results( "SELECT * FROM $table_name WHERE family='$id'", OBJECT );
-  }
+  $pRresults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
 
   foreach ($pRresults as &$item) {
     $item->portraitUrl = wp_get_attachment_image_url($item->portraitImageId, 'thumbnail');
   }
-  $families = get_option( 'pedigree_families', array('default' => 'default') );
-
 
   $table_name = pedigree_relations_tablename();
 
-  if (empty($id)) {
-    $rResults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
-  } else {
-    $rResults = $wpdb->get_results( "SELECT * FROM $table_name WHERE family='$id'", OBJECT );
-  }
+  $rResults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
 
   return array(
     'persons' => $pRresults,
-    'families' => $families,
     'relations' => $rResults,
   );
 }
@@ -208,7 +191,6 @@ function pedigree_database_remove_relation() {
 
 function pedigree_person_fields($person) {
   return array(
-    'family' => $person['family'],
     'firstName' => $person['firstName'],
     'surNames' => $person['surNames'],
     'lastName' => $person['lastName'],
@@ -249,7 +231,6 @@ function pedigree_database_update_person($person) {
 
 function pedigree_relation_fields($relation) {
   return array(
-    'family' => $relation['family'],
     'type' => $relation['type'],
     'start' => $relation['start'],
     'end' => $relation['end'],

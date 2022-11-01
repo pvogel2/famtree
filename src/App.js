@@ -14,10 +14,10 @@ import runtimeReducer from './store/runtimeReducer';
 import relationsReducer from './store/relationsReducer';
 import RenderProvider from './components/RenderProvider';
 import PedigreeRenderer from './components/PedegreeRenderer';
-import { setFamilyContext, loadFamily } from './mylib/Connect';
+import { loadFamily } from './mylib/Connect';
 
 import { setPersons } from './store/personsReducer';
-import { setFamily } from './store/familyReducer';
+import { setFounder } from './store/familyReducer';
 import { setFamilies } from './store/familiesReducer';
 import { setForeground, setBackground, setText, setHighlight } from './store/layoutReducer';
 import { setRelations } from './store/relationsReducer';
@@ -32,7 +32,7 @@ import layoutReducer from './store/layoutReducer';
 
 const store = configureStore({ reducer: {
   persons: personsReducer,
-  family: familyReducer,
+  founder: familyReducer,
   families: familiesReducer,
   config: dialogsReducer,
   focusedPerson: focusedPersonReducer,
@@ -43,11 +43,11 @@ const store = configureStore({ reducer: {
 
 function App(props) {
   const {
-    family = '',
+    founder = -1,
     persons = null,
     families = null,
     relations = null, // TODO needed?
-    familyFAB = false,
+    founderFAB = false,
     readonly = false,
     text,
     background,
@@ -68,22 +68,27 @@ function App(props) {
   });
 
   useEffect(async () => {
-    if (family) {
-      setFamilyContext(family);
-      await store.dispatch(setFamily(family));
+    if (founder) {
+      await store.dispatch(setFounder(founder));
 
-      if (!persons || !families || !relations) {
+      async function updateData(data) {
+        await store.dispatch(setPersons(data.persons));
+        await store.dispatch(setRelations(data.relations));
+
+        const founders = data.persons.filter((p) => p.root).map((p) => p.id);
+
+        await store.dispatch(setFamilies(founders));
+
+      }
+
+      if (!persons || !relations) {
         const loadedData = await loadFamily();
-        await store.dispatch(setPersons(loadedData.persons));
-        await store.dispatch(setFamilies(loadedData.families));
-        await store.dispatch(setRelations(loadedData.relations));
+        await updateData(loadedData);
       } else {
-        await store.dispatch(setPersons(persons));
-        await store.dispatch(setFamilies(families));
-        await store.dispatch(setRelations(relations));
+        await updateData({ persons, relations });
       }
     }
-  }, [family, persons, families, relations]);
+  }, [founder, persons, families, relations]);
 
   useEffect(async () => {
     if (foreground) {
@@ -121,7 +126,7 @@ function App(props) {
             <PedigreeRenderer />
             <Intersector />
           </RenderProvider>
-          {familyFAB && <LoadFamily readonly={ readonly } /> }
+          {founderFAB && <LoadFamily readonly={ readonly } /> }
           <InfoDialog readonly={ readonly } />
         </Provider>
       </StyledEngineProvider>

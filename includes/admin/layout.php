@@ -91,7 +91,7 @@ function pedigree_render_update_root_form() {
   <?php
 }
 
-function render_remove_button($callback) { //removeFamily // $family
+function render_remove_button($callback) {
   ?>
   <button type="button" onclick="window.pedigree.<?php echo $callback ?>()" class="button icon">
     <span title="<?php echo __('remove', 'pedigree') ?>" class="dashicons dashicons-trash"></span>
@@ -120,7 +120,7 @@ function pedigree_render_persons_listing() {
   echo '</div>';
 }
 
-function pedigree_render_edit_person_form($families, $preselect) {
+function pedigree_render_edit_person_form() {
   ?>
   <div style="display: flex;">
     <div>
@@ -130,16 +130,6 @@ function pedigree_render_edit_person_form($families, $preselect) {
         <fieldset>
         <?php pedigree_render_legend('Attributes') ?>
           <table>
-            <tr>
-              <td><label for="family">Family:</label></td>
-              <td>
-                <select name="family" id="family" class="ped-form__data">
-                  <?php foreach ($families as $family) { ?>
-                  <option value="<?php print($family) ?>" <?php if ($family == $preselect) print('selected="selected"') ?> ><?php print($family) ?></option>
-                  <?php } ?>
-                </select>
-              </td>
-            </tr>
             <?php
             pedigree_form_text_field('firstName', 'First Name');
             pedigree_form_text_field('surNames', 'Sur Names');
@@ -218,30 +208,6 @@ function pedigree_render_edit_person_form($families, $preselect) {
       </form>
     </div>
   </div>
-  <?php
-}
-
-function pedigree_render_families_fieldsets($families) {
-  ?>
-  <fieldset>
-    <label>
-      <input type="text" id="pedigreeFamiliesInput" placeholder="<?php echo __('new family', 'pedigree') ?>" value="" />
-      <button class="button" type="button" onclick="window.pedigree.addFamily()">add</button>
-    </label>
-  </fieldset>
-  <fieldset id="pedigreeKnownFamilies">
-    <label>
-      <select class="ped-form__data" id="families" onchange="window.pedigree.checkFamily()">
-        <?php foreach ($families as $family) { ?>
-        <option value="<?php echo $family ?>"><?php echo $family ?></option>
-        <?php } ?>
-      </select>
-      <button type="button" disabled="disabled" id="deleteFamily" onclick="window.pedigree.removeFamily()" class="button icon"><span title="<?php print('remove') ?>" class="dashicons dashicons-trash"></span></button>
-    </label>
-    <?php foreach ($families as $family) { ?>
-    <input type="hidden" readonly id="pedigree_families_<?php echo $family ?>" name="pedigree_families[<?php echo $family ?>]" value="<?php echo $family ?>"/>
-    <?php } ?>
-  </fieldset>
   <?php
 }
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 
 import { FormGroup, FormControl } from '@mui/material';
-import { Select, MenuItem, Divider, Button } from '@mui/material';
+import { Select, MenuItem, Button } from '@mui/material';
 
 import DeletableList from './DeletableList';
 
@@ -13,7 +13,7 @@ import { updatePerson } from '../../store/personsReducer';
 import { deleteRelation as deleteConnectRelation, updateRelation as updateConnectRelation, saveRelation as saveConnectRelation } from '../../lib/Connect';
 
 function RelationSelector(props) {
-  const { targetPerson, relations = [], persons = [], family = 'default' } = props;
+  const { targetPerson, relations = [], persons = [], founder = -1 } = props;
 
   const [relatedPerson, setRelatedPerson] = useState({});
   const [editedRelation, setEditedRelation] = useState({});
@@ -65,7 +65,7 @@ function RelationSelector(props) {
 
   const handleAddPartnerClick = async () => {
     const newRelation = {
-      family,
+      founder,
       members: [targetPerson.id, relatedPerson.id],
       type: null,
       start: null,
@@ -165,8 +165,8 @@ function RelationSelector(props) {
 
 function mapStateToProps(state) {
   const persons = state.persons.map((data) => new Person(data));
-  const family = state.family;
-  return { persons, family };
+  const founder = state.founder;
+  return { persons, founder };
 }
 
 export default connect(mapStateToProps)(RelationSelector);

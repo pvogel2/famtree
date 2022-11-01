@@ -212,7 +212,7 @@ describe.skip('calculates dimensions', () => {
   ])('for $desc', ({ p, expds }) => {
     const expectedData = [...expds];
 
-    it.only.each(children)('sets up family variant $# correctly', ({ cs }) => {
+    it.only.each(children)('sets up founder variant $# correctly', ({ cs }) => {
       const person = p();
       const persons = [person];
       const { size: expectedSize, zs: expectedZs } = expectedData.shift();

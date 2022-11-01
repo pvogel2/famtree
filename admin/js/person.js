@@ -23,7 +23,6 @@ class Person {
 
   constructor(p) {
     this._id = parseInt(p.id) || null;
-    this._family = p.family;
     this._firstName = p.firstName || '';
     this._lastName = p.lastName || '';
     this._surNames = p.surNames || '';
@@ -41,10 +40,6 @@ class Person {
 
   get id() {
     return this._id;
-  }
-
-  get family() {
-    return this._family;
   }
 
   get firstName() {

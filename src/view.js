@@ -6,8 +6,8 @@ import App from './App';
 window.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('testtest');
   ReactDOM.render(<App
-    family={ root.dataset.family }
-    familyFAB={ root.dataset.familyFab === 'true' }
+    founder={ parseInt(root.dataset.founder) }
+    founderFAB={ root.dataset.founderFab === 'true' }
     background={ root.dataset.backgroundColor }
     text={ root.dataset.text }
     foreground={ root.dataset.foregroundColor }

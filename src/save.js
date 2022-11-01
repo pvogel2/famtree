@@ -24,8 +24,8 @@ import { useBlockProps } from '@wordpress/block-editor';
  */
 export default function Save({ attributes }) {
 	const {
-	  family = '',
-	  familyFAB = false,
+	  founder = -1,
+	  founderFAB = false,
 	  backgroundColor = '#000000',
 	  foregroundColor = '#CCCCCC',
 	  textColor = '#333333',
@@ -36,8 +36,8 @@ export default function Save({ attributes }) {
 		  <div style="position:relative; min-height: 640px;">
 			  <div
 			    id="testtest"
-				data-family={ family }
-				data-family-fab={ familyFAB }
+				data-founder={ founder }
+				data-founder-fab={ founderFAB }
 				data-background-color={ backgroundColor }
 				data-foreground-color={ foregroundColor }
 				data-text-color={ textColor }

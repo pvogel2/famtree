@@ -28,7 +28,6 @@ class Relation {
 
   constructor(r) {
     this._id = parseInt(r.id) || null;
-    this.family = r.family;
     this._members = r.members.map((m) => parseInt(m));
     this._children = r.children.map((c) => parseInt(c));
     this._start = r.start || null;
@@ -126,7 +125,6 @@ class Relation {
 
   serialize() {
     return {
-      family: this.family,
       id: this.id,
       start: this._start,
       end: this._end,
