@@ -14,6 +14,7 @@ const getHighlight = (state) => state.layout.highlight;
 function Intersector(props) {
   const { persons = [] } = props;
   const { renderer } = useContext(RenderContext);
+
   const [intersectedObj, setIntersectedObj] = useState(null);
 
   const findPerson  = useCallback((id) => persons.find((p) => p.id === id), [persons]);
@@ -51,12 +52,14 @@ function Intersector(props) {
 
     const setIntersected = (event, intersected) => {
       if (intersected.length) {
-        setIntersectedObj(intersected[0].object);
+        if (intersectedObj?.uuid !== intersected[0].object.uuid) {
+          setIntersectedObj(intersected[0].object);
+        }
 
-        const p = { move: { x: event.clientX, y: event.clientY } };
+        const p = { x: event.clientX, y: event.clientY };
         dispatch(setPoint(p));
 
-      } else if (!intersected.length) {
+      } else if (intersectedObj && !intersected.length) {
         setIntersectedObj(null);
       }
     };
@@ -64,9 +67,10 @@ function Intersector(props) {
     renderer.registerEventCallback('move', setIntersected);
 
     return () => {
+      console.log('unregister');
       if (renderer) renderer.unregisterEventCallback('move', setIntersected);
     };
-  }, [renderer]);
+  }, [renderer, intersectedObj]);
 
   return null;
 };

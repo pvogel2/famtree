@@ -7,7 +7,7 @@ const runtimeSlice = createSlice({
   },
   reducers: {
     setPoint(_, action) {
-      return { ...action.payload };
+      return { move: { ...action.payload } };
     },
  },
 })

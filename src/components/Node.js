@@ -70,7 +70,7 @@ const findPartner = (relation, persons = []) => {
 
 const getPersons = (state) => state.persons;
 
-const getRelations = (ids = []) => (state) => state.relations.filter((r) => ids.includes(r.id));
+const getRelations = (state) => state.relations;
 
 const getForeground = (state) => state.layout.foreground;
 
@@ -86,7 +86,6 @@ function getChildSize(id, szs) {
 
 function getChildrenGroupSize(cs, szs) {
   let groupSize = cs.reduce((total, c) => {
-    // console.log(c.firstName, c.lastName, getChildSize(c.id, szs));
     return total += getChildSize(c.id, szs);
   }, 0) + Math.max((cs.length - 1), 0) * cldDist;
   return groupSize;
@@ -106,6 +105,7 @@ function addRelationMinDist(rTarget) {
 
 const defaultSendSize = () => 0;
 
+
 function Node(props) {
   const { person, parent, sendSize = defaultSendSize, offsetY = 0, offsetZ = 0 } = props;
 
@@ -118,9 +118,10 @@ function Node(props) {
   const persons = useSelector(getPersons);
   
   const foreground = useSelector(getForeground);
+
   const text = useSelector(getText);
 
-  const relations = useSelector(getRelations(person?.relations));
+  const relations = useSelector(getRelations).filter((r) => r.members.includes(person?.id));;
 
   useEffect(() => {
     if (!person) return;
@@ -132,8 +133,6 @@ function Node(props) {
     relations.forEach((r, idx) => {
       const children = findMembers(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
-
-      // console.log(person.firstName, person.lastName, relations.length, idx);
 
       if (idx === 0) {
         relationTarget.add(new Vector3(0, 0,  -nodeDist));
@@ -155,8 +154,6 @@ function Node(props) {
     });
 
     newTotalSize += Math.abs(childMinZ);
-
-    // console.log(person.firstName, person.lastName, newTotalSize);
 
     sendSize(newTotalSize);
     if (totalSize !== newTotalSize) {
@@ -210,7 +207,7 @@ function Node(props) {
     let childMinZ = 0;
 
     childPosition.add(new Vector3(0, genDist - 4, 0));
-    console.log('relations', relations);
+
     return relations.map((r, idx) => {
       const partner = findPartner(r, persons);
       if (!partner) {
@@ -223,8 +220,6 @@ function Node(props) {
       const childSourceOffset = new Vector3(0, idx * -0.2, 0);
 
       addRelationMinDist(relationTarget);
-
-      // console.log('partner', partner.firstName, partner.lastName);
 
       if (idx === 0) {
         childMinZ = relationTarget.z - getNormalizedDistance(childrenSize);
@@ -258,9 +253,7 @@ function Node(props) {
 
       const childSource = childPosition.clone().add(childSourceOffset);
 
-      //if (children.length > 1) {
       childPosition.add(new Vector3(0, 0, childrenSize * 0.5));
-      //}
 
       const childNode = children.map((c, idx) => {
         const updateNodeSize = (s) => {
@@ -295,7 +288,7 @@ function Node(props) {
           </Fragment>
         );
       });
-console.log(person);
+
       return (
         <Fragment key={ `relation${r.id}` }>
           { partnerNode }

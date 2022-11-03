@@ -62,6 +62,10 @@ export function focusNode(m, config = {}) {
   const {
     highlight = '#770000',
   } = config;
+
+  if (m.type !== 'Mesh') {
+    return;
+  }
   m.material.color = new Color(highlight);
   m.material.needsUpdate = true;
   /* const text = findLabelText(m);

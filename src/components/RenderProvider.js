@@ -1,10 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { AmbientLight } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-
-// import { Renderer } from 'mwm-renderer/src/js/renderer.js';
 import { Renderer } from '../lib/Renderer.js';
-
 import RenderContext from './RenderContext.js';
 
 const gltfLoader = new GLTFLoader();

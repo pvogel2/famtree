@@ -14,7 +14,6 @@ function PedegreeRenderer() {
 
   const root = useSelector((state) => {
     const fId = state.founder;
-    console.log('FID', fId);
 
     return state.persons.find((p) => p.id === fId);
   });
@@ -32,7 +31,7 @@ function PedegreeRenderer() {
   }
 
   if (!setteled) {
-     renderer.addAxes(10);
+    renderer.addAxes(10);
     const grid = renderer.addGrid(20, 20);
     grid.material.opacity = 0.1;
     grid.rotation.z = Math.PI * 0.5;
@@ -41,9 +40,7 @@ function PedegreeRenderer() {
   }
 
   return (
-  <>
     <Node person={ root }/>
-  </>
   );
 };
 
