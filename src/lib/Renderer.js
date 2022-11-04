@@ -60,7 +60,6 @@ export class Renderer {
 
     // setup the used three renderer
     this.three.renderer = new WebGLRenderer({antialias: true});
-    console.log('set size:', this.width, this.height);
     this.three.renderer.setSize( this.width, this.height );
 
 

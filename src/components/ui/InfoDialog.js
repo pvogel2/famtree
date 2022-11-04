@@ -17,7 +17,7 @@ function InfoDialog(props) {
 
   const elementRef = useRef(null);
 
-  if (!focusedPerson || readonly) {
+  if (!focusedPerson || readonly || !elementRef) {
     return null;
   }
 
@@ -48,6 +48,7 @@ function InfoDialog(props) {
 
   const birthDate = showDate(currentPerson.birthday);
   const deathDate = showDate(currentPerson.deathday);
+
   return <Card
     qa="info-dialog"
     sx={{

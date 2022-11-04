@@ -23,13 +23,14 @@ function Intersector(props) {
   const highlight = useSelector(getHighlight);
 
   useEffect(() => {
-    const intersectCallback = () => {
+    /* const intersectCallback = () => {
       const config = { edit: intersectedObj?.userData.id };
+
       dispatch(showPersonDialog(config));
-    };
+    }; */
 
     if (intersectedObj) {
-      renderer.registerEventCallback('click', intersectCallback);
+      // renderer.registerEventCallback('click', intersectCallback);
       focusNode(intersectedObj, { highlight });
 
       const focusedPerson = findPerson(intersectedObj.userData.id);
@@ -42,7 +43,7 @@ function Intersector(props) {
       if (intersectedObj) {
         defocusNode(intersectedObj, { foreground });
         dispatch(clearPerson());
-        renderer.unregisterEventCallback('click', intersectCallback);
+        // renderer.unregisterEventCallback('click', intersectCallback);
       }
     };
    }, [renderer, intersectedObj, dispatch, foreground, highlight]);
@@ -67,7 +68,6 @@ function Intersector(props) {
     renderer.registerEventCallback('move', setIntersected);
 
     return () => {
-      console.log('unregister');
       if (renderer) renderer.unregisterEventCallback('move', setIntersected);
     };
   }, [renderer, intersectedObj]);

@@ -8,13 +8,16 @@ export default function ExtendedDialogTitle(props) {
     portrait = null,
     icon = <Info />,
   } = props;
+
+  const srcUrl = portrait ? portrait : null;
+
   return <DialogTitle>
     <div style={{
       display: 'flex',
       alignItems: 'center',
     }}>
     <Avatar
-      src={ portrait }
+      src={ srcUrl }
       style={{
         marginRight: '16px',
       }}
