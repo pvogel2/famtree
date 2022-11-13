@@ -7,13 +7,6 @@ function MetaDialog(props) {
 
   const dispatch = useDispatch();
 
-  const styles = {
-    top: 20,
-    right: 20,
-    width: 'calc(50% - 30px)',
-    position: 'absolute',
-  };
-
   if (!selectedMeta) {
     return null;
   }
@@ -35,12 +28,7 @@ function MetaDialog(props) {
   const isText = selectedMeta.mimetype === 'text/plain';
 
   return (
-    <Card
-      qa="meta-dialog"
-      sx={{
-        ...styles,
-      }}
-    >
+    <Card>
       <CardActionArea>
         { isImage && <CardMedia
           style={{

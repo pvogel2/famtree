@@ -25,7 +25,6 @@ import { setRelations } from './store/relationsReducer';
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
 import DetailsDialog from './components/ui/DetailsDialog';
-import MetaDialog from './components/ui/MetaDialog';
 import Intersector from './components/Intersector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -131,7 +130,6 @@ function App(props) {
           {founderFAB && <LoadFamily readonly={ readonly } /> }
           <InfoDialog readonly={ readonly } />
           <DetailsDialog />
-          <MetaDialog />
         </Provider>
       </StyledEngineProvider>
       </ThemeProvider>

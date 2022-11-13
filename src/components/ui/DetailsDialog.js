@@ -1,8 +1,10 @@
 import { connect, useDispatch } from 'react-redux';
-import { Grid, Typography, Card, CardContent, Table, TableBody, TableRow, TableCell } from '@mui/material';
+import { Popover, Grid, Typography, Card, CardContent, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
 import ExtendedDialogTitle from './ExtendedDialogTitle';
+import MetaDialog from './MetaDialog';
+
 import Person from '../../lib/Person';
 import { clearPerson } from '../../store/selectedPersonReducer';
 import { showDate } from '../../lib/ui/utils';
@@ -16,31 +18,33 @@ function DetailsDialog(props) {
     dispatch(clearPerson());
   };
 
-  const styles = {
-    top: 20,
-    left: 20,
-    bottom: 20,
-    right: 20,
-    position: 'absolute',
-  };
-
   if (!selectedPerson) {
     return null;
   }
 
   const currentPerson = selectedPerson ? new Person(selectedPerson) : new Person({ id: -1 });
 
+  const anchorEl = document.getElementById('testtest');
   const birthDate = showDate(currentPerson.birthday);
   const deathDate = showDate(currentPerson.deathday);
 
   return (
-       <Card
+    <Popover open={ true } anchorEl={ anchorEl }
+      placement="top-start"
         qa="details-dialog"
         onClose={ handleClose }
+        hideBackdrop={ true }
+        disableBackdropClick={true}
         sx={{
-          ...styles,
+          pointerEvents: 'none',
         }}
-          >
+        PaperProps={{
+          sx: {
+            pointerEvents: 'all',
+            width: selectedMeta ? '100vw' : 'auto',
+          },
+        }}
+      >
         <ExtendedDialogTitle
           title={ currentPerson.name }
           portrait={ currentPerson.portraitUrl }
@@ -84,10 +88,10 @@ function DetailsDialog(props) {
         </CardContent>) : null }
         </Grid>
         <Grid item xs={6}>
+          { selectedMeta ? <MetaDialog /> : null }
         </Grid>
       </Grid>
-
-      </Card>
+    </Popover>
   );
 }
 
