@@ -45,7 +45,7 @@ function DetailsDialog(props) {
           portrait={ currentPerson.portraitUrl }
           icon={ <PersonIcon /> }
           onClose={ handleClose }
-        />Test
+        />
         { (birthDate || deathDate) ? (<CardContent>
           <Table
             size="small"
