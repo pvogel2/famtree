@@ -54,12 +54,14 @@ const findMembers = (typedArr = [], persons = []) => {
   return foundMembers;
 }
 
-const findPartner = (relation, persons = []) => {
+const findPartner = (relation, person, persons = []) => {
   if (!relation.members.length > 1) {
     return null;
   }
 
-  const found =  findMembers([relation.members[1]], persons);
+  const pIds = relation.members.filter((id) => id !== person.id);
+
+  const found =  findMembers(pIds, persons);
 
   if (!found.length) {
     return null;
@@ -210,7 +212,7 @@ function Node(props) {
     childPosition.add(new Vector3(0, genDist - 4, 0));
 
     return relations.map((r, idx) => {
-      const partner = findPartner(r, persons);
+      const partner = findPartner(r, person, persons);
       if (!partner) {
         return null;
       }
