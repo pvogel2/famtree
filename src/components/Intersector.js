@@ -49,7 +49,6 @@ function Intersector(props) {
     };
 
     const selectFocusedMetaResource = () => {
-      console.log('>>', intersectedObj);
       renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       dispatch(setSelectedMeta(intersectedObj.userData.id));
     };

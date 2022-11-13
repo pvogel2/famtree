@@ -33,7 +33,7 @@ function MetaImage(props) {
   const m = new MeshBasicMaterial(options);
   const p = new Mesh(g, m);
   const metadataId = `metadata${metadata.id}`; 
-  p.position.set(0, 0, -1 - idx * 1.1);
+  p.position.set(0.5, 0, -1 - idx * 1.1);
   p.rotateY(Math.PI * 0.5);
 
   p.userData.name = metadataId;

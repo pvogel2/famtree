@@ -15,13 +15,6 @@ function Metadata(props) {
   const { renderer } = useContext(RenderContext);
 
   useEffect(() => {
-    console.log('in m');
-    return () => {
-      console.log('out m');
-    };
-  }, []);
-
-  useEffect(() => {
     let mesh = null;
     let dataGroup = null;
 
@@ -41,7 +34,6 @@ function Metadata(props) {
     }
 
     return () => {
-      console.log('cleanup', selectedPerson, currentMeta);
       if (mesh) {
         mesh.clear();
         dataGroup.remove(mesh);
