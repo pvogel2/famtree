@@ -1,5 +1,5 @@
 import { connect, useDispatch } from 'react-redux';
-import { Typography, Card, CardContent, Table, TableBody, TableRow, TableCell } from '@mui/material';
+import { Grid, Typography, Card, CardContent, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
 import ExtendedDialogTitle from './ExtendedDialogTitle';
@@ -19,7 +19,8 @@ function DetailsDialog(props) {
   const styles = {
     top: 20,
     left: 20,
-    width: 'calc(50% - 30px)',
+    bottom: 20,
+    right: 20,
     position: 'absolute',
   };
 
@@ -46,6 +47,8 @@ function DetailsDialog(props) {
           icon={ <PersonIcon /> }
           onClose={ handleClose }
         />
+          <Grid container>
+            <Grid item xs={ 6 }>
         { (birthDate || deathDate) ? (<CardContent>
           <Table
             size="small"
@@ -79,6 +82,11 @@ function DetailsDialog(props) {
             { selectedMeta.description }
           </Typography>
         </CardContent>) : null }
+        </Grid>
+        <Grid item xs={6}>
+        </Grid>
+      </Grid>
+
       </Card>
   );
 }
