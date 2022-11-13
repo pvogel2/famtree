@@ -25,3 +25,10 @@ export async function loadFamily() {
 
   return { persons: Object.values(personsObj), relations };
 }
+
+
+export async function loadMetadata(personId) {
+  const data = await apiFetch({ path: `pedigree/v1/person/${personId}/metadata` });
+
+  return data;
+}

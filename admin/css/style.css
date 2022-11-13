@@ -6,6 +6,19 @@
   padding: 0;
 }
 
+.wp-list-table.toplevel_page_pedigree .column-root {
+  width: 3em;
+}
+
+.wp-list-table.toplevel_page_pedigree .column-edit {
+  width: 3em;
+}
+
+.wp-list-table.toplevel_page_pedigree .column-deathday,
+.wp-list-table.toplevel_page_pedigree .column-birthday {
+  width: 8em;
+}
+
 .ped-form {
   margin-right: 20px;
   margin-bottom: 20px;
@@ -32,4 +45,19 @@
 
 .ped-form__button {
   min-width: 100px;
+}
+
+.ped-metadata-list-container {
+  margin-top: 28px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.ped-metadata-list-container img {
+  height: 80px;
+}
+
+.ped-metadata-list-container span.ped-dashicons-thumb.dashicons {
+  font-size: 80px;
+  height: 80px;
 }

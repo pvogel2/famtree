@@ -5,6 +5,20 @@ export function findTypedGroup(m, name) {
   return m.children.find(c => c.name === name);
 }
 
+export function isValidNode(o = {}) {
+  return o?.userData?.type && o?.userData?.id;
+}
+
+export function isPersonNode(o = {}) {
+  const type = o?.userData?.type ||'';
+  return type.match(/^(node|partner)$/);
+}
+
+export function isMetaResourceNode(o = {}) {
+  const type = o?.userData?.type ||'';
+  return type.match(/^meta/);
+}
+
 function createTypedGroup(m, name) {
   const g = new Group();
   g.name = name;
@@ -23,9 +37,16 @@ function getDataGroup(m) {
 export function getMesh(layout = {}) {
   const foreground = layout.foreground ? layout.foreground : '#888888';
   const color = new Color(foreground);
+  const options = { color };
+
+  if (typeof layout.opacity === 'number') {
+    options.opacity = layout.opacity;
+    options.transparent = true;
+  };
+
   const r = 0.5;
   const g = new SphereGeometry(r);
-  const m = new MeshBasicMaterial({ color });
+  const m = new MeshBasicMaterial(options);
 
   g.computeBoundingSphere();
   return new Mesh(g, m);
@@ -61,13 +82,19 @@ return null;
 export function focusNode(m, config = {}) {
   const {
     highlight = '#770000',
+    scale = 1,
   } = config;
 
   if (m.type !== 'Mesh') {
     return;
   }
-  m.material.color = new Color(highlight);
-  m.material.needsUpdate = true;
+
+  if (scale !== 1) {
+    m.scale.set(scale, scale, scale);
+  } else {
+    m.material.color = new Color(highlight);
+    m.material.needsUpdate = true;
+  }
   /* const text = findLabelText(m);
   if (text) {
     text.material.uniforms.scale.value = 1;
@@ -79,7 +106,17 @@ export function defocusNode(m, config = {}) {
   const {
     foreground = '#FFFFFF',
   } = config;
-  m.material.color = m.name.startsWith('node') ? new Color(foreground) : (new Color(foreground)).multiplyScalar(0.75);
+  if (m.userData?.type?.startsWith('node')) {
+    m.material.color = new Color(foreground);
+  }
+
+  if (m.userData?.type?.startsWith('partner')) {
+    m.material.color = new Color(foreground).multiplyScalar(0.75);
+  }
+
+  if (isMetaResourceNode(m)) {
+    m.scale.set(1, 1, 1);
+  }
   /* const text = findLabelText(m);
   if(text) {
     text.material.uniforms.scale.value = 0.4;

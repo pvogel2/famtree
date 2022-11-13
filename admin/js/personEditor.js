@@ -249,6 +249,7 @@ const personEditor = {
     uploadButton: '#upload-submit',
     default: '',
     form: '#uploadPortraitForm',
+
     getForm() {
       return document.querySelector(this.form);
     },
@@ -281,6 +282,49 @@ const personEditor = {
       const subm = form.querySelector(this.uploadButton);
       inp.value = data.id;
       subm.disabled = false;
+    },
+  },
+  metadata: {
+    img: '#person-metadata',
+    mediaTable: '#existingMetadata',
+    uploadButton: '#upload-metadata-submit',
+    idInput: 'metadata-id',
+    default: '',
+    form: '#uploadMetadataForm',
+
+    getForm() {
+      return document.querySelector(this.form);
+    },
+
+    setSource(s) {
+      const img = document.querySelector(this.img);
+      if (!this.default) {
+        this.default = img.src;
+      }
+      img.src = s || this.default;
+    },
+
+    update(data) {
+      this.setSource(data.url);
+      const form = this.getForm();
+      const inp = form[this.idInput];
+      const subm = form.querySelector(this.uploadButton);
+      inp.value = data.id;
+      subm.disabled = false;
+    },
+
+    reset() {
+      if (this.default) {
+        this.setSource(this.default);
+      }
+
+      const form = this.getForm();
+      const inp = form[this.idInput];
+      const subm = form.querySelector(this.uploadButton);
+      const table = document.querySelector(this.mediaTable);
+      inp.value = '';
+      subm.disabled = true;
+      table.innerHTML = '';
     },
   },
 };

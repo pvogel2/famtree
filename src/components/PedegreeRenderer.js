@@ -4,10 +4,14 @@ import { Color } from 'three';
 
 import RenderContext from './RenderContext.js';
 import Node from './Node';
+import Metadata from './Metadata';
 
 let setteled = false;
 
 const getBackground = (state) => state.layout.background;
+const getSelectedPerson = (state) => state.selectedPerson.person;
+const getCurrentMetadata = (state) => state.selectedPerson.metadata;
+
 
 function PedegreeRenderer() {
   const { renderer } = useContext(RenderContext);
@@ -18,6 +22,8 @@ function PedegreeRenderer() {
     return state.persons.find((p) => p.id === fId);
   });
 
+  const selectedPerson = useSelector(getSelectedPerson);
+  const currentMetadata = useSelector(getCurrentMetadata);
   const background = useSelector(getBackground);
 
   useEffect(() => {
@@ -40,7 +46,10 @@ function PedegreeRenderer() {
   }
 
   return (
+    <>
     <Node person={ root }/>
+    { (selectedPerson && currentMetadata.length ) &&  <Metadata selectedPerson={ selectedPerson } currentMeta={ currentMetadata }/> }
+    </>
   );
 };
 

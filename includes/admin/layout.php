@@ -182,13 +182,12 @@ function pedigree_render_edit_person_form() {
     </div>
     <div>
       <form method="post" id="uploadPortraitForm" class="form ped-form">
-        <fieldset class="last">
+        <fieldset>
           <input hidden id="upload-media-id" type="text" name="portrait-id" class="form"/>
           <input hidden id="upload-person-id" type="text" name="id" />
-          <?php pedigree_render_legend('Additional files') ?>
+          <?php pedigree_render_legend('Portrait foto') ?>
           <table>  
             <tr>
-              <td><label>Portrait:</label></td>
               <td>
                 <?php printf(
                 '<img src="%1$s" id="person-portrait" width="100" height="100" style="object-fit: cover"/>',
@@ -197,15 +196,43 @@ function pedigree_render_edit_person_form() {
               </td>
             </tr>
             <tr>
-              <td></td>
               <td>
-              <input id="upload-button" type="button" class="button" value="Select Image" />
-              <input id="upload-submit"  type="submit" disabled value="Submit" class="button button-primary"/>
+                <input id="upload-button" type="button" class="button" value="Select Image" />
+                <input id="upload-submit"  type="submit" disabled value="Submit" class="button button-primary"/>
               </td>
             </tr>
           </table>
         </fieldset>
       </form>
+    </div>
+    <div>
+      <form method="post" id="uploadMetadataForm" class="form ped-form">
+        <fieldset class="last">
+          <input hidden id="upload-metadata-refid" type="text" name="refid" />
+          <input hidden id="upload-metadata-id" type="text" name="metadata-id" />
+          <?php pedigree_render_legend('Additional files') ?>
+          <table>
+          <tr>
+              <td>
+                <?php printf(
+                '<img src="%1$s" id="person-metadata" width="100" height="100" style="object-fit: cover"/>',
+                  plugins_url( '../../admin/images/default.jpg', __FILE__ )
+                );?>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input id="upload-metadata-button" type="button" class="button" value="Select Metadata" />
+                <input id="upload-metadata-submit"  type="submit" disabled value="Submit" class="button button-primary"/>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+      </form>
+    </div>
+    <div class="ped-metadata-list-container">
+      <table id="existingMetadata">
+      </table>
     </div>
   </div>
   <?php

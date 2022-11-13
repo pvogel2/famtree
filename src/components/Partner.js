@@ -33,6 +33,7 @@ function Partner(props) {
 
     m.name = meshId;
     m.userData.id = usedPerson.id;
+    m.userData.type = 'partner';
 
     m.position.add(meshOffset);
 

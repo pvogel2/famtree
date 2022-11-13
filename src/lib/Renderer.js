@@ -315,22 +315,12 @@ export class Renderer {
     }
   }
 
-  transition(v, time) {
+  transition(v, time, p) {
     if (this.transitioning) return;
     this.transitionVector = v.clone();
+    this.transitionPosition = p ? p.clone() : null;
     this.transitionTime = Math.max(time, 0.1);
     this.transitionStart = this.three.clock.getElapsedTime();
-    // this.transitionPosition =
-    // this.three.camera.position.clone();
-    // var v =
-    // this.transitionPosition.clone().sub(this.three.control.center);
-    // this.transitionDistance0 = v.length();
-    // this.transitionDistance1 = this.transitionVector.length();
-    // this.transitionScaler = this.transitionDistance0 /
-    // this.transitionDistance1;
-    // this.transitionTarget =
-    // this.transitionVector.clone().sub(this.three.camera.position).setLength(this.three.camera.position.length);
-    // this.transitionVector.clone().setLength(this.transitionDistance1-this.transitionDistance0);
     this.transitioning = true;
   }
 
@@ -339,12 +329,11 @@ export class Renderer {
     var alpha = Math.min((this.three.clock.getElapsedTime() - this.transitionStart)/this.transitionTime, 1.0);
     if (alpha >= 1.0) {
       this.transitioning = false;
-      if (this.three.control) this.three.control.center.copy(this.transitionVector);
-      // this.three.camera.position.copy(this.transitionTarget);
+      if (this.three.control) this.three.control.target.copy(this.transitionVector);
+      if (this.transitionPosition) this.three.camera.position.copy(this.transitionPosition);
     } else if (this.three.control) {
-      // this.three.camera.position.lerp(this.transitionTarget,
-      // alpha);
-      this.three.control.center.lerp(this.transitionVector, alpha);
+      if (this.transitionPosition) this.three.camera.position.lerp(this.transitionPosition,alpha);
+      this.three.control.target.lerp(this.transitionVector, alpha);
     }
   }
 
@@ -373,7 +362,7 @@ export class Renderer {
     });
     this._updateObjects();
     // this._updateIntersection();
-    // this._transitionUpdate();
+    this._transitionUpdate();
     if (this.stats) this.stats.end();
   }
 

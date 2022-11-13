@@ -9,10 +9,20 @@ function pedigree_is_update_portrait_image() {
   return !empty($_POST['portrait-id']);
 }
 
+function pedigree_is_upload_metadata() {
+  return !empty($_POST['metadata-id']);
+}
+
 function pedigree_update_portrait_image() {
   $portraitId = sanitize_text_field($_POST['portrait-id']);
   $personId = sanitize_text_field($_POST['id']);
   return pedigree_database_update_portrait_image($personId, $portraitId);
+}
+
+function pedigree_upload_metadata() {
+  $metadataId = sanitize_text_field($_POST['metadata-id']);
+  $personId = sanitize_text_field($_POST['refid']);
+  return pedigree_database_save_metadata($personId, $metadataId);
 }
 
 function pedigree_update_family_root(WP_REST_Request $req = null) {
@@ -119,6 +129,18 @@ function pedigree_delete_person(WP_REST_Request $req = null) {
   }
 
   return pedigree_database_delete_person($personId);
+}
+
+function pedigree_get_metadata(WP_REST_Request $req = null) {
+  $personId = '';
+  if (isset($req)) {
+    $result = preg_match('/\/person\/([0-9]+)\/metadata$/', urldecode($req->get_route()), $matches);
+    if ($result == 1) {
+      $personId = $matches[1];
+    }
+  }
+
+  return pedigree_database_get_metadata($personId);
 }
 
 function pedigree_save_person() {

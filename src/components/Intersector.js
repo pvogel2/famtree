@@ -1,12 +1,14 @@
 import { useState, useContext, useCallback, useEffect } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { showPersonDialog } from './../store/dialogsReducer';
-import { focusNode, defocusNode } from '../lib/nodes/utils';
+import { Vector3 } from 'three';
+import { focusNode, defocusNode, isValidNode, isPersonNode, isMetaResourceNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
 import Person from '../lib/Person';
-import { setPerson, clearPerson } from '../store/focusedPersonReducer';
+import { setPerson as setFocusedPerson, clearPerson as clearFocusedPerson } from '../store/focusedPersonReducer';
+import { setSelectedMeta, setMetadata, setPerson as setSelectedPerson } from '../store/selectedPersonReducer';
 import { setPoint } from '../store/runtimeReducer';
+import { loadMetadata } from './../mylib/Connect.js';
 
 const getForeground = (state) => state.layout.foreground;
 const getHighlight = (state) => state.layout.highlight;
@@ -23,27 +25,63 @@ function Intersector(props) {
   const highlight = useSelector(getHighlight);
 
   useEffect(() => {
-    /* const intersectCallback = () => {
-      const config = { edit: intersectedObj?.userData.id };
+    const currentPerson = findPerson(intersectedObj?.userData?.id);
 
-      dispatch(showPersonDialog(config));
-    }; */
+    const selectFocusedPerson = () => {
+      const targetPosition = new Vector3();
+      intersectedObj.getWorldPosition(targetPosition);
+      const cameraPosition = targetPosition.clone();
+      cameraPosition.add(new Vector3(10, 0, 0));
+      renderer.transition(targetPosition, 1, cameraPosition);
 
-    if (intersectedObj) {
-      // renderer.registerEventCallback('click', intersectCallback);
+      renderer.unregisterEventCallback('click', selectFocusedPerson);
+
+      if (currentPerson) {
+        dispatch(clearFocusedPerson());
+        dispatch(setSelectedPerson(currentPerson.serialize()));
+        async function loadCurrentMetadata() {
+          const metadata = await loadMetadata(currentPerson.id);
+          dispatch(setMetadata([...metadata]));
+        };
+        loadCurrentMetadata();
+
+      }
+    };
+
+    const selectFocusedMetaResource = () => {
+      console.log('>>', intersectedObj);
+      renderer.unregisterEventCallback('click', selectFocusedMetaResource);
+      dispatch(setSelectedMeta(intersectedObj.userData.id));
+    };
+
+    if (isPersonNode(intersectedObj)) {
+      renderer.registerEventCallback('click', selectFocusedPerson);
       focusNode(intersectedObj, { highlight });
 
-      const focusedPerson = findPerson(intersectedObj.userData.id);
-      if (focusedPerson) {
-        dispatch(setPerson(focusedPerson.serialize()));
+      if (currentPerson) {
+        dispatch(setFocusedPerson(currentPerson.serialize()));
+      }
+    }
+
+    if (isMetaResourceNode(intersectedObj)) {
+      renderer.registerEventCallback('click', selectFocusedMetaResource);
+      focusNode(intersectedObj, { scale: 1.2 });
+
+      if (currentPerson) {
+        dispatch(setFocusedPerson(currentPerson.serialize()));
       }
     }
 
     return () => {
-      if (intersectedObj) {
+      if (isPersonNode(intersectedObj)) {
         defocusNode(intersectedObj, { foreground });
-        dispatch(clearPerson());
-        // renderer.unregisterEventCallback('click', intersectCallback);
+        dispatch(clearFocusedPerson());
+        renderer.unregisterEventCallback('click', selectFocusedPerson);
+      }
+
+      if (isMetaResourceNode(intersectedObj)) {
+        defocusNode(intersectedObj);
+        renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       }
     };
    }, [renderer, intersectedObj, dispatch, foreground, highlight]);
@@ -52,9 +90,11 @@ function Intersector(props) {
     if (!renderer) return;
 
     const setIntersected = (event, intersected) => {
+
       if (intersected.length) {
-        if (intersectedObj?.uuid !== intersected[0].object.uuid) {
-          setIntersectedObj(intersected[0].object);
+        const maybeObj = intersected[0].object;
+        if (intersectedObj?.uuid !== maybeObj.uuid && isValidNode(maybeObj)) {
+          setIntersectedObj(maybeObj);
         }
 
         const p = { x: event.clientX, y: event.clientY };

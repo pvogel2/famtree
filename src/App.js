@@ -7,9 +7,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import personsReducer from './store/personsReducer';
 import focusedPersonReducer from './store/focusedPersonReducer';
+import selectedPersonReducer from './store/selectedPersonReducer';
 import familyReducer from './store/familyReducer';
 import familiesReducer from './store/familiesReducer';
-import dialogsReducer from './store/dialogsReducer';
 import runtimeReducer from './store/runtimeReducer';
 import relationsReducer from './store/relationsReducer';
 import RenderProvider from './components/RenderProvider';
@@ -24,6 +24,8 @@ import { setRelations } from './store/relationsReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
+import DetailsDialog from './components/ui/DetailsDialog';
+import MetaDialog from './components/ui/MetaDialog';
 import Intersector from './components/Intersector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -34,8 +36,8 @@ const store = configureStore({ reducer: {
   persons: personsReducer,
   founder: familyReducer,
   families: familiesReducer,
-  config: dialogsReducer,
   focusedPerson: focusedPersonReducer,
+  selectedPerson: selectedPersonReducer,
   runtime: runtimeReducer,
   layout: layoutReducer,
   relations: relationsReducer,
@@ -128,6 +130,8 @@ function App(props) {
           </RenderProvider>
           {founderFAB && <LoadFamily readonly={ readonly } /> }
           <InfoDialog readonly={ readonly } />
+          <DetailsDialog />
+          <MetaDialog />
         </Provider>
       </StyledEngineProvider>
       </ThemeProvider>

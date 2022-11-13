@@ -11,13 +11,14 @@ import { showDate } from '../../lib/ui/utils';
 function InfoDialog(props) {
   const {
     focusedPerson = null,
+    selectedPerson = null,
     readonly = false,
     position,
   } = props;
 
   const elementRef = useRef(null);
 
-  if (!focusedPerson || readonly || !elementRef) {
+  if (selectedPerson || !focusedPerson || readonly || !elementRef) {
     return null;
   }
 
@@ -86,7 +87,8 @@ function InfoDialog(props) {
 function mapStateToProps(state) {
   return {
     position: state.runtime.move,
-    focusedPerson: state.config.edit === null ? state.focusedPerson : null,
+    focusedPerson: state.focusedPerson,
+    selectedPerson: state.selectedPerson.person,
   };
 }
 

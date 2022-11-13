@@ -1,7 +1,7 @@
 <?php
 
 global $pedigree_db_version;
-$pedigree_db_version = '3.0';
+$pedigree_db_version = '6.0';
 
 function pedigree_persons_tablename() {
 	global $wpdb;
@@ -11,6 +11,11 @@ function pedigree_persons_tablename() {
 function pedigree_relations_tablename() {
 	global $wpdb;
   return $wpdb->prefix . 'pedigree_relations';
+}
+
+function pedigree_metadata_tablename() {
+	global $wpdb;
+  return $wpdb->prefix . 'pedigree_metadata';
 }
 
 function pedigree_rename_persons_table() {
@@ -71,6 +76,21 @@ function pedigree_database_setup() {
 
     dbDelta( $sql );
 
+	  $table_name = pedigree_metadata_tablename();
+
+	  $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+		  id mediumint(9) NOT NULL AUTO_INCREMENT,
+		  refId mediumint(9) NOT NULL,
+		  mediaId mediumint(9) NOT NULL,
+      refDate date NULL DEFAULT NULL,
+      content json NULL DEFAULT NULL,
+		  PRIMARY KEY  (id)
+	  ) $charset_collate;";
+
+    dbDelta( $sql );
+
 	  add_option( 'pedigree_db_version', $pedigree_db_version );
 	  update_option( 'pedigree_db_version', $pedigree_db_version );
   }
@@ -123,6 +143,27 @@ function pedigree_database_get_persons() {
   );
 }
 
+function pedigree_database_get_metadata($personId) {
+  global $wpdb;
+
+  $table_name = pedigree_metadata_tablename();
+  // to add relations to the result directly from db
+  // SELECT p.*,r.id relations FROM `wp_testpedigree_persons` AS p LEFT JOIN `wp_testpedigree_relations` AS r ON JSON_CONTAINS(r.members, CONCAT('[',p.id,']'))
+  $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE refId='$personId'", OBJECT );
+
+  foreach ($results as &$item) {
+    $post = get_post($item->mediaId);
+    $item->thumbnail = wp_get_attachment_image_url($item->mediaId, 'thumbnail');
+    $item->original = $post->guid;
+    $item->mimetype = $post->post_mime_type;
+    $item->title = $post->post_title;
+    $item->excerpt = $post->post_excerpt;
+    $item->description = $post->post_content;
+  }
+  
+  return $results;
+}
+
 function pedigree_database_delete_relation($id) {
   global $wpdb;
   $table_name = pedigree_relations_tablename();
@@ -159,6 +200,23 @@ function pedigree_database_update_portrait_image($id, $mediaId) {
       )
     );
     return true;
+  }
+}
+
+function pedigree_database_save_metadata($personId, $metadataId) {
+  global $wpdb;
+  $table_name = pedigree_metadata_tablename();
+  if (empty($personId) || empty($metadataId)) {
+    return false;
+  } else {
+    $result = (boolean) $wpdb->insert( 
+      $table_name, 
+      array(
+        'refId' => filter_var($personId, FILTER_SANITIZE_NUMBER_INT),
+        'mediaId' => filter_var($metadataId, FILTER_SANITIZE_NUMBER_INT),
+      ),
+    );
+    return $result;
   }
 }
 

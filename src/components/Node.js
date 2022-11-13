@@ -173,6 +173,7 @@ function Node(props) {
     m.name = meshId;
 
     m.userData.id = usedPerson.id;
+    m.userData.type = 'node';
 
     m.position.add(meshOffset);
 

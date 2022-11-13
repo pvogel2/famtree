@@ -54,6 +54,15 @@ window.pedigree.loadFamilies = async () => {
   return wp.apiRequest(options);
 }
 
+window.pedigree.loadMetadata = async (id) => {
+  const options = {
+    path: `pedigree/v1/person/${id}/metadata`,
+    type: 'GET',
+  };
+
+  return wp.apiRequest(options);
+}
+
 window.pedigree.savePerson = function() {
   const person = personEditor.edit.getPerson();
   if (!person.firstName || !person.lastName) {
@@ -226,21 +235,70 @@ window.pedigree.addChild = (id) => {
   personEditor.edit.addChild(cId);
 };
 
+window.pedigree.getMediaType = (mimetype) => {
+  if (mimetype.startsWith('image')) {
+    return 'image';
+  }
+
+  if (mimetype.startsWith('video')) {
+    return 'video';
+  }
+
+  if (mimetype.endsWith('pdf') || mimetype.endsWith('msword')) {
+    return 'document';
+  }
+
+  if (mimetype.startsWith('text')) {
+    return 'text';
+  }
+
+  return 'unknown';
+};
+
 window.pedigree.editPerson = (id) => {
   const person = Person.find(id);
   if (person) {
     personEditor.edit.setPerson(person);
 
     const portraitForm = personEditor.portrait.getForm();
-
     portraitForm.id.value = id;
     personEditor.portrait.setSource(person.portraitUrl);
+
+    const metadataForm = personEditor.metadata.getForm();
+    metadataForm.refid.value = id;
+
+    window.pedigree.loadMetadata(id)
+      .then((results) => {
+        const table = document.getElementById('existingMetadata');
+        table.innerHTML = '';
+        results.forEach((item) => {
+          const tr = document.createElement('tr');
+          const thumbTd = document.createElement('td');
+          const excerptTd = document.createElement('td');
+          const editTd = document.createElement('td');
+          if (!item.thumbnail) {
+            thumbTd.innerHTML = `<span class="ped-dashicons-thumb dashicons dashicons-media-document"></span>`;
+          } else {
+            thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
+          }
+          excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
+          editTd.innerHTML = `<button type="button" class="button icon" onclick="window.pedigree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
+          tr.appendChild(thumbTd);
+          tr.appendChild(excerptTd);
+          tr.appendChild(editTd);
+          table.appendChild(tr);
+        });
+      })
+      .catch((err) => {
+        console.log('Could not load metadata', err);
+      });
   }
 };
 
 window.pedigree.resetPerson = () => {
   personEditor.edit.reset();
   personEditor.portrait.reset();
+  personEditor.metadata.reset();
 };
 
 window.pedigree.deletePerson = async () => {
@@ -273,6 +331,14 @@ window.pedigree.deletePerson = async () => {
 
 }
 
+
+window.pedigree.editMedia = (mediaId) => {
+  const mediaLib = window.pedigree.wkEditMedia.open();
+  // setTimeout(() => {
+  //   mediaLib.$el[0].querySelector(`[data-id="${mediaId}"]`).click();
+  // }, 1000);
+}
+
 window.pedigree.updateRoot = async (elem, pId) => {
   const root = elem.checked;
 
@@ -287,6 +353,12 @@ window.pedigree.updateRoot = async (elem, pId) => {
 
 jQuery(function($){
   let wkMedia;
+
+  window.pedigree.wkEditMedia = wp.media({
+    title: 'Edit media',
+    button: {
+    text: 'Save'
+  }, multiple: false });
 
   document.querySelector('#upload-button').addEventListener('click', (e) => {
     e.preventDefault();
@@ -306,6 +378,29 @@ jQuery(function($){
     wkMedia.on('select', function() {
       const attachment = wkMedia.state().get('selection').first().toJSON();
       personEditor.portrait.update(attachment);
+    });
+    // Open the upload dialog
+    wkMedia.open();
+  });
+
+  document.querySelector('#upload-metadata-button').addEventListener('click', (e) => {
+    e.preventDefault();
+    // If the upload object has already been created, reopen the dialog
+      if (wkMedia) {
+        wkMedia.open();
+        return;
+    }
+    // Extend the wp.media object
+    wkMedia = wp.media({
+      title: 'Select media',
+      button: {
+      text: 'Select media'
+    }, multiple: false });
+
+    // When a file is selected, grab the URL and set it as the text field's value
+    wkMedia.on('select', function() {
+      const attachment = wkMedia.state().get('selection').first().toJSON();
+      personEditor.metadata.update(attachment);
     });
     // Open the upload dialog
     wkMedia.open();

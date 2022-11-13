@@ -4,6 +4,7 @@ const dialogsSlice = createSlice({
     name: 'config',
     initialState: {
       edit: null,
+      details: false,
     },
     reducers: {
       showPersonDialog(state, action) {
@@ -11,7 +12,7 @@ const dialogsSlice = createSlice({
         return { ...state, edit };
       },
       hidePersonDialog(state) {
-        return { ...state, edit: null };;
+        return { ...state, edit: null };
       },
     },
   })

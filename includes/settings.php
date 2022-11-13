@@ -92,6 +92,11 @@ function pedigree_options_page_html() {
       $message = __('Portrait image updated', 'pedigree');
     }
 
+    if (pedigree_is_upload_metadata()) {
+      $result = pedigree_upload_metadata();
+      $message = __('Metadata uploaded', 'pedigree');
+    }
+
     if ($result == TRUE) {
       do_action( 'pedigree_success_feedback', $message);
     } else {

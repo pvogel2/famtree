@@ -44,6 +44,12 @@ function pedigree_rest_register_routes() {
     'permission_callback' => 'pedigree_rest_permission_write',
   ));
 
+  register_rest_route( $namespace, '/person/(?P<id>[\w%]+)/metadata', array(
+    'methods' => WP_REST_Server::READABLE,
+    'callback' => 'pedigree_get_metadata',
+    'permission_callback' => 'pedigree_rest_permission_read',
+  ));
+
   register_rest_route( $namespace, '/root/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::EDITABLE,
     'callback' => 'pedigree_update_family_root',
