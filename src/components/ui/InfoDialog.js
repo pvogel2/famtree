@@ -1,12 +1,11 @@
 import { useRef } from 'react';
 import { connect } from 'react-redux';
 import { Card, CardContent } from '@mui/material';
-import { Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
 import ExtendedDialogTitle from './ExtendedDialogTitle';
+import PersonDetails from './PersonDetails';
 import Person from '../../lib/Person';
-import { showDate } from '../../lib/ui/utils';
 
 function InfoDialog(props) {
   const {
@@ -47,9 +46,6 @@ function InfoDialog(props) {
     delete styles.top;
   }
 
-  const birthDate = showDate(currentPerson.birthday);
-  const deathDate = showDate(currentPerson.deathday);
-
   return <Card
     qa="info-dialog"
     sx={{
@@ -64,23 +60,7 @@ function InfoDialog(props) {
       portrait={ currentPerson.portraitUrl }
       icon={ <PersonIcon /> }
     />
-    { (birthDate || deathDate) ? (<CardContent>
-      <Table
-        size="small"
-        sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-      >
-        <TableBody>
-          { birthDate ? (<TableRow>
-            <TableCell>Birth</TableCell>
-            <TableCell>{ birthDate }</TableCell>
-          </TableRow>) : null }
-          { deathDate ? (<TableRow>
-            <TableCell>Death</TableCell>
-            <TableCell>{ deathDate }</TableCell>
-          </TableRow>) : null }
-        </TableBody>
-      </Table>
-    </CardContent>) : null }
+      <PersonDetails person={ currentPerson } component={ CardContent } />
   </Card>
 }
 
