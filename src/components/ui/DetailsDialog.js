@@ -1,12 +1,16 @@
+import { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { Button, Popover, Grid, Typography, CardActionArea, CardMedia, CardContent, CardActions } from '@mui/material';
+import { Button, Popover, Grid, Typography, CardActionArea, CardContent, CardActions } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
 import ExtendedDialogTitle from './ExtendedDialogTitle';
 import PersonDetails from './PersonDetails';
+import RenderContext from '../RenderContext.js';
 
 import Person from '../../lib/Person';
 import { clearPerson, setSelectedMeta } from '../../store/selectedPersonReducer';
+import { getMetaContainer } from '../../lib/ui/utils';
+
 
 function DetailsDialog(props) {
   const { selectedPerson = null, selectedMeta = null, metadata = [] } = props;
@@ -15,6 +19,7 @@ function DetailsDialog(props) {
     return null;
   }
 
+  const { renderTarget } = useContext(RenderContext);
   const dispatch = useDispatch();
 
   const index = metadata.findIndex((md) => md.id === selectedMeta?.id);
@@ -33,16 +38,10 @@ function DetailsDialog(props) {
     dispatch(clearPerson());
   };
 
-  const isImage = selectedMeta ? selectedMeta.mimetype.startsWith('image') : false;
-  const isPDF = selectedMeta ? selectedMeta.mimetype === 'application/pdf' : false;
-  const isText = selectedMeta ? selectedMeta.mimetype === 'text/plain' : false;
-
   const currentPerson = selectedPerson ? new Person(selectedPerson) : new Person({ id: -1 });
 
-  const anchorEl = document.getElementById('testtest');
-
   return (
-    <Popover open={ true } anchorEl={ anchorEl }
+    <Popover open={ true } anchorEl={ renderTarget.current }
       placement="top-start"
         qa="details-dialog"
         onClose={ handleClose }
@@ -75,48 +74,37 @@ function DetailsDialog(props) {
           <CardContent sx={{ flex: '1 0 auto', height: 'calc(100% - 160px)' }}>
             <Grid container sx={{ height: '100%' }} columnSpacing={ 2 }>
               <Grid item xs={ selectedMeta ? 4 : 12 } sx={{ height: '100%', overflowY: 'auto' }}>
-              <PersonDetails person={ currentPerson } />
-              { selectedMeta?.excerpt ? (<Typography gutterBottom variant="h6" component="div">
-                Excerpt
-              </Typography>) : null }
-              { selectedMeta?.excerpt ? (<Typography variant="body2" color="text.secondary">
-                { selectedMeta.excerpt }
-              </Typography>) : null }
-              { (selectedMeta?.description) ? (<Typography gutterBottom variant="h6" component="div">
-                Description
-              </Typography>) : null }
-              { (selectedMeta?.description) ? (<Typography variant="body2" color="text.secondary">
-                { selectedMeta.description }
-              </Typography>) : null }
+                <PersonDetails person={ currentPerson } />
+                { selectedMeta?.excerpt && (
+                <Typography gutterBottom variant="h6" component="div">
+                  Excerpt
+                </Typography>) }
+                { selectedMeta?.excerpt && (
+                <Typography variant="body2" color="text.secondary">
+                  { selectedMeta.excerpt }
+                </Typography>) }
+                { selectedMeta?.description && (
+                <Typography gutterBottom variant="h6" component="div">
+                  Description
+                </Typography>) }
+                { selectedMeta?.description && (
+                <Typography variant="body2" color="text.secondary">
+                  { selectedMeta.description }
+                </Typography>) }
             </Grid>
-            { selectedMeta ? <Grid item xs={8} sx={{ height: '100%', overflowY: 'auto' }}>
-            <CardActionArea  sx={{ height: '100%' }}>
-              { isImage && <CardMedia
-                sx={{
-                  height: '100%',
-                  objectFit: 'contain',
-                }}
-                component="img"
-                image={ selectedMeta.original }
-                alt={ selectedMeta.original }
-              /> }
-              { (isPDF || isText) && <CardMedia
-                style={{
-                  width: '100%',
-                  height: '100%',
-                }}
-                component="object"
-                data={ selectedMeta.original }
-                type={ selectedMeta.mimetype }
-              /> }
-            </CardActionArea>
-          </Grid> : null }
+            { selectedMeta && (
+            <Grid item xs={8} sx={{ height: '100%', overflowY: 'auto' }}>
+              <CardActionArea  sx={{ height: '100%' }}>
+              { getMetaContainer(selectedMeta) }
+              </CardActionArea>
+          </Grid>) }
         </Grid>
       </CardContent>
-      { selectedMeta ? <CardActions sx={{ flex: '0 0 auto', justifyContent: 'flex-end' }}>
+      { selectedMeta && (
+      <CardActions sx={{ flex: '0 0 auto', justifyContent: 'flex-end' }}>
         <Button disabled={ index <= 0 } onClick={ previousMeta } variant="text">previous</Button>
         <Button disabled={ index >= metadata.length - 1 } onClick={ nextMeta } variant="text">next</Button>
-      </CardActions> : null }
+      </CardActions>) }
     </Popover>
   );
 }

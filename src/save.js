@@ -29,7 +29,7 @@ export default function Save({ attributes }) {
 	  backgroundColor = '#000000',
 	  foregroundColor = '#CCCCCC',
 	  textColor = '#333333',
-		highlightColor = '#770000',
+	  highlightColor = '#770000',
 	} = attributes;
 	return (
 		<p { ...useBlockProps.save() }>

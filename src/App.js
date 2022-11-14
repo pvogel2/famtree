@@ -126,10 +126,10 @@ function App(props) {
           >
             <PedigreeRenderer />
             <Intersector />
+            {founderFAB && <LoadFamily readonly={ readonly } /> }
+            <InfoDialog readonly={ readonly } />
+            <DetailsDialog />
           </RenderProvider>
-          {founderFAB && <LoadFamily readonly={ readonly } /> }
-          <InfoDialog readonly={ readonly } />
-          <DetailsDialog />
         </Provider>
       </StyledEngineProvider>
       </ThemeProvider>

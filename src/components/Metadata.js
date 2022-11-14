@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 
 import RenderContext from './RenderContext.js';
-import MetaImage from './MetaImage.js';
+import MetaThumb from './MetaThumb.js';
 import { getMesh, addDataToMesh } from './../lib/nodes/utils.js';
 
 function Metadata(props) {
@@ -52,7 +52,7 @@ function Metadata(props) {
   }
 
   const metaImages = currentMeta.map((md, idx) => {
-    return <MetaImage key={ md.id } idx={ idx } parent={ currentMesh } metadata={ md } />
+    return <MetaThumb key={ md.id } idx={ idx } parent={ currentMesh } metadata={ md } />
   });
 
   return metaImages;

@@ -7,7 +7,7 @@ import pdfImage from './../assets/images/pdf.jpg';
 const textureLoader = new TextureLoader();
 // const imageLoader = new ImageLoader();
 
-function MetaImage(props) {
+function MetaThumb(props) {
   const {
     parent,
     metadata,
@@ -46,4 +46,4 @@ function MetaImage(props) {
   return null;
 }
 
-export default MetaImage;
+export default MetaThumb;
