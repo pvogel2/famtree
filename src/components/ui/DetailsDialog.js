@@ -92,8 +92,9 @@ function DetailsDialog(props) {
             { selectedMeta ? <Grid item xs={8} sx={{ height: '100%', overflowY: 'auto' }}>
             <CardActionArea  sx={{ height: '100%' }}>
               { isImage && <CardMedia
-                style={{
-                  width: '100%',
+                sx={{
+                  height: '100%',
+                  objectFit: 'contain',
                 }}
                 component="img"
                 image={ selectedMeta.original }
