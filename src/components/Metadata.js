@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import RenderContext from './RenderContext.js';
 import MetaThumb from './MetaThumb.js';
 import { getMesh, addDataToMesh } from './../lib/nodes/utils.js';
+import { Vector3 } from 'three';
 
 function Metadata(props) {
   const {
@@ -51,8 +52,17 @@ function Metadata(props) {
     return null;
   }
 
+  const rowsOffset = 0.5 * Math.floor(currentMeta.length / 3);
   const metaImages = currentMeta.map((md, idx) => {
-    return <MetaThumb key={ md.id } idx={ idx } parent={ currentMesh } metadata={ md } />
+    const row = Math.floor(idx / 3);
+    const col = idx % 3;
+    return (
+    <MetaThumb
+      key={ md.id }
+      position={ new Vector3(0.5, (rowsOffset - row) * 1.1, -1 - col * 1.1) }
+      parent={ currentMesh }
+      metadata={ md }
+    />);
   });
 
   return metaImages;

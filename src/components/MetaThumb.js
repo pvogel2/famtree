@@ -1,8 +1,10 @@
-import { Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, TextureLoader, ImageLoader } from 'three';
+import { Vector3, Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, TextureLoader } from 'three';
 import { useContext } from 'react';
 
 import RenderContext from './RenderContext.js';
 import pdfImage from './../assets/images/pdf.jpg';
+import textImage from './../assets/images/txt.jpg';
+import unknownImage from './../assets/images/file.jpg';
 
 const textureLoader = new TextureLoader();
 // const imageLoader = new ImageLoader();
@@ -11,35 +13,34 @@ function MetaThumb(props) {
   const {
     parent,
     metadata,
-    idx,
+    position,
   } = props;
 
   const { renderer } = useContext(RenderContext);
-  const options = { color: '#ff7711', side: DoubleSide };
+  const options = { color: '#ffffff', side: DoubleSide };
 
   if (metadata.mimetype.startsWith('image')) {
-    const texture = textureLoader.load(metadata.thumbnail);
-    options.map = texture;
-    options.color = '#ffffff';
-  }
-  // imageLoader.load(metadata.original, (image) => { console.log(image.width, image.height);});
-  if (metadata.mimetype === 'application/pdf' || metadata.mimetype.includes('text')) {
-    const texture = textureLoader.load(pdfImage);
-    options.map = texture;
-    options.color = '#ffffff';
+    options.map = textureLoader.load(metadata.thumbnail);
+  } else if (metadata.mimetype === 'application/pdf') {
+    options.map = textureLoader.load(pdfImage);
+  } else if (metadata.mimetype.includes('text')) {
+    options.map = textureLoader.load(textImage);
+  } else {
+    options.map = textureLoader.load(unknownImage);
   }
 
   const g = new PlaneGeometry(1, 1);
   const m = new MeshBasicMaterial(options);
   const p = new Mesh(g, m);
   const metadataId = `metadata${metadata.id}`; 
-  p.position.set(0.5, 0, -1 - idx * 1.1);
+  if (position) {
+    p.position.copy(position);
+  }
   p.rotateY(Math.PI * 0.5);
 
   p.userData.name = metadataId;
   p.userData.id = metadata.id;
   p.userData.type = 'metaimage';
-  // parent.add(p);
 
   renderer.addObject(metadataId, p, true, parent);
 

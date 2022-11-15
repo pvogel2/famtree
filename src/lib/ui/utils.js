@@ -15,11 +15,7 @@ export function showDate(ts = null) {
 }
 
 export function getMetaContainer(md = { mimetype: '' }) {
-  const isImage = md.mimetype.startsWith('image');
-  const isPDF = md.mimetype === 'application/pdf';
-  const isText = md.mimetype === 'text/plain';
-
-  if (isImage) return (<CardMedia
+  if (md.mimetype.startsWith('image')) return (<CardMedia
     sx={{
       height: '100%',
       objectFit: 'contain',
@@ -29,7 +25,7 @@ export function getMetaContainer(md = { mimetype: '' }) {
     alt={ md.original }
   />);
 
-  if (isPDF || isText) return (<CardMedia
+  if (md.mimetype === 'application/pdf' || md.mimetype === 'text/plain') return (<CardMedia
     style={{
       width: '100%',
       height: '100%',
@@ -39,5 +35,17 @@ export function getMetaContainer(md = { mimetype: '' }) {
     type={ md.mimetype }
   />);
 
-  return '';
+  
+  if (md.mimetype.startsWith('video')) return (<CardMedia
+    style={{
+      width: '100%',
+      height: '100%',
+    }}
+    component="video"
+    src={ md.original }
+    type={ md.mimetype }
+    controls
+  />);
+
+  return 'unknown file';
 }

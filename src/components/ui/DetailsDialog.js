@@ -38,6 +38,19 @@ function DetailsDialog(props) {
     dispatch(clearPerson());
   };
 
+  const getLayoutedInfo = (headine, content) => {
+    return content && (
+      <>
+        <Typography variant="h6" component="div">
+          { headine }
+        </Typography>
+        <Typography gutterBottom variant="body2" color="text.secondary">
+          { content }
+        </Typography>
+      </>
+    );
+  }
+
   const currentPerson = selectedPerson ? new Person(selectedPerson) : new Person({ id: -1 });
 
   const popoverProps = {
@@ -78,46 +91,32 @@ function DetailsDialog(props) {
       anchorPosition={ popoverProps.aPos }
       transformOrigin={ popoverProps.tOrig }
       placement="top-start"
-        qa="details-dialog"
+      qa="details-dialog"
+      onClose={ handleClose }
+      hideBackdrop
+      sx={{
+        pointerEvents: 'none',
+      }}
+      PaperProps={ paperProps }
+    >
+      <ExtendedDialogTitle
+        title={ currentPerson.name }
+        portrait={ currentPerson.portraitUrl }
+        icon={ <PersonIcon /> }
         onClose={ handleClose }
-        hideBackdrop
-        sx={{
-          pointerEvents: 'none',
-        }}
-        PaperProps={ paperProps }
-      >
-        <ExtendedDialogTitle
-          title={ currentPerson.name }
-          portrait={ currentPerson.portraitUrl }
-          icon={ <PersonIcon /> }
-          onClose={ handleClose }
-        />
-          <CardContent sx={{ flex: '1 0 auto', height: 'calc(100% - 160px)' }}>
-            <Grid container sx={{ height: '100%' }} columnSpacing={ 2 }>
-              <Grid item xs={ selectedMeta ? 4 : 12 } sx={{ height: '100%', overflowY: 'auto' }}>
-                <PersonDetails person={ currentPerson } />
-                { selectedMeta?.excerpt && (
-                <Typography gutterBottom variant="h6" component="div">
-                  Excerpt
-                </Typography>) }
-                { selectedMeta?.excerpt && (
-                <Typography variant="body2" color="text.secondary">
-                  { selectedMeta.excerpt }
-                </Typography>) }
-                { selectedMeta?.description && (
-                <Typography gutterBottom variant="h6" component="div">
-                  Description
-                </Typography>) }
-                { selectedMeta?.description && (
-                <Typography variant="body2" color="text.secondary">
-                  { selectedMeta.description }
-                </Typography>) }
-            </Grid>
-            { selectedMeta && (
-            <Grid item xs={8} sx={{ height: '100%', overflowY: 'auto' }}>
-              <CardActionArea  sx={{ height: '100%' }}>
+      />
+      <CardContent sx={{ flex: '1 0 auto', height: 'calc(100% - 160px)' }}>
+        <Grid container sx={{ height: '100%' }} columnSpacing={ 2 }>
+          <Grid item xs={ selectedMeta ? 4 : 12 } sx={{ height: '100%', overflowY: 'auto' }}>
+            <PersonDetails person={ currentPerson } />
+            { getLayoutedInfo('Excerpt', selectedMeta?.excerpt) }
+            { getLayoutedInfo('Description', selectedMeta?.description) }
+          </Grid>
+          { selectedMeta && (
+          <Grid item xs={ 8 } sx={{ height: '100%', overflowY: 'auto' }}>
+            <CardActionArea  sx={{ height: '100%' }}>
               { getMetaContainer(selectedMeta) }
-              </CardActionArea>
+            </CardActionArea>
           </Grid>) }
         </Grid>
       </CardContent>
