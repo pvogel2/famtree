@@ -1,5 +1,7 @@
-import { Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color } from 'three';
+import { TextureLoader, Mesh, Group, CylinderGeometry, SphereGeometry, MeshBasicMaterial, Vector3, Color } from 'three';
 import ThreeText from '../../lib/three/Text';
+
+const textureLoader = new TextureLoader();
 
 export function findTypedGroup(m, name) {
   return m.children.find(c => c.name === name);
@@ -52,6 +54,30 @@ export function getMesh(layout = {}) {
   return new Mesh(g, m);
 }
 
+export function getPersonMesh(layout = {}) {
+  const foreground = layout.foreground ? layout.foreground : '#888888';
+  const color = new Color(foreground);
+
+  const options = { color };
+  if (layout.mapUrl) {
+    options.color = '#ffffff';
+    options.map = textureLoader.load(layout.mapUrl);
+  }
+
+  if (typeof layout.opacity === 'number') {
+    options.opacity = layout.opacity;
+    options.transparent = true;
+  };
+
+  const g = new CylinderGeometry(0.8, 0.6, 0.1, 64, 1);
+  g.rotateZ(Math.PI * 0.5);
+  g.rotateX(Math.PI);
+  const m = new MeshBasicMaterial(options);
+
+  g.computeBoundingSphere();
+  return new Mesh(g, m);
+}
+
 export function addDataToMesh(m) {
   return getDataGroup(m);
 }
@@ -81,7 +107,7 @@ return null;
 
 export function focusNode(m, config = {}) {
   const {
-    highlight = '#770000',
+    highlight = '#ddffff',
     scale = 1,
   } = config;
 
@@ -92,7 +118,7 @@ export function focusNode(m, config = {}) {
   if (scale !== 1) {
     m.scale.set(scale, scale, scale);
   } else {
-    m.material.color = new Color(highlight);
+    m.material.color = m.material.map ? new Color('#ffcccc') : new Color(highlight);
     m.material.needsUpdate = true;
   }
   /* const text = findLabelText(m);
@@ -104,14 +130,14 @@ export function focusNode(m, config = {}) {
 
 export function defocusNode(m, config = {}) {
   const {
-    foreground = '#FFFFFF',
+    foreground = '#ffffff',
   } = config;
   if (m.userData?.type?.startsWith('node')) {
-    m.material.color = new Color(foreground);
+    m.material.color = m.material.map ? new Color(new Color('#ffffff')) : new Color(foreground);
   }
 
   if (m.userData?.type?.startsWith('partner')) {
-    m.material.color = new Color(foreground).multiplyScalar(0.75);
+    m.material.color = m.material.map ? new Color(new Color('#ffffff')) : new Color(foreground).multiplyScalar(0.75);
   }
 
   if (isMetaResourceNode(m)) {

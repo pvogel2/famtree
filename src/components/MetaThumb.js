@@ -1,4 +1,4 @@
-import { Vector3, Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, TextureLoader } from 'three';
+import { Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, TextureLoader } from 'three';
 import { useContext } from 'react';
 
 import RenderContext from './RenderContext.js';

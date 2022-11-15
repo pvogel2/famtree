@@ -5,7 +5,7 @@ import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import { useSelector } from 'react-redux';
 
-import { getMesh, addDataToMesh, addLabelText } from '../lib/nodes/utils';
+import { getPersonMesh, addDataToMesh, addLabelText } from '../lib/nodes/utils';
 import Person from '../lib/Person';
 import Partner from './Partner';
 
@@ -171,7 +171,7 @@ function Node(props) {
     const meshOffset = new Vector3(0, offsetY, offsetZ);
     const meshId = `node${usedPerson.id}`;
 
-    const m = getMesh({ foreground });
+    const m = getPersonMesh({ foreground, mapUrl: person.portraitUrl });
     m.name = meshId;
 
     m.userData.id = usedPerson.id;

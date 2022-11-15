@@ -6,7 +6,7 @@ import { Color, Vector3 } from 'three';
 import Person from '../lib/Person';
 
 import ThreeText from '../lib/three/Text';
-import { getMesh, addDataToMesh } from '../lib/nodes/utils';
+import { getPersonMesh, addDataToMesh } from '../lib/nodes/utils';
 
 const getForeground = (state) => state.layout.foreground;
 
@@ -29,7 +29,7 @@ function Partner(props) {
     const meshId = `partner${usedPerson.id}`;
 
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
-    const m = getMesh({ foreground: `#${partnerColor.getHexString()}` });
+    const m = getPersonMesh({ mapUrl: person.portraitUrl, foreground: `#${partnerColor.getHexString()}` });
 
     m.name = meshId;
     m.userData.id = usedPerson.id;
