@@ -40,30 +40,51 @@ function DetailsDialog(props) {
 
   const currentPerson = selectedPerson ? new Person(selectedPerson) : new Person({ id: -1 });
 
+  const popoverProps = {
+    aRef: selectedMeta ? 'anchorPosition' : 'anchorEl',
+    aEl: renderTarget.current,
+    tOrig: {
+      horizontal: -16,
+      vertical: -16,
+    },
+  };
+
+  const paperProps = { sx: {
+    pointerEvents: 'all',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+  }};
+
+  if (selectedMeta) {
+    const offset = 80;
+
+    popoverProps.aPos = {
+      top: offset,
+      left: offset,
+    };
+    popoverProps.tOrig = undefined;
+
+    paperProps.sx.width = `calc(100vw - ${offset * 2}px)`;
+    paperProps.sx.height = `calc(100vh - ${offset * 2}px)`;
+  }
+
   return (
-    <Popover open={ true } anchorEl={ renderTarget.current }
+    <Popover
+      open
+      anchorReference={ popoverProps.aRef }
+      anchorEl={ popoverProps.aEl }
+      anchorPosition={ popoverProps.aPos }
+      transformOrigin={ popoverProps.tOrig }
       placement="top-start"
         qa="details-dialog"
         onClose={ handleClose }
-        hideBackdrop={ true }
-        transformOrigin={{
-          horizontal: selectedMeta ? 0 : -16,
-          vertical: selectedMeta ? 0 : -16,
-        }}
+        hideBackdrop
         sx={{
           pointerEvents: 'none',
         }}
-        PaperProps={{
-          sx: {
-            pointerEvents: 'all',
-            width: selectedMeta ? '100vw' : undefined,
-            bottom: selectedMeta ? 40 : undefined,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-          },
-        }}
+        PaperProps={ paperProps }
       >
         <ExtendedDialogTitle
           title={ currentPerson.name }
