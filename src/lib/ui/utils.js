@@ -45,6 +45,7 @@ export function getMetaContainer(md = { mimetype: '' }) {
     src={ md.original }
     type={ md.mimetype }
     controls
+    preload='metadata'
   />);
 
   return 'unknown file';

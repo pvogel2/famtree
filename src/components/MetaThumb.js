@@ -3,6 +3,7 @@ import { useContext } from 'react';
 
 import RenderContext from './RenderContext.js';
 import pdfImage from './../assets/images/pdf.jpg';
+import videoImage from './../assets/images/video.jpg';
 import textImage from './../assets/images/txt.jpg';
 import unknownImage from './../assets/images/file.jpg';
 
@@ -25,6 +26,8 @@ function MetaThumb(props) {
     options.map = textureLoader.load(pdfImage);
   } else if (metadata.mimetype.includes('text')) {
     options.map = textureLoader.load(textImage);
+  } else if (metadata.mimetype.startsWith('video')) {
+    options.map = textureLoader.load(videoImage);
   } else {
     options.map = textureLoader.load(unknownImage);
   }
