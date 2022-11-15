@@ -1,5 +1,6 @@
 import { TextureLoader, Mesh, Group, CylinderGeometry, SphereGeometry, MeshBasicMaterial, Vector3, Color } from 'three';
 import ThreeText from '../../lib/three/Text';
+import avatarImage from './../../assets/images/avatar.png';
 
 const textureLoader = new TextureLoader();
 
@@ -55,13 +56,11 @@ export function getMesh(layout = {}) {
 }
 
 export function getPersonMesh(layout = {}) {
-  const foreground = layout.foreground ? layout.foreground : '#888888';
-  const color = new Color(foreground);
-
-  const options = { color };
+  const options = { color: '#ffffff' };
   if (layout.mapUrl) {
-    options.color = '#ffffff';
     options.map = textureLoader.load(layout.mapUrl);
+  } else {
+    options.map = textureLoader.load(avatarImage);
   }
 
   if (typeof layout.opacity === 'number') {

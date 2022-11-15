@@ -74,8 +74,6 @@ const getPersons = (state) => state.persons;
 
 const getRelations = (state) => state.relations;
 
-const getForeground = (state) => state.layout.foreground;
-
 const getText = (state) => state.layout.text;
 
 function getChildSize(id, szs) {
@@ -119,8 +117,6 @@ function Node(props) {
 
   const persons = useSelector(getPersons);
   
-  const foreground = useSelector(getForeground);
-
   const text = useSelector(getText);
 
   const relations = useSelector(getRelations).filter((r) => r.members.includes(person?.id));;
@@ -171,7 +167,7 @@ function Node(props) {
     const meshOffset = new Vector3(0, offsetY, offsetZ);
     const meshId = `node${usedPerson.id}`;
 
-    const m = getPersonMesh({ foreground, mapUrl: person.portraitUrl });
+    const m = getPersonMesh({ mapUrl: person.portraitUrl });
     m.name = meshId;
 
     m.userData.id = usedPerson.id;
@@ -191,7 +187,7 @@ function Node(props) {
       renderer.removeObject(meshId);
       labelText.remove(null, dataGroup);
     };
-  }, [renderer, person, offsetY, offsetZ, parent, foreground, text]);
+  }, [renderer, person, offsetY, offsetZ, parent, text]);
 
   if (!mesh) {
     return null;

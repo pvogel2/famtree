@@ -47,23 +47,6 @@ function pedigree_form_select_field($name, $label, $callback = NULL, $options = 
   <?php
 }
 
-function pedigree_form_buttons() {
-  ?>
-  <tr>
-    <td>
-      <p class="submit">
-        <button type="button" onclick="window.pedigree.resetPerson()" class="button ped-form__button">Reset Person</button>
-      </p>
-    </td>
-    <td>
-      <p class="submit">
-        <button type="button" onclick="window.pedigree.deletePerson()" class="button ped-form__button">Remove Person</button>
-        <button id="person-submit"  type="submit" value="Submit" class="button button-primary ped-form__button">Save Person</button>
-    </p></td>
-  </tr>
-  <?php
-}
-
 function pedigree_render_page_title($title) {
   ?>
   <h1><?php print(esc_html($title)) ?></h1>
