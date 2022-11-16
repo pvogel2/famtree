@@ -25,7 +25,7 @@ function Intersector(props) {
   const highlight = useSelector(getHighlight);
 
   useEffect(() => {
-    const currentPerson = findPerson(intersectedObj?.userData?.id);
+    const currentPerson = findPerson(intersectedObj?.parent?.parent?.userData?.id);
 
     const selectFocusedPerson = () => {
       const targetPosition = new Vector3();

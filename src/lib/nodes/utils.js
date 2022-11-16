@@ -1,25 +1,40 @@
-import { TextureLoader, Mesh, Group, CylinderGeometry, SphereGeometry, MeshBasicMaterial, Vector3, Color } from 'three';
+import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color } from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+
 import ThreeText from '../../lib/three/Text';
 import avatarImage from './../../assets/images/avatar.png';
+import { getBaseUrl } from '../../mylib/Connect';
 
 const textureLoader = new TextureLoader();
+const gltfLoader = new GLTFLoader();
+
+let personMesh;
+
+function getGLTFPerson() {
+  gltfLoader.load(`${getBaseUrl()}assets/models/personMesh.gltf`, (gltf) => {
+    personMesh = gltf.scene.children[0];
+  });
+}
+getGLTFPerson();
 
 export function findTypedGroup(m, name) {
   return m.children.find(c => c.name === name);
 }
 
 export function isValidNode(o = {}) {
-  return o?.userData?.type && o?.userData?.id;
+  const root = o?.parent?.parent;
+  return (o?.userData?.type && o?.userData?.id) || (root?.userData?.type && root?.userData?.id);
 }
 
 export function isPersonNode(o = {}) {
-  const type = o?.userData?.type ||'';
-  return type.match(/^(node|partner)$/);
+  const root = o?.parent?.parent;
+  const type = root?.userData?.type ||'';
+  return !!type.match(/^(node|partner)$/);
 }
 
 export function isMetaResourceNode(o = {}) {
   const type = o?.userData?.type ||'';
-  return type.match(/^meta/);
+  return !!type.match(/^meta/);
 }
 
 function createTypedGroup(m, name) {
@@ -56,25 +71,29 @@ export function getMesh(layout = {}) {
 }
 
 export function getPersonMesh(layout = {}) {
-  const options = { color: '#ffffff' };
-  if (layout.mapUrl) {
-    options.map = textureLoader.load(layout.mapUrl);
-  } else {
-    options.map = textureLoader.load(avatarImage);
+  const newPersonMesh = personMesh.clone();
+
+  const portraitMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshPortrait');
+  const baseMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshBase');
+
+  baseMesh.material = baseMesh.material.clone();
+  if (layout.foreground) {
+    baseMesh.material.setValues({ color: layout.foreground });
   }
 
-  if (typeof layout.opacity === 'number') {
-    options.opacity = layout.opacity;
-    options.transparent = true;
-  };
+  if (layout.mapUrl) {
+    portraitMesh.material = portraitMesh.material.clone();
+    portraitMesh.material.setValues({ map: textureLoader.load(layout.mapUrl) });
+  } else {
+    portraitMesh.material.setValues({ map: textureLoader.load(avatarImage) });
+  }
 
-  const g = new CylinderGeometry(0.8, 0.6, 0.1, 64, 1);
-  g.rotateZ(Math.PI * 0.5);
-  g.rotateX(Math.PI);
-  const m = new MeshBasicMaterial(options);
-
-  g.computeBoundingSphere();
-  return new Mesh(g, m);
+  const personGroup = new Group();
+  newPersonMesh.rotateY(Math.PI * -0.5);
+  newPersonMesh.rotateX(Math.PI * -0.5);
+  personGroup.add(newPersonMesh);
+  
+  return personGroup;
 }
 
 export function addDataToMesh(m) {
@@ -116,9 +135,12 @@ export function focusNode(m, config = {}) {
 
   if (scale !== 1) {
     m.scale.set(scale, scale, scale);
-  } else {
-    m.material.color = m.material.map ? new Color('#ffcccc') : new Color(highlight);
-    m.material.needsUpdate = true;
+  } else if (m.parent?.parent?.userData?.type?.startsWith('node') || m.parent?.parent?.userData?.type?.startsWith('partner')) {
+    const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
+    if (m2) {
+      m2.material.color = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
+      m2.material.needsUpdate = true;
+    }
   }
   /* const text = findLabelText(m);
   if (text) {
@@ -131,12 +153,20 @@ export function defocusNode(m, config = {}) {
   const {
     foreground = '#ffffff',
   } = config;
-  if (m.userData?.type?.startsWith('node')) {
-    m.material.color = m.material.map ? new Color(new Color('#ffffff')) : new Color(foreground);
+  if (m.parent?.parent?.userData?.type?.startsWith('node')) {
+    const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
+    if (m2) {
+      m2.material.color = m2.material.map ? new Color('#ffffff') : new Color(foreground);
+      m2.material.needsUpdate = true;
+    }
   }
 
-  if (m.userData?.type?.startsWith('partner')) {
-    m.material.color = m.material.map ? new Color(new Color('#ffffff')) : new Color(foreground).multiplyScalar(0.75);
+  if (m.parent?.parent?.userData?.type?.startsWith('partner')) {
+    const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
+    if (m2) {
+      m2.material.color = m2.material.map ? new Color('#ffffff') : new Color(foreground).multiplyScalar(0.75);
+      m2.material.needsUpdate = true;
+    }
   }
 
   if (isMetaResourceNode(m)) {

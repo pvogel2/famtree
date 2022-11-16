@@ -32,3 +32,7 @@ export async function loadMetadata(personId) {
 
   return data;
 }
+
+export function getBaseUrl() {
+  return `${apiFetch.nonceEndpoint.replace(/(wp-admin).*/, '')}wp-content/plugins/pedigree/`;
+}
