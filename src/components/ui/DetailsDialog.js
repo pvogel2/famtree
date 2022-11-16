@@ -56,6 +56,7 @@ function DetailsDialog(props) {
   const popoverProps = {
     aRef: selectedMeta ? 'anchorPosition' : 'anchorEl',
     aEl: renderTarget.current,
+    
     tOrig: {
       horizontal: -16,
       vertical: -16,
@@ -86,6 +87,7 @@ function DetailsDialog(props) {
   return (
     <Popover
       open
+      disableScrollLock
       anchorReference={ popoverProps.aRef }
       anchorEl={ popoverProps.aEl }
       anchorPosition={ popoverProps.aPos }

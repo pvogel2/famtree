@@ -42,7 +42,7 @@ function MetaThumb(props) {
   p.rotateY(Math.PI * 0.5);
 
   p.userData.name = metadataId;
-  p.userData.id = metadata.id;
+  p.userData.refId = metadata.id;
   p.userData.type = 'metaimage';
 
   renderer.addObject(metadataId, p, true, parent);

@@ -25,7 +25,7 @@ function Intersector(props) {
   const highlight = useSelector(getHighlight);
 
   useEffect(() => {
-    const currentPerson = findPerson(intersectedObj?.parent?.parent?.userData?.id);
+    const currentPerson = findPerson(intersectedObj?.parent?.parent?.userData?.refId);
 
     const selectFocusedPerson = () => {
       const targetPosition = new Vector3();
@@ -50,7 +50,7 @@ function Intersector(props) {
 
     const selectFocusedMetaResource = () => {
       renderer.unregisterEventCallback('click', selectFocusedMetaResource);
-      dispatch(setSelectedMeta(intersectedObj.userData.id));
+      dispatch(setSelectedMeta(intersectedObj.userData.refId));
     };
 
     if (isPersonNode(intersectedObj)) {

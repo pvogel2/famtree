@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import RenderContext from './RenderContext.js';
-import { Color, Vector3 } from 'three';
+import { Color, Vector3, Group } from 'three';
 
 import Person from '../lib/Person';
 
@@ -29,17 +29,20 @@ function Partner(props) {
     const meshId = `partner${usedPerson.id}`;
 
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
-    const m = getPersonMesh({ mapUrl: person.portraitUrl, foreground: `#${partnerColor.getHexString()}` });
 
-    m.name = meshId;
-    m.userData.id = usedPerson.id;
-    m.userData.type = 'partner';
+    const root = new Group();
 
-    m.position.add(meshOffset);
+    const m = getPersonMesh(person, { foreground: `#${partnerColor.getHexString()}` });
 
-    renderer.addObject(meshId, m, true, parent);
+    root.name = meshId;
+    root.userData.refId = usedPerson.id;
+    root.userData.type = 'partner';
+    root.position.add(meshOffset);
 
-    const dataGroup = addDataToMesh(m);
+    renderer.addObject(meshId, root, false, parent);
+    renderer.addObject(`person${meshId}`, m, true, root);
+
+    const dataGroup = addDataToMesh(root);
     const labelText = new ThreeText({
       text: usedPerson.name,
       position: new Vector3(1, -1, 0),
@@ -52,8 +55,9 @@ function Partner(props) {
     labelText.textMesh.geometry.center();
 
     return () => {
-      m.clear();
+      root.clear();
       renderer.removeObject(meshId);
+      renderer.removeObject(`person${meshId}`);
       labelText.remove(null, dataGroup);
     };
   }, [renderer, person, parent, foreground, text, offsetY, offsetZ]);

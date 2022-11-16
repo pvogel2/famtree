@@ -22,8 +22,7 @@ export function findTypedGroup(m, name) {
 }
 
 export function isValidNode(o = {}) {
-  const root = o?.parent?.parent;
-  return (o?.userData?.type && o?.userData?.id) || (root?.userData?.type && root?.userData?.id);
+  return !!o?.userData?.refId;
 }
 
 export function isPersonNode(o = {}) {
@@ -70,30 +69,30 @@ export function getMesh(layout = {}) {
   return new Mesh(g, m);
 }
 
-export function getPersonMesh(layout = {}) {
+export function getPersonMesh(person = {}, layout = {}) {
   const newPersonMesh = personMesh.clone();
 
   const portraitMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshPortrait');
+  portraitMesh.userData.refId = person.id;
+
   const baseMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshBase');
+  baseMesh.userData.refId = person.id;
 
   baseMesh.material = baseMesh.material.clone();
   if (layout.foreground) {
     baseMesh.material.setValues({ color: layout.foreground });
   }
 
-  if (layout.mapUrl) {
+  if (person.portraitUrl) {
     portraitMesh.material = portraitMesh.material.clone();
-    portraitMesh.material.setValues({ map: textureLoader.load(layout.mapUrl) });
+    portraitMesh.material.setValues({ map: textureLoader.load(person.portraitUrl) });
   } else {
     portraitMesh.material.setValues({ map: textureLoader.load(avatarImage) });
   }
 
-  const personGroup = new Group();
   newPersonMesh.rotateY(Math.PI * -0.5);
-  newPersonMesh.rotateX(Math.PI * -0.5);
-  personGroup.add(newPersonMesh);
-  
-  return personGroup;
+  newPersonMesh.rotateX(Math.PI * -0.5);  
+  return newPersonMesh;
 }
 
 export function addDataToMesh(m) {
@@ -135,7 +134,7 @@ export function focusNode(m, config = {}) {
 
   if (scale !== 1) {
     m.scale.set(scale, scale, scale);
-  } else if (m.parent?.parent?.userData?.type?.startsWith('node') || m.parent?.parent?.userData?.type?.startsWith('partner')) {
+  } else if (isPersonNode(m)) {
     const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
     if (m2) {
       m2.material.color = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
@@ -153,7 +152,7 @@ export function defocusNode(m, config = {}) {
   const {
     foreground = '#ffffff',
   } = config;
-  if (m.parent?.parent?.userData?.type?.startsWith('node')) {
+  if (m.parent?.parent?.userData?.type === 'node') {
     const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
     if (m2) {
       m2.material.color = m2.material.map ? new Color('#ffffff') : new Color(foreground);
@@ -161,7 +160,7 @@ export function defocusNode(m, config = {}) {
     }
   }
 
-  if (m.parent?.parent?.userData?.type?.startsWith('partner')) {
+  if (m.parent?.parent?.userData?.type === 'partner') {
     const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
     if (m2) {
       m2.material.color = m2.material.map ? new Color('#ffffff') : new Color(foreground).multiplyScalar(0.75);

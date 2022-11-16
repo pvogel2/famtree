@@ -111,7 +111,7 @@ const defaultSendSize = () => 0;
 function Node(props) {
   const { person, parent, sendSize = defaultSendSize, offsetY = 0, offsetZ = 0 } = props;
 
-  const [mesh, setMesh] = useState(null);
+  const [root, setRoot] = useState(null);
   const [totalSize, setTotalSize] = useState(0);
   const [sizes] = useState({});
 
@@ -169,31 +169,34 @@ function Node(props) {
     const usedPerson = new Person(person);
 
     const meshOffset = new Vector3(0, offsetY, offsetZ);
-    const meshId = `node${usedPerson.id}`;
+    const rootId = `person${usedPerson.id}`;
+    const meshId = `pNode${usedPerson.id}`;
 
-    const m = getPersonMesh({ foreground, mapUrl: person.portraitUrl });
-    m.name = meshId;
+    const newRoot = new Group();
 
-    m.userData.id = usedPerson.id;
-    m.userData.type = 'node';
+    const m = getPersonMesh(person, { foreground });
+    newRoot.name = rootId;
+    newRoot.userData.refId = usedPerson.id;
+    newRoot.userData.type = 'node';
+    newRoot.position.add(meshOffset);
 
-    m.position.add(meshOffset);
+    renderer.addObject(rootId, newRoot, false, parent);
+    renderer.addObject(meshId, m, true, newRoot);
 
-    renderer.addObject(meshId, m, true, parent);
-
-    const dataGroup = addDataToMesh(m);
+    const dataGroup = addDataToMesh(newRoot);
     const labelText = addLabelText(dataGroup, usedPerson.name, text);
 
-    setMesh(m);
+    setRoot(newRoot);
 
     return () => {
-      m.clear();
+      newRoot.clear();
+      renderer.removeObject(rootId);
       renderer.removeObject(meshId);
       labelText.remove(null, dataGroup);
     };
   }, [renderer, person, foreground, offsetY, offsetZ, parent, text]);
 
-  if (!mesh) {
+  if (!root) {
     return null;
   }
 
@@ -202,8 +205,8 @@ function Node(props) {
       return null;
     }
 
-    const relationsGroup = getRelationsGroup(mesh);
-    const assetsGroup = getAssetsGroup(mesh);
+    const relationsGroup = getRelationsGroup(root);
+    const assetsGroup = getAssetsGroup(root);
 
     const relationTarget = new Vector3();
     const childPosition = new Vector3();

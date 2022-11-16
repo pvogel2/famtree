@@ -20,7 +20,7 @@ describe('on intersection', () => {
     const moveCallbacks = renderer.registerEventCallback.mock.calls[0][1];
 
     const dummyMesh = getMesh();
-    dummyMesh.userData.id = defaultPerson.id;
+    dummyMesh.userData.refId = defaultPerson.id;
     const dg = addDataToMesh(dummyMesh);
     addLabelText(dg, 'name');
 

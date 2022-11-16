@@ -38,7 +38,7 @@ it('adds several properties to the mesh', () => {
 
   const id = serializedPerson.id;
   expect(node.name).toEqual(`partner${id}`);
-  expect(node.userData.id).toEqual(id);
+  expect(node.userData.refId).toEqual(id);
 });
 
 it('adds an offset to the node', () => {
