@@ -5,7 +5,7 @@ import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import { useSelector } from 'react-redux';
 
-import { getPersonMesh, addDataToMesh, addLabelText } from '../lib/nodes/utils';
+import { getPersonGroup, getSymbolGroup, getDataGroup, addLabelText, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
 import Person from '../lib/Person';
 import Partner from './Partner';
 
@@ -13,31 +13,12 @@ const nodeDist = 6;
 const genDist = 6;
 const cldDist = nodeDist;
 
-function findTypedGroup(m, name) {
-  return m.children.find(c => c.name === name);
-}
-
-function createTypedGroup(m, name) {
-  const g = new Group();
-  g.name = name;
-  m.add(g);
-  return g;
-}
-
 function getRelationsGroup(m) {
-  let g = findTypedGroup(m, 'relations');
-  if (!g) {
-    g = createTypedGroup(m, 'relations');
-  }
-  return g;
+  return (findNamedGroup(m, 'relations') || createNamedGroup(m, 'relations'));
 }
 
 function getAssetsGroup(m) {
-  let g = findTypedGroup(m, 'assets');
-  if (!g) {
-    g = createTypedGroup(m, 'assets');
-  }
-  return g;
+  return (findNamedGroup(m, 'assets') || createNamedGroup(m, 'assets'));
 }
 
 const findMembers = (typedArr = [], persons = []) => {
@@ -168,23 +149,19 @@ function Node(props) {
 
     const usedPerson = new Person(person);
 
-    const meshOffset = new Vector3(0, offsetY, offsetZ);
+    const rootOffset = new Vector3(0, offsetY, offsetZ);
     const rootId = `person${usedPerson.id}`;
-    const meshId = `pNode${usedPerson.id}`;
 
-    const newRoot = new Group();
-    newRoot.name = rootId;
-    newRoot.userData.refId = usedPerson.id;
-    newRoot.userData.type = 'node';
-    newRoot.position.add(meshOffset);
+    const newRoot = getPersonGroup(usedPerson);
+    newRoot.position.add(rootOffset);
 
-    const m = getPersonMesh(person, { foreground });
-    m.name = 'symbols';
+    const symbolGroup = getSymbolGroup(person, { foreground });
+    const symbolId = `symbol${usedPerson.id}`;
   
     renderer.addObject(rootId, newRoot, false, parent);
-    renderer.addObject(meshId, m, true, newRoot);
+    renderer.addObject(symbolId, symbolGroup, true, newRoot);
 
-    const dataGroup = addDataToMesh(newRoot);
+    const dataGroup = getDataGroup(newRoot);
     const labelText = addLabelText(dataGroup, usedPerson.name, text);
 
     setRoot(newRoot);
@@ -192,7 +169,7 @@ function Node(props) {
     return () => {
       newRoot.clear();
       renderer.removeObject(rootId);
-      renderer.removeObject(meshId);
+      renderer.removeObject(symbolId);
       labelText.remove(null, dataGroup);
     };
   }, [renderer, person, foreground, offsetY, offsetZ, parent, text]);

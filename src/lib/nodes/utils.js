@@ -17,20 +17,20 @@ function getGLTFPerson() {
 }
 getGLTFPerson();
 
-function getRootNode(m) {
-  if (!m?.userData?.type) {
+export function getRootNode(m) {
+  if (isValidNode(m) && !m?.name.match(/^(person|partner)$/)) {
     return m?.parent?.parent;
   }
   return m;
 }
 
-function getPersonBaseMesh(root) {
-  const symbols = findTypedGroup(root, 'symbols');
-  return symbols?.children.find((m) => m.material?.name === 'personMeshBase');
+export function findNamedGroup(m, name) {
+  return m.children.find(c => c.name === name);
 }
 
-export function findTypedGroup(m, name) {
-  return m.children.find(c => c.name === name);
+function getPersonBaseMesh(root) {
+  const symbols = findNamedGroup(root, 'symbols');
+  return symbols?.children.find((m) => m.material?.name === 'personMeshBase');
 }
 
 export function isValidNode(o = {}) {
@@ -39,8 +39,8 @@ export function isValidNode(o = {}) {
 
 export function isPersonNode(o = {}) {
   const root = getRootNode(o);
-  const type = root?.userData?.type || '';
-  return !!type.match(/^(node|partner)$/);
+  const name = root?.name || '';
+  return !!name.match(/^(person|partner)$/);
 }
 
 export function isMetaResourceNode(o = {}) {
@@ -48,17 +48,17 @@ export function isMetaResourceNode(o = {}) {
   return !!type.match(/^meta/);
 }
 
-function createTypedGroup(m, name) {
+export function createNamedGroup(m, name) {
   const g = new Group();
   g.name = name;
   m.add(g);
   return g;
 }
 
-function getDataGroup(m) {
-  let g = findTypedGroup(m, 'data');
+export function getDataGroup(m) {
+  let g = findNamedGroup(m, 'data');
   if (!g) {
-    g = createTypedGroup(m, 'data');
+    g = createNamedGroup(m, 'data');
   }
   return g;
 }
@@ -81,7 +81,21 @@ export function getMesh(layout = {}) {
   return new Mesh(g, m);
 }
 
-export function getPersonMesh(person = {}, layout = {}) {
+export function getPersonGroup(person = {}) {
+  const p = new Group();
+  p.name = 'person';
+  p.userData.refId = person.id;
+  return p;
+}
+
+export function getPartnerGroup(person = {}) {
+  const p = new Group();
+  p.name = 'partner';
+  p.userData.refId = person.id;
+  return p;
+}
+
+export function getSymbolGroup(person = {}, layout = {}) {
   const newPersonMesh = personMesh.clone();
 
   const portraitMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshPortrait');
@@ -103,12 +117,10 @@ export function getPersonMesh(person = {}, layout = {}) {
   }
 
   newPersonMesh.rotateY(Math.PI * -0.5);
-  newPersonMesh.rotateX(Math.PI * -0.5);  
-  return newPersonMesh;
-}
+  newPersonMesh.rotateX(Math.PI * -0.5);
+  newPersonMesh.name = 'symbols';
 
-export function addDataToMesh(m) {
-  return getDataGroup(m);
+  return newPersonMesh;
 }
 
 export function addLabelText(p, label, color = null) {
@@ -126,7 +138,7 @@ export function addLabelText(p, label, color = null) {
 }
 
 export function findLabelText(m) {
-  const dg = findTypedGroup(m, 'data');
+  const dg = findNamedGroup(m, 'data');
 
   if(dg && dg.children.length) {
     return dg.children[0];
@@ -167,16 +179,43 @@ export function defocusNode(m, config = {}) {
     const m2 = getPersonBaseMesh(root);
 
     if (m2) {
-      if (root?.userData?.type === 'node') {
+      if (root?.name === 'person') {
         m2.material.color = new Color(foreground);
       } else {
         m2.material.color = new Color(foreground).multiplyScalar(0.75);
       }
       m2.material.needsUpdate = true;
     }
-  }Z
+  }
 
   if (isMetaResourceNode(m)) {
     m.scale.set(1, 1, 1);
   }
+}
+
+export function selectNode(m, config = {}) {
+  const {
+    highlight = '#ddffff',
+    scale = 1,
+  } = config;
+
+  if (m.type !== 'Mesh') {
+    return;
+  }
+
+  if (scale !== 1) {
+    m.scale.set(scale, scale, scale);
+  } else if (isPersonNode(m)) {
+    const root = getRootNode(m);
+    const m2 = getPersonBaseMesh(root);
+    
+    if (m2) {
+      m2.material.color = m2.material.map ? new Color('#ffffcc') : new Color('#ffffff');
+      m2.material.needsUpdate = true;
+    }
+  }
+}
+
+export function deselectNode(m, config = {}) {
+  defocusNode(m, config);
 }

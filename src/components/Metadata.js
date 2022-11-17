@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 
 import RenderContext from './RenderContext.js';
 import MetaThumb from './MetaThumb.js';
-import { getMesh, addDataToMesh } from './../lib/nodes/utils.js';
+import { getMesh, getDataGroup } from './../lib/nodes/utils.js';
 import { Vector3 } from 'three';
 
 function Metadata(props) {
@@ -25,7 +25,7 @@ function Metadata(props) {
       if (node) {
         mesh = getMesh({ foreground : '#ff0000', opacity: 0.3 });
         mesh.scale.set(1.3, 1.3, 1.3);
-        dataGroup = addDataToMesh(node.obj);
+        dataGroup = getDataGroup(node.obj);
         dataGroup.add(mesh);
         setCurrentMesh(mesh);
       }

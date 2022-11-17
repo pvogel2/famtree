@@ -1,7 +1,7 @@
 import React from 'react';
 import { cleanup /*, fireEvent, act */} from '@testing-library/react';
 import { Color } from 'three';
-import { getMesh, addDataToMesh, addLabelText, findLabelText } from '../lib/nodes/utils';
+import { getMesh, addDataGroup, addLabelText, findLabelText } from '../lib/nodes/utils';
 
 import U from '../lib/tests/utils';
 import Intersector from './Intersector';
@@ -21,7 +21,7 @@ describe('on intersection', () => {
 
     const dummyMesh = getMesh();
     dummyMesh.userData.refId = defaultPerson.id;
-    const dg = addDataToMesh(dummyMesh);
+    const dg = addDataGroup(dummyMesh);
     addLabelText(dg, 'name');
 
     const moveEvent = new MouseEvent('mousemove', { clientX: 100, clientY: 100 });

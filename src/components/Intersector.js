@@ -1,7 +1,7 @@
 import { useState, useContext, useCallback, useEffect } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Vector3 } from 'three';
-import { focusNode, defocusNode, isValidNode, isPersonNode, isMetaResourceNode } from '../lib/nodes/utils';
+import { focusNode, defocusNode, getRootNode, isValidNode, isPersonNode, isMetaResourceNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
 import Person from '../lib/Person';
@@ -12,6 +12,7 @@ import { loadMetadata } from './../mylib/Connect.js';
 
 const getForeground = (state) => state.layout.foreground;
 const getHighlight = (state) => state.layout.highlight;
+const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function Intersector(props) {
   const { persons = [] } = props;
@@ -23,9 +24,11 @@ function Intersector(props) {
   const dispatch = useDispatch();
   const foreground = useSelector(getForeground);
   const highlight = useSelector(getHighlight);
+  const selectedPerson = useSelector(getSelectedPerson);
 
   useEffect(() => {
-    const currentPerson = findPerson(intersectedObj?.parent?.parent?.userData?.refId);
+    const rootNode = getRootNode(intersectedObj);
+    const currentPerson = findPerson(rootNode?.userData?.refId);
 
     const selectFocusedPerson = () => {
       const targetPosition = new Vector3();
@@ -33,7 +36,6 @@ function Intersector(props) {
       const cameraPosition = targetPosition.clone();
       cameraPosition.add(new Vector3(10, 0, 0));
       renderer.transition(targetPosition, 1, cameraPosition);
-
       renderer.unregisterEventCallback('click', selectFocusedPerson);
 
       if (currentPerson) {

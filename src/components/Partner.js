@@ -6,7 +6,7 @@ import { Color, Vector3, Group } from 'three';
 import Person from '../lib/Person';
 
 import ThreeText from '../lib/three/Text';
-import { getPersonMesh, addDataToMesh } from '../lib/nodes/utils';
+import { getPartnerGroup, getSymbolGroup, getDataGroup } from '../lib/nodes/utils';
 
 const getForeground = (state) => state.layout.foreground;
 
@@ -25,25 +25,21 @@ function Partner(props) {
 
     const usedPerson = new Person(person);
 
-    const meshOffset = new Vector3(0, offsetY, offsetZ);
+    const rootOffset = new Vector3(0, offsetY, offsetZ);
     const rootId = `person${usedPerson.id}`;
-    const meshId = `pNode${usedPerson.id}`;
 
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
 
-    const root = new Group();
-    root.name = rootId;
-    root.userData.refId = usedPerson.id;
-    root.userData.type = 'partner';
-    root.position.add(meshOffset);
+    const root = getPartnerGroup(usedPerson);
+    root.position.add(rootOffset);
 
-    const m = getPersonMesh(person, { foreground: `#${partnerColor.getHexString()}` });
-    m.name = 'symbols';
+    const symbolGroup = getSymbolGroup(person, { foreground: `#${partnerColor.getHexString()}` });
+    const symbolId = `symbol${usedPerson.id}`;
 
     renderer.addObject(rootId, root, false, parent);
-    renderer.addObject(meshId, m, true, root);
+    renderer.addObject(symbolId, symbolGroup, true, root);
 
-    const dataGroup = addDataToMesh(root);
+    const dataGroup = getDataGroup(root);
     const labelText = new ThreeText({
       text: usedPerson.name,
       position: new Vector3(1, -1, 0),
@@ -58,7 +54,7 @@ function Partner(props) {
     return () => {
       root.clear();
       renderer.removeObject(rootId);
-      renderer.removeObject(meshId);
+      renderer.removeObject(symbolId);
       labelText.remove(null, dataGroup);
     };
   }, [renderer, person, parent, foreground, text, offsetY, offsetZ]);
