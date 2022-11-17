@@ -11,7 +11,7 @@ const gltfLoader = new GLTFLoader();
 let personMesh;
 
 function getGLTFPerson() {
-  gltfLoader.load(`${getBaseUrl()}public/models/personMeshTest.gltf`, (gltf) => {
+  gltfLoader.load(`${getBaseUrl()}public/models/personMesh.gltf`, (gltf) => {
     personMesh = gltf.scene.children[0];
   });
 }
@@ -109,15 +109,18 @@ export function getSymbolGroup(person = {}, layout = {}) {
     baseMesh.material.setValues({ color: layout.foreground });
   }
 
+  let texture;
   if (person.portraitUrl) {
-    portraitMesh.material = portraitMesh.material.clone();
-    portraitMesh.material.setValues({ map: textureLoader.load(person.portraitUrl) });
+    texture = textureLoader.load(person.portraitUrl);
   } else {
-    // portraitMesh.material.setValues({ map: textureLoader.load(avatarImage) });
+    texture = textureLoader.load(avatarImage);
   }
+  texture.flipY = false;
+  portraitMesh.material = portraitMesh.material.clone();
+  portraitMesh.material.setValues({ map: texture });
 
-  newPersonMesh.rotateY(Math.PI * -0.5);
-  newPersonMesh.rotateX(Math.PI * -0.5);
+  newPersonMesh.rotateY(Math.PI * 0.5);
+  newPersonMesh.rotateX(Math.PI * 0.5);
   newPersonMesh.name = 'symbols';
 
   return newPersonMesh;
