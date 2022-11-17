@@ -26,6 +26,7 @@ import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
 import DetailsDialog from './components/ui/DetailsDialog';
 import Intersector from './components/Intersector';
+import PersonSelector from './components/PersonSelector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -126,6 +127,7 @@ function App(props) {
           >
             <PedigreeRenderer />
             <Intersector />
+            <PersonSelector />
             {founderFAB && <LoadFamily readonly={ readonly } /> }
             <InfoDialog readonly={ readonly } />
             <DetailsDialog />

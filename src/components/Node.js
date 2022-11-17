@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState, Fragment } from 'react';
-import { Vector3, Group } from 'three';
+import { Vector3 } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';

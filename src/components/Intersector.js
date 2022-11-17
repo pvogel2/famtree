@@ -13,7 +13,7 @@ import { loadMetadata } from './../mylib/Connect.js';
 const getForeground = (state) => state.layout.foreground;
 const getHighlight = (state) => state.layout.highlight;
 const getSelectedPerson = (state) => state.selectedPerson.person;
-
+  
 function Intersector(props) {
   const { persons = [] } = props;
   const { renderer } = useContext(RenderContext);
@@ -25,11 +25,12 @@ function Intersector(props) {
   const foreground = useSelector(getForeground);
   const highlight = useSelector(getHighlight);
   const selectedPerson = useSelector(getSelectedPerson);
-
+  
   useEffect(() => {
     const rootNode = getRootNode(intersectedObj);
     const currentPerson = findPerson(rootNode?.userData?.refId);
 
+    let isSelected = currentPerson?.id === selectedPerson?.id;
     const selectFocusedPerson = () => {
       const targetPosition = new Vector3();
       intersectedObj.getWorldPosition(targetPosition);
@@ -41,6 +42,9 @@ function Intersector(props) {
       if (currentPerson) {
         dispatch(clearFocusedPerson());
         dispatch(setSelectedPerson(currentPerson.serialize()));
+
+        isSelected = true;
+
         async function loadCurrentMetadata() {
           const metadata = await loadMetadata(currentPerson.id);
           dispatch(setMetadata([...metadata]));
@@ -55,7 +59,7 @@ function Intersector(props) {
       dispatch(setSelectedMeta(intersectedObj.userData.refId));
     };
 
-    if (isPersonNode(intersectedObj)) {
+    if (isPersonNode(intersectedObj) && !isSelected) {
       renderer.registerEventCallback('click', selectFocusedPerson);
       focusNode(intersectedObj, { highlight });
 
@@ -74,7 +78,7 @@ function Intersector(props) {
     }
 
     return () => {
-      if (isPersonNode(intersectedObj)) {
+      if (isPersonNode(intersectedObj) && !isSelected) {
         defocusNode(intersectedObj, { foreground });
         dispatch(clearFocusedPerson());
         renderer.unregisterEventCallback('click', selectFocusedPerson);
@@ -85,7 +89,7 @@ function Intersector(props) {
         renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       }
     };
-   }, [renderer, intersectedObj, dispatch, foreground, highlight]);
+   }, [renderer, intersectedObj, dispatch, foreground, highlight, selectedPerson]);
 
   useEffect(() => {
     if (!renderer) return;

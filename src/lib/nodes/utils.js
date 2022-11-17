@@ -199,7 +199,7 @@ export function selectNode(m, config = {}) {
     scale = 1,
   } = config;
 
-  if (m.type !== 'Mesh') {
+  if (m.type !== 'Mesh' && m.type !== 'Group') {
     return;
   }
 

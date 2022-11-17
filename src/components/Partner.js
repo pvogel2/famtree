@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import RenderContext from './RenderContext.js';
-import { Color, Vector3, Group } from 'three';
+import { Color, Vector3 } from 'three';
 
 import Person from '../lib/Person';
 
