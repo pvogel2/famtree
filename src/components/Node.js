@@ -24,6 +24,7 @@ function getAssetsGroup(m) {
 const findMembers = (typedArr = [], persons = []) => {
   const knownMembers = typedArr;
   const foundMembers = [];
+
   knownMembers.forEach((mId) => {
     const member = persons.find((p) => {
       return p.id === mId;
@@ -52,12 +53,10 @@ const findPartner = (relation, person, persons = []) => {
 }
 
 const getPersons = (state) => state.persons;
-
 const getRelations = (state) => state.relations;
-
-const getForeground = (state) => state.layout.foreground;
-
-const getText = (state) => state.layout.text;
+const getLayout = (state) => state.layout; 
+const getFocusedPerson = (state) => state.focusedPerson;
+const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function getChildSize(id, szs) {
   const s = szs[id];
@@ -99,12 +98,13 @@ function Node(props) {
   const { renderer } = useContext(RenderContext);
 
   const persons = useSelector(getPersons);
-
-  const foreground = useSelector(getForeground);
-
-  const text = useSelector(getText);
-
+  const { text, foreground, highlight, selection } = useSelector(getLayout); 
+  const focusedPerson = useSelector(getFocusedPerson);
+  const selectedPerson = useSelector(getSelectedPerson);
   const relations = useSelector(getRelations).filter((r) => r.members.includes(person?.id));;
+
+  const isFocused = focusedPerson?.id === person?.id;
+  const isSelected = selectedPerson?.id === person?.id;
 
   useEffect(() => {
     if (!person) return;
@@ -215,6 +215,9 @@ function Node(props) {
 
       addChildSourceOffset(relationTarget, childPosition);
 
+      const partnerFocused = partner.id === focusedPerson?.id;
+      const partnerSelected = partner.id === selectedPerson?.id;
+
       const partnerNode = (
         <>
           <Partner
@@ -224,6 +227,8 @@ function Node(props) {
             offsetZ={ relationTarget.z }
           />
           <PartnerRelation
+            highstart={ isSelected ? selection : (isFocused ? highlight : undefined) }
+            highend={ partnerSelected ? selection : (partnerFocused ? highlight : undefined) }
             parent={ assetsGroup }
             targetX={ relationTarget.x }
             targetY={ relationTarget.y }
@@ -239,6 +244,7 @@ function Node(props) {
 
       childPosition.add(new Vector3(0, 0, childrenSize * 0.5));
 
+      // console.log(focusedPerson);
       const childNode = children.map((c, idx) => {
         const updateNodeSize = (s) => {
           sizes[c.id] = s;
@@ -251,6 +257,9 @@ function Node(props) {
 
         childPosition.add(new Vector3(0, 0, -childSize - (lastChild ? 0 : nodeDist)));
 
+        const childFocused = c.id === focusedPerson?.id;
+        const childSelected = c.id === selectedPerson?.id;
+
         return (
           <Fragment key={ `children${c.id}` }>
             <Node
@@ -261,6 +270,7 @@ function Node(props) {
               offsetZ={ childTarget.z }
             />
             <ChildRelation
+              highlight={ childSelected ? selection : (childFocused ? highlight : undefined) }
               parent={ assetsGroup }
               sourceX={ childSource.x  }
               sourceY={ childSource.y  }

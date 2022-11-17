@@ -199,6 +199,7 @@ export function defocusNode(m, config = {}) {
 export function selectNode(m, config = {}) {
   const {
     highlight = '#ddffff',
+    renderer,
     scale = 1,
   } = config;
 
@@ -216,6 +217,15 @@ export function selectNode(m, config = {}) {
       m2.material.color = m2.material.map ? new Color('#ffffcc') : new Color('#ffffff');
       m2.material.needsUpdate = true;
     }
+
+    if (renderer) {
+      const targetPosition = new Vector3();
+      root.getWorldPosition(targetPosition);
+      const cameraPosition = targetPosition.clone();
+      cameraPosition.add(new Vector3(10, 0, 0));
+      renderer.transition(targetPosition, 1, cameraPosition);
+    }
+
   }
 }
 

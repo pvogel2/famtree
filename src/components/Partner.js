@@ -8,16 +8,13 @@ import Person from '../lib/Person';
 import ThreeText from '../lib/three/Text';
 import { getPartnerGroup, getSymbolGroup, getDataGroup } from '../lib/nodes/utils';
 
-const getForeground = (state) => state.layout.foreground;
-
-const getText = (state) => state.layout.text;
+const getLayout = (state) => state.layout;
 
 function Partner(props) {
   const { person, parent, offsetY = 0, offsetZ = 0 } = props;
 
-  const foreground = useSelector(getForeground);
-  const text = useSelector(getText);
-
+  const { text, foreground } = useSelector(getLayout);
+ 
   const { renderer } = useContext(RenderContext);
 
   useEffect(() => {

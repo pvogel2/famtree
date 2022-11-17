@@ -1,6 +1,5 @@
 import { useState, useContext, useCallback, useEffect } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { Vector3 } from 'three';
 import { focusNode, defocusNode, getRootNode, isValidNode, isPersonNode, isMetaResourceNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
@@ -32,11 +31,6 @@ function Intersector(props) {
 
     let isSelected = currentPerson?.id === selectedPerson?.id;
     const selectFocusedPerson = () => {
-      const targetPosition = new Vector3();
-      intersectedObj.getWorldPosition(targetPosition);
-      const cameraPosition = targetPosition.clone();
-      cameraPosition.add(new Vector3(10, 0, 0));
-      renderer.transition(targetPosition, 1, cameraPosition);
       renderer.unregisterEventCallback('click', selectFocusedPerson);
 
       if (currentPerson) {

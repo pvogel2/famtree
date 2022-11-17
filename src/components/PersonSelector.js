@@ -16,7 +16,7 @@ function PersonSelector() {
   useEffect(() => {
     const rootGroup = selectedPerson && renderer.getObject(`person${selectedPerson.id}`);
     if (rootGroup) {
-      selectNode(rootGroup.obj, { highlight: '#ffffff' });
+      selectNode(rootGroup.obj, { highlight: '#ffffff', renderer });
     }
     return () => {
       if (rootGroup) {
