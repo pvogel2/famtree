@@ -198,7 +198,7 @@ export function defocusNode(m, config = {}) {
 
 export function selectNode(m, config = {}) {
   const {
-    highlight = '#ddffff',
+    color = '#ffffff',
     renderer,
     scale = 1,
   } = config;
@@ -214,7 +214,7 @@ export function selectNode(m, config = {}) {
     const m2 = getPersonBaseMesh(root);
     
     if (m2) {
-      m2.material.color = m2.material.map ? new Color('#ffffcc') : new Color('#ffffff');
+      m2.material.color = new Color(color);
       m2.material.needsUpdate = true;
     }
 

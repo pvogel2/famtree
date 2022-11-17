@@ -12,5 +12,6 @@ window.addEventListener('DOMContentLoaded', () => {
     text={ root.dataset.text }
     foreground={ root.dataset.foregroundColor }
     highlight={ root.dataset.highlightColor }
+    selection={ root.dataset.selectionColor }
   />, root);
 });

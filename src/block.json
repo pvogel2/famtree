@@ -42,6 +42,10 @@
 		"highlightColor": {
 			"type": "string",
 			"default": "#770000"
+		},
+		"selectionColor": {
+			"type": "string",
+			"default": "#ffffff"
 		}
 	}
 }

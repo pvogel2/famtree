@@ -30,6 +30,7 @@ export default function Save({ attributes }) {
 	  foregroundColor = '#CCCCCC',
 	  textColor = '#333333',
 	  highlightColor = '#770000',
+	  selectionColor = '#ffffff',
 	} = attributes;
 	return (
 		<p { ...useBlockProps.save() }>
@@ -42,6 +43,7 @@ export default function Save({ attributes }) {
 				data-foreground-color={ foregroundColor }
 				data-text-color={ textColor }
 				data-highlight-color={ highlightColor }
+				data-selection-color={ selectionColor }
 			  />
 		  </div>
 		</p>

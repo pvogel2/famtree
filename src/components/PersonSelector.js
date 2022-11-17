@@ -4,19 +4,19 @@ import { selectNode, deselectNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
 
-const getForeground = (state) => state.layout.foreground;
+const getLayout = (state) => state.layout;
 const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function PersonSelector() {
   const { renderer } = useContext(RenderContext);
 
   const selectedPerson = useSelector(getSelectedPerson);
-  const foreground = useSelector(getForeground);
+  const { foreground, selection } = useSelector(getLayout);
   
   useEffect(() => {
     const rootGroup = selectedPerson && renderer.getObject(`person${selectedPerson.id}`);
     if (rootGroup) {
-      selectNode(rootGroup.obj, { highlight: '#ffffff', renderer });
+      selectNode(rootGroup.obj, { color: selection, renderer });
     }
     return () => {
       if (rootGroup) {

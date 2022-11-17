@@ -37,7 +37,7 @@ import { loadFamily } from './mylib/Connect';
  * @return {WPElement} Element to render.
  */
 export default function Edit({ attributes, setAttributes  }) {
-	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor } = attributes;
+	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor, selectionColor } = attributes;
   const [families, setFamilies] = useState([]);
 	const [relations, setRelations] = useState([]);
 	const [persons, setPersons] = useState([]);
@@ -116,6 +116,11 @@ export default function Edit({ attributes, setAttributes  }) {
 							onChange: (c) => setAttributes({ highlightColor: c }),
 							label: __("Highlight Color"),
 						},
+						{
+							value: selectionColor,
+							onChange: (c) => setAttributes({ selectionColor: c }),
+							label: __("Selection Color"),
+						},
 					]}
 				/>
 			</InspectorControls>
@@ -131,10 +136,11 @@ export default function Edit({ attributes, setAttributes  }) {
 					relations={ relations }
 					founderFAB={ founderFAB }	
 					readonly={ true }
-          text={ textColor }
+                    text={ textColor }
 					background={ backgroundColor }
 					foreground={ foregroundColor }
 					highlight={ highlightColor }
+					selection={ selectionColor }
 				/>
 		  </div>
 		</div>

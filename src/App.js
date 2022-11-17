@@ -19,7 +19,7 @@ import { loadFamily } from './mylib/Connect';
 import { setPersons } from './store/personsReducer';
 import { setFounder } from './store/familyReducer';
 import { setFamilies } from './store/familiesReducer';
-import { setForeground, setBackground, setText, setHighlight } from './store/layoutReducer';
+import { setForeground, setBackground, setText, setHighlight, setSelection } from './store/layoutReducer';
 import { setRelations } from './store/relationsReducer';
 
 import LoadFamily from './components/ui/LoadFamily';
@@ -55,6 +55,7 @@ function App(props) {
     background,
     foreground,
     highlight,
+    selection,
   } = props;
 
   const cameraPosition= { x: 30.0, y: 30.0, z: 30.0 };
@@ -115,6 +116,12 @@ function App(props) {
       await store.dispatch(setHighlight(highlight));
     }
   }, [highlight]);
+
+  useEffect(async () => {
+    if (selection) {
+      await store.dispatch(setSelection(selection));
+    }
+  }, [selection]);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
