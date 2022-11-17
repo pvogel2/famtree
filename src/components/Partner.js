@@ -26,21 +26,22 @@ function Partner(props) {
     const usedPerson = new Person(person);
 
     const meshOffset = new Vector3(0, offsetY, offsetZ);
-    const meshId = `partner${usedPerson.id}`;
+    const rootId = `person${usedPerson.id}`;
+    const meshId = `pNode${usedPerson.id}`;
 
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
 
     const root = new Group();
-
-    const m = getPersonMesh(person, { foreground: `#${partnerColor.getHexString()}` });
-
-    root.name = meshId;
+    root.name = rootId;
     root.userData.refId = usedPerson.id;
     root.userData.type = 'partner';
     root.position.add(meshOffset);
 
-    renderer.addObject(meshId, root, false, parent);
-    renderer.addObject(`person${meshId}`, m, true, root);
+    const m = getPersonMesh(person, { foreground: `#${partnerColor.getHexString()}` });
+    m.name = 'symbols';
+
+    renderer.addObject(rootId, root, false, parent);
+    renderer.addObject(meshId, m, true, root);
 
     const dataGroup = addDataToMesh(root);
     const labelText = new ThreeText({
@@ -56,8 +57,8 @@ function Partner(props) {
 
     return () => {
       root.clear();
+      renderer.removeObject(rootId);
       renderer.removeObject(meshId);
-      renderer.removeObject(`person${meshId}`);
       labelText.remove(null, dataGroup);
     };
   }, [renderer, person, parent, foreground, text, offsetY, offsetZ]);

@@ -20,10 +20,7 @@ function Metadata(props) {
     let dataGroup = null;
 
     if (renderer && selectedPerson) {
-      let node = renderer.getObject(`node${selectedPerson.id}`);
-      if (!node) {
-        node = renderer.getObject(`partner${selectedPerson.id}`);
-      }
+      let node = renderer.getObject(`person${selectedPerson.id}`);
 
       if (node) {
         mesh = getMesh({ foreground : '#ff0000', opacity: 0.3 });

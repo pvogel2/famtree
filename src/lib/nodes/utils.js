@@ -17,6 +17,18 @@ function getGLTFPerson() {
 }
 getGLTFPerson();
 
+function getRootNode(m) {
+  if (!m?.userData?.type) {
+    return m?.parent?.parent;
+  }
+  return m;
+}
+
+function getPersonBaseMesh(root) {
+  const symbols = findTypedGroup(root, 'symbols');
+  return symbols?.children.find((m) => m.material?.name === 'personMeshBase');
+}
+
 export function findTypedGroup(m, name) {
   return m.children.find(c => c.name === name);
 }
@@ -26,8 +38,8 @@ export function isValidNode(o = {}) {
 }
 
 export function isPersonNode(o = {}) {
-  const root = o?.parent?.parent;
-  const type = root?.userData?.type ||'';
+  const root = getRootNode(o);
+  const type = root?.userData?.type || '';
   return !!type.match(/^(node|partner)$/);
 }
 
@@ -135,45 +147,36 @@ export function focusNode(m, config = {}) {
   if (scale !== 1) {
     m.scale.set(scale, scale, scale);
   } else if (isPersonNode(m)) {
-    const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
+    const root = getRootNode(m);
+    const m2 = getPersonBaseMesh(root);
+    
     if (m2) {
       m2.material.color = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
       m2.material.needsUpdate = true;
     }
   }
-  /* const text = findLabelText(m);
-  if (text) {
-    text.material.uniforms.scale.value = 1;
-    text.material.needsUpdate = true;
-  } */
 }
 
 export function defocusNode(m, config = {}) {
   const {
     foreground = '#ffffff',
   } = config;
-  if (m.parent?.parent?.userData?.type === 'node') {
-    const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
-    if (m2) {
-      m2.material.color = m2.material.map ? new Color('#ffffff') : new Color(foreground);
-      m2.material.needsUpdate = true;
-    }
-  }
 
-  if (m.parent?.parent?.userData?.type === 'partner') {
-    const m2 = m.parent?.children.find((m) => m.material?.name === 'personMeshBase');
+  if (isPersonNode(m)) {
+    const root = getRootNode(m);
+    const m2 = getPersonBaseMesh(root);
+
     if (m2) {
-      m2.material.color = m2.material.map ? new Color('#ffffff') : new Color(foreground).multiplyScalar(0.75);
+      if (root?.userData?.type === 'node') {
+        m2.material.color = new Color(foreground);
+      } else {
+        m2.material.color = new Color(foreground).multiplyScalar(0.75);
+      }
       m2.material.needsUpdate = true;
     }
-  }
+  }Z
 
   if (isMetaResourceNode(m)) {
     m.scale.set(1, 1, 1);
   }
-  /* const text = findLabelText(m);
-  if(text) {
-    text.material.uniforms.scale.value = 0.4;
-    text.material.needsUpdate = true;
-  } */
 }

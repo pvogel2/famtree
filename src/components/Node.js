@@ -173,13 +173,14 @@ function Node(props) {
     const meshId = `pNode${usedPerson.id}`;
 
     const newRoot = new Group();
-
-    const m = getPersonMesh(person, { foreground });
     newRoot.name = rootId;
     newRoot.userData.refId = usedPerson.id;
     newRoot.userData.type = 'node';
     newRoot.position.add(meshOffset);
 
+    const m = getPersonMesh(person, { foreground });
+    m.name = 'symbols';
+  
     renderer.addObject(rootId, newRoot, false, parent);
     renderer.addObject(meshId, m, true, newRoot);
 
