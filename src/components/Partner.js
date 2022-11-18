@@ -6,7 +6,7 @@ import { Color, Vector3 } from 'three';
 import Person from '../lib/Person';
 
 import ThreeText from '../lib/three/Text';
-import { getPartnerGroup, getSymbolGroup, getDataGroup } from '../lib/nodes/utils';
+import { getPartnerGroup, getSymbolGroup, getDataGroup, addLabelText } from '../lib/nodes/utils';
 
 const getLayout = (state) => state.layout;
 
@@ -37,16 +37,7 @@ function Partner(props) {
     renderer.addObject(symbolId, symbolGroup, true, root);
 
     const dataGroup = getDataGroup(root);
-    const labelText = new ThreeText({
-      text: usedPerson.name,
-      position: new Vector3(1, -1, 0),
-      rotation: new Vector3(0, Math.PI * 0.5, 0),
-      scale: 0.4,
-      color: text,
-    });
-
-    labelText.attach(null, dataGroup);
-    labelText.textMesh.geometry.center();
+    const labelText = addLabelText(dataGroup, usedPerson.name, text);
 
     return () => {
       root.clear();
