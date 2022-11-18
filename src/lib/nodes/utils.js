@@ -38,6 +38,9 @@ export function isValidNode(o = {}) {
 }
 
 export function isPersonNode(o = {}) {
+  if (o?.userData?.type === 'metaimage') {
+    return false;
+  };
   const root = getRootNode(o);
   const name = root?.name || '';
   return !!name.match(/^(person|partner)$/);
@@ -52,6 +55,14 @@ export function createNamedGroup(m, name) {
   const g = new Group();
   g.name = name;
   m.add(g);
+  return g;
+}
+
+export function getAssetsGroup(m) {
+  let g = findNamedGroup(m, 'assets');
+  if (!g) {
+    g = createNamedGroup(m, 'assets');
+  }
   return g;
 }
 
@@ -129,7 +140,7 @@ export function getSymbolGroup(person = {}, layout = {}) {
 export function addLabelText(p, label, color = null) {
   const text = new ThreeText({
     text: label,
-    position: new Vector3(1, -1, 0),
+    position: new Vector3(0.75, -1, 0),
     rotation: new Vector3(0, Math.PI * 0.5, 0),
     scale: 0.4,
     color,
@@ -178,6 +189,7 @@ export function defocusNode(m, config = {}) {
   } = config;
 
   if (isPersonNode(m)) {
+    console.log('defocus', m);
     const root = getRootNode(m);
     const m2 = getPersonBaseMesh(root);
 

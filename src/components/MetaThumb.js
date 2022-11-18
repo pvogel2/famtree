@@ -1,5 +1,5 @@
 import { Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, TextureLoader } from 'three';
-import { useContext } from 'react';
+import { useEffect, useContext } from 'react';
 
 import RenderContext from './RenderContext.js';
 import pdfImage from './../assets/images/pdf.jpg';
@@ -8,12 +8,12 @@ import textImage from './../assets/images/txt.jpg';
 import unknownImage from './../assets/images/file.jpg';
 
 const textureLoader = new TextureLoader();
-// const imageLoader = new ImageLoader();
 
 function MetaThumb(props) {
   const {
     parent,
     metadata,
+    size = 1,
     position,
   } = props;
 
@@ -32,7 +32,7 @@ function MetaThumb(props) {
     options.map = textureLoader.load(unknownImage);
   }
 
-  const g = new PlaneGeometry(1, 1);
+  const g = new PlaneGeometry(size, size);
   const m = new MeshBasicMaterial(options);
   const p = new Mesh(g, m);
   const metadataId = `metadata${metadata.id}`; 
@@ -45,7 +45,12 @@ function MetaThumb(props) {
   p.userData.refId = metadata.id;
   p.userData.type = 'metaimage';
 
-  renderer.addObject(metadataId, p, true, parent);
+  useEffect(()=> {
+    renderer.addObject(metadataId, p, true, parent);
+    return () => {
+      renderer.removeObject(metadataId);
+    };
+  }, [metadataId]);
 
   return null;
 }

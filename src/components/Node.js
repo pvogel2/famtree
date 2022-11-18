@@ -5,7 +5,7 @@ import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import { useSelector } from 'react-redux';
 
-import { getPersonGroup, getSymbolGroup, getDataGroup, addLabelText, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
+import { getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, addLabelText, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
 import Person from '../lib/Person';
 import Partner from './Partner';
 
@@ -15,10 +15,6 @@ const cldDist = nodeDist;
 
 function getRelationsGroup(m) {
   return (findNamedGroup(m, 'relations') || createNamedGroup(m, 'relations'));
-}
-
-function getAssetsGroup(m) {
-  return (findNamedGroup(m, 'assets') || createNamedGroup(m, 'assets'));
 }
 
 const findMembers = (typedArr = [], persons = []) => {
