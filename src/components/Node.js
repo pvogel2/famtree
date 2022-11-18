@@ -212,7 +212,7 @@ function Node(props) {
         addRelationMinDist(relationTarget);
         childMinZ = relationTarget.z - childrenSize * 0.5;
       }
-
+  
       addChildSourceOffset(relationTarget, childPosition);
 
       const partnerFocused = partner.id === focusedPerson?.id;
@@ -242,9 +242,10 @@ function Node(props) {
 
       const childSource = childPosition.clone().add(childSourceOffset);
 
-      childPosition.add(new Vector3(0, 0, childrenSize * 0.5));
+      if (children.length > 1) {
+        childPosition.add(new Vector3(0, 0, childrenSize * 0.5));
+      }
 
-      // console.log(focusedPerson);
       const childNode = children.map((c, idx) => {
         const updateNodeSize = (s) => {
           sizes[c.id] = s;
