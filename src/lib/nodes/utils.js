@@ -189,7 +189,6 @@ export function defocusNode(m, config = {}) {
   } = config;
 
   if (isPersonNode(m)) {
-    console.log('defocus', m);
     const root = getRootNode(m);
     const m2 = getPersonBaseMesh(root);
 

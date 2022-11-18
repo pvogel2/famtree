@@ -26,8 +26,11 @@ function Metadata(props) {
 
   const thumbSize = 1;
   const offsetZ = -1.7;
-  const source = new Vector3(0, 0, -1.2);
-  const target = new Vector3(1, rowsOffset * thumbSize * 1.1 + thumbSize * 0.5, offsetZ);
+
+  const rows = Math.ceil(currentMeta.length / 3);
+  const cols = Math.min(3, currentMeta.length);
+  const width = cols * thumbSize + Math.max(cols - 1, 0) * 0.1;
+  const height = rows * thumbSize + Math.max(rows - 1, 0) * 0.1;
 
   const metaImages = currentMeta.map((md, idx) => {
     const row = Math.floor(idx / 3);
@@ -47,12 +50,8 @@ function Metadata(props) {
       { metaImages }
       <MetadataRelation
         parent={ assetsGroup }
-        sourceX={ source.x }
-        sourceY={ source.y }
-        sourceZ={ source.z }
-        targetX={ target.x }
-        targetY={ target.y }
-        targetZ={ target.z }
+        width={ width }
+        height={ height }
       />
     </>
   );

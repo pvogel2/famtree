@@ -1,57 +1,52 @@
 import { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { Vector3, LineSegments, BufferGeometry, LineBasicMaterial, Color } from 'three';
+import { Vector3, Color, PlaneGeometry, Mesh, MeshBasicMaterial, DoubleSide } from 'three';
 import RenderContext from '../RenderContext.js';
 
-function getRelationLines(s, t, config = { foreground, highlight }) {
+const OFFSET_LEFT = 0.4;
+
+function getRelationPlane(config = { highlight, width, height }) {
   const highColor = new Color(config.highlight);
-  const material = new LineBasicMaterial({
+  const material = new MeshBasicMaterial({
     color: highColor,
+    opacity: 0.1,
+    transparent: true,
+    side: DoubleSide,
   });    
 
-  const points = [];
   const frame = 0.2;
-
-  const t0 = new Vector3(t.x, t.y + frame, t.z + frame);
-  const t1 = new Vector3(t.x, -t.y - frame, t.z + frame);
-  points.push(s.clone());
-  points.push(s.clone().add(new Vector3(0, 0, -0.3)));
-
-  points.push(s.clone().add(new Vector3(0, 0, -0.3)));
-  points.push(s.clone().add(new Vector3(t.x, 0, -0.3)));
-
-  points.push(t0.clone());
-  points.push(t1.clone());
-
-  points.push(t0.clone());
-  points.push(t0.clone().add(new Vector3(0, 0, -frame * 2)));
-
-  points.push(t1.clone());
-  points.push(t1.clone().add(new Vector3(0, 0, -frame * 2)));
-
-  const geometry = new BufferGeometry().setFromPoints( points );
-  return new LineSegments( geometry, material );
+  const geometry = new PlaneGeometry(config.width + 2 * frame + OFFSET_LEFT, config.height + 2 * frame);
+  return new Mesh(geometry, material);
 }
 
 const getLayout = (state) => state.layout;
 
 function MetaRelation(props) {
-  const { sourceX = 0, sourceY = 0, sourceZ = 0, targetX = 0, targetY = 0, targetZ = 0, parent } = props;
-  const { foreground, selection } = useSelector(getLayout);
+  const {
+    parent,
+    width = 0,
+    height = 0,
+  } = props;
+
+  const { selection } = useSelector(getLayout);
   const { renderer } = useContext(RenderContext);
 
   useEffect(() => {
     if (!renderer || !parent) return;
-    const target = new Vector3(targetX, targetY, targetZ);
-    const source = new Vector3(sourceX, sourceY, sourceZ);
 
-    const lines = getRelationLines(source, target, { foreground, highlight: selection });
-    parent.add(lines);
+    const center = new Vector3(0.975, 0, -width * 0.5 - 1.7 + OFFSET_LEFT * 0.5);
+
+    const bgPlane = getRelationPlane({ highlight: selection, width, height });
+
+    parent.add(bgPlane);
+
+    bgPlane.rotateY(Math.PI * 0.5);
+    bgPlane.position.copy(center);
 
     return () => {
-      parent.remove(lines);
+      parent.remove(bgPlane);
     };
-  }, [renderer, sourceX, sourceY, sourceZ, targetX, targetY, targetZ, parent, foreground, selection]);
+  }, [renderer, parent, selection, width, height]);
 
   return null;
 };
