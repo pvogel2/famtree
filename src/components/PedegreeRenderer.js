@@ -1,6 +1,9 @@
 import React, { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { Color } from 'three';
+import { Color, Vector2 } from 'three';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 
 import RenderContext from './RenderContext.js';
 import Node from './Node';
@@ -42,6 +45,18 @@ function PedegreeRenderer() {
     grid.rotation.z = Math.PI * 0.5;
     renderer.start();
     setteled = true;
+
+    const renderScene = new RenderPass( renderer.three.scene, renderer.three.camera );
+    const bloomPass = new UnrealBloomPass( new Vector2( renderer.width, renderer.height ), 1.5, 0.4, 0.85 );
+
+    bloomPass.threshold = 0; // params.bloomThreshold;
+    bloomPass.strength = 1; // params.bloomStrength;
+    bloomPass.radius = 3; // params.bloomRadius;
+
+    const composer = new EffectComposer( renderer.three.renderer );
+    composer.addPass( renderScene );
+    composer.addPass( bloomPass );
+    renderer.setComposer(composer);
   }
 
   return (

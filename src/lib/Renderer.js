@@ -21,6 +21,9 @@ export class Renderer {
     this.stats = null;
     this.running = false;
     this.paused = false;
+
+    this.composer = null;
+
     this.three = {
       szene : null,
       renderer : null,
@@ -242,6 +245,10 @@ export class Renderer {
     }
   }
 
+  setComposer(c) {
+    this.composer = c;
+  }
+
   getObject(id) {
     if (this.geometry.objects[id]) {
       return this.geometry.objects[id];
@@ -310,7 +317,11 @@ export class Renderer {
   _render(){
     if (this.running && !this.paused) {
       requestAnimationFrame(this._render.bind(this));
-      this.three.renderer.render(this.three.scene, this.three.camera);
+      if (this.composer) {
+         this.composer.render();
+      } else {
+        this.three.renderer.render(this.three.scene, this.three.camera);
+      }
       this.update();
     }
   }
