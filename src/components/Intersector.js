@@ -28,6 +28,7 @@ function Intersector(props) {
   useEffect(() => {
     const rootNode = getRootNode(intersectedObj);
     const currentPerson = findPerson(rootNode?.userData?.refId);
+    const defaultOpacity = intersectedObj?.material?.opacity;
 
     let isSelected = currentPerson?.id === selectedPerson?.id;
     const selectFocusedPerson = () => {
@@ -55,7 +56,7 @@ function Intersector(props) {
 
     if (isPersonNode(intersectedObj) && !isSelected) {
       renderer.registerEventCallback('click', selectFocusedPerson);
-      focusNode(intersectedObj, { highlight });
+      focusNode(intersectedObj, { highlight, renderer });
 
       if (currentPerson) {
         dispatch(setFocusedPerson(currentPerson.serialize()));
@@ -64,7 +65,7 @@ function Intersector(props) {
 
     if (isMetaResourceNode(intersectedObj)) {
       renderer.registerEventCallback('click', selectFocusedMetaResource);
-      focusNode(intersectedObj, { scale: 1.2 });
+      focusNode(intersectedObj, { scale: 1.2, renderer });
 
       if (currentPerson) {
         dispatch(setFocusedPerson(currentPerson.serialize()));
@@ -73,13 +74,13 @@ function Intersector(props) {
 
     return () => {
       if (isPersonNode(intersectedObj) && !isSelected) {
-        defocusNode(intersectedObj, { foreground });
+        defocusNode(intersectedObj, { foreground, renderer });
         dispatch(clearFocusedPerson());
         renderer.unregisterEventCallback('click', selectFocusedPerson);
       }
 
       if (isMetaResourceNode(intersectedObj)) {
-        defocusNode(intersectedObj);
+        defocusNode(intersectedObj, { renderer, opacity: defaultOpacity });
         renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       }
     };

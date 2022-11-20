@@ -1,7 +1,8 @@
-import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color } from 'three';
+import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import ThreeText from '../../lib/three/Text';
+import Transition from '../../lib/Transition';
 import avatarImage from './../../assets/images/avatar.png';
 import { getBaseUrl } from '../../mylib/Connect';
 
@@ -164,6 +165,8 @@ export function focusNode(m, config = {}) {
   const {
     highlight = '#ddffff',
     scale = 1,
+    opacity = 1,
+    renderer,
   } = config;
 
   if (m.type !== 'Mesh') {
@@ -171,14 +174,43 @@ export function focusNode(m, config = {}) {
   }
 
   if (scale !== 1) {
-    m.scale.set(scale, scale, scale);
+    const startScale = m.scale.clone();
+    const endScale = new Vector3(scale, scale, scale);
+    const startOpacity = m.material.opacity;
+    const focusTransition = new Transition({
+      duration: 0.15,
+      curve: 'easeOutQuad',
+      callback: (current) => {
+        m.scale.lerpVectors(startScale, endScale, current);
+        m.material.opacity = MathUtils.lerp(startOpacity, opacity, current);
+      },
+      onFinish: () => {
+        renderer.unregisterEventCallback('render', focusTransition.update);
+      },
+    });
+    renderer.registerEventCallback('render', focusTransition.update);
+    focusTransition.forward();
   } else if (isPersonNode(m)) {
     const root = getRootNode(m);
     const m2 = getPersonBaseMesh(root);
-    
-    if (m2) {
-      m2.material.color = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
-      m2.material.needsUpdate = true;
+
+    if (m2 && renderer) {
+      const startColor = m2.material.color.clone();
+      const endColor = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
+      const focusTransition = new Transition({
+        duration: 0.25,
+        callback: (current) => {
+          m2.material.color.lerpColors(startColor, endColor, current);
+        },
+        onFinish: () => {
+          renderer.unregisterEventCallback('render', focusTransition.update);
+        },
+      });
+      renderer.registerEventCallback('render', focusTransition.update);
+      focusTransition.forward();
+
+      // m2.material.color = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
+      // m2.material.needsUpdate = true;
     }
   }
 }
@@ -186,24 +218,56 @@ export function focusNode(m, config = {}) {
 export function defocusNode(m, config = {}) {
   const {
     foreground = '#ffffff',
+    scale = 1,
+    opacity = 1,
+    renderer,
   } = config;
 
   if (isPersonNode(m)) {
     const root = getRootNode(m);
     const m2 = getPersonBaseMesh(root);
 
-    if (m2) {
-      if (root?.name === 'person') {
-        m2.material.color = new Color(foreground);
-      } else {
-        m2.material.color = new Color(foreground).multiplyScalar(0.75);
+    if (m2 && renderer) {
+      const startColor = m2.material.color.clone();
+      let endColor = new Color(foreground);
+
+      if (root?.name !== 'person') {
+        endColor = new Color(foreground).multiplyScalar(0.75);
       }
-      m2.material.needsUpdate = true;
+      const focusTransition = new Transition({
+        duration: 0.25,
+        callback: (current) => {
+          m2.material.color.lerpColors(startColor, endColor, current);
+        },
+        onFinish: () => {
+          renderer.unregisterEventCallback('render', focusTransition.update);
+        },
+      });
+      renderer.registerEventCallback('render', focusTransition.update);
+      focusTransition.forward();
+      // m2.material.needsUpdate = true;
     }
   }
 
   if (isMetaResourceNode(m)) {
-    m.scale.set(1, 1, 1);
+    const startScale = m.scale.clone();
+    const endScale = new Vector3(scale, scale, scale);
+    const startOpacity = m.material.opacity;
+
+    const focusTransition = new Transition({
+      duration: 0.15,
+      curve: 'easeOutQuad',
+      callback: (current) => {
+        m.scale.lerpVectors(startScale, endScale, current);
+        m.material.opacity = MathUtils.lerp(startOpacity, opacity, current);
+      },
+      onFinish: () => {
+        renderer.unregisterEventCallback('render', focusTransition.update);
+      },
+    });
+    renderer.registerEventCallback('render', focusTransition.update);
+    focusTransition.forward();
+    // m.scale.set(1, 1, 1);
   }
 }
 
@@ -224,9 +288,23 @@ export function selectNode(m, config = {}) {
     const root = getRootNode(m);
     const m2 = getPersonBaseMesh(root);
     
-    if (m2) {
-      m2.material.color = new Color(color);
-      m2.material.needsUpdate = true;
+    if (m2 && renderer) {
+      const startColor = m2.material.color.clone();
+      const endColor = m2.material.map ? new Color('#ccffcc') : new Color(color);
+      const focusTransition = new Transition({
+        duration: 0.25,
+        callback: (current) => {
+          m2.material.color.lerpColors(startColor, endColor, current);
+        },
+        onFinish: () => {
+          renderer.unregisterEventCallback('render', focusTransition.update);
+        },
+      });
+      renderer.registerEventCallback('render', focusTransition.update);
+      focusTransition.forward();
+
+      // m2.material.color = new Color(color);
+      // m2.material.needsUpdate = true;
     }
 
     if (renderer) {

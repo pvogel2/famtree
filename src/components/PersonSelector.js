@@ -20,7 +20,7 @@ function PersonSelector() {
     }
     return () => {
       if (rootGroup) {
-        deselectNode(rootGroup.obj, { foreground });
+        deselectNode(rootGroup.obj, { foreground, renderer });
       }
     }
   }, [renderer, selectedPerson, foreground]);

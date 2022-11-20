@@ -61,7 +61,8 @@ export default class Transition {
     if (this.delta >= 1.0) {
       this.finished = true;
       this.start = -1;
-      this.onFinish(this.current);
+      // for final renders to finish wait for next cycle
+      setTimeout(() => this.onFinish(this.current), 0);
     }
   }
 }
