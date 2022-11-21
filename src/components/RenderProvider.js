@@ -9,8 +9,6 @@ const gltfLoader = new GLTFLoader();
 function RenderProvider(props) {
   const [renderer, setRenderer] = useState(null);
 
-  const { position, target } = props;
-
   const renderTarget = useRef(null);
 
   useEffect(() => {
@@ -20,8 +18,6 @@ function RenderProvider(props) {
       fov: 45,
       cameraNear: 0.01,
       cameraFar: 5000,
-      position: { ...position },
-      target: { ...target },
       control: true,
       parentSelector: `#thepedegreerenderer`,
     });
@@ -35,7 +31,7 @@ function RenderProvider(props) {
     newRenderer.three.gammaFactor = 2.2;
 
     setRenderer(newRenderer);
-  }, [position, target, renderer]);
+  }, [renderer]);
 
   const style = {left: 0, top: 0, bottom: 0, right: 0, position: 'absolute'};
 

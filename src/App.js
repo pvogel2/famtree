@@ -58,9 +58,6 @@ function App(props) {
     selection,
   } = props;
 
-  const cameraPosition= { x: 30.0, y: 30.0, z: 30.0 };
-  const cameraTarget = { x: 0, y: 0, z: 0 };
-
   const theme = createTheme({
     palette: {
       primary: {
@@ -128,10 +125,7 @@ function App(props) {
       <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
         <Provider store={ store }>
-          <RenderProvider
-            position={ cameraPosition }
-            target={ cameraTarget }
-          >
+          <RenderProvider>
             <PedigreeRenderer />
             <Intersector />
             <PersonSelector />
