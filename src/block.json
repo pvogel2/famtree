@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
 	"name": "create-block/pedigree",
-	"version": "0.8.6-beta",
+	"version": "0.8.7-beta",
 	"title": "Pedigree",
 	"category": "widgets",
 	"icon": "smiley",
