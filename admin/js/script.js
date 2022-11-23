@@ -191,7 +191,7 @@ window.pedigree.addPartner = (id) => {
   let relation = null;
   personEditor.edit.relations.forEach((rId) => {
     const rel = Relation.find(rId);
-    if (rel.members.find((mId) => mId == pId)) {
+    if (rel?.members.find((mId) => mId == pId)) {
       relation = { ...rel };
     }
   });
@@ -212,9 +212,10 @@ window.pedigree.addPartner = (id) => {
     const partnerPerson = Person.find(pId);
     newOption.setAttribute('value', rId);
     newOption.text = `${partnerPerson.name} (p:${partnerPerson.id}, r:${rId})`;
-    partnersSelect.appendChild(newOption);
+    partnersSelect.add(newOption);
     partnersSelect.disabled = false;
-    partnersSelect.setAttribute('value', rId);
+    partnersSelect.selectedIndex = Math.max(partnersSelect.options.length - 1, 0);
+
     relation.id = rId;
     Relation.add({ ...relation, members: [...relation.members], children: [...relation.children] });
   }
