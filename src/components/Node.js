@@ -70,7 +70,7 @@ function getChildrenGroupSize(cs, szs) {
 }
 
 function getNormalizedDistance(dist) {
-  return Math.max((dist - nodeDist) * 0.5, 0);
+  return Math.max((0.5 * dist - nodeDist), 0);
 }
 
 function addChildSourceOffset(rTarget, cSource) {
@@ -247,12 +247,16 @@ function Node(props) {
           sizes[c.id] = s;
         }
         const firstChild = idx === 0;
-
         const childSize = getChildSize(c.id, sizes);
+        // console.log(`Child no ${idx}, ${c.lastName}, size ${childSize}`);
         const childTarget = childPosition.clone().add(new Vector3(0, genDist - 2, firstChild ? 0 : -getNormalizedDistance(childSize)));
+        // console.log('childTarget', childTarget, getNormalizedDistance(childSize));
+
         const lastChild = idx === children.length - 1;
 
+        // childPosition.add(new Vector3(0, 0, -childSize - (lastChild ? 0 : nodeDist)));
         childPosition.add(new Vector3(0, 0, -childSize - (lastChild ? 0 : nodeDist)));
+        // console.log('childPosition', childPosition);
 
         const childFocused = c.id === focusedPerson?.id;
         const childSelected = c.id === selectedPerson?.id;
