@@ -16,8 +16,8 @@ function getRelationLines(s, t, config = { foreground, highstart, highend, offse
   const colors = [];
 
   points.push(s.clone().add(new Vector3(0, 1.2, 0)));
-  points.push(s.clone().add(new Vector3(0, 2, 0)).add(config.offset));
-  points.push(t.clone().add(new Vector3(0, 2, 0)).add(config.offset));
+  points.push(s.clone().add(new Vector3(0, 2, 0)));//.add(config.offset));
+  points.push(t.clone().add(new Vector3(0, 2, 0)));//.add(config.offset));
   points.push(t.clone().add(new Vector3(0, 1.2, 0)));
 
   colors.push(...startColor.toArray());
