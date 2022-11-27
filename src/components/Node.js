@@ -142,9 +142,9 @@ function Node(props) {
         newTotalSize = childrenSize;
       }
       if (newTotalSize < 12) { // minimum if relation existent
-        newTotalSize = 12;
+        newTotalSize += nodeSize;
       }
-      });
+    });
     if (person.id === debugId) console.log('newTotalSize', newTotalSize);
     // newTotalSize += Math.abs(childMinZ);
 
@@ -244,9 +244,9 @@ function Node(props) {
             targetX={ relationTarget.x }
             targetY={ relationTarget.y }
             targetZ={ relationTarget.z }
-            offsetX={ childSourceOffset.x }
+            offsetX={ 0 }
             offsetY={ childSourceOffset.y }
-            offsetZ={ childSourceOffset.z }
+            offsetZ={ 0 }
           />
         </>
       );
