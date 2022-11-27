@@ -2,6 +2,7 @@ import { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { Vector3, Line, BufferGeometry, BufferAttribute, LineBasicMaterial, Color } from 'three';
 import RenderContext from '../RenderContext.js';
+import { getMesh } from '../../lib/nodes/utils';
 
 function getRelationLines(s, t, config = { foreground, highlight }) {
   const foreColor = new Color(config.foreground);
@@ -49,6 +50,13 @@ function ChildRelation(props) {
 
     const lines = getRelationLines(source, target, { foreground, highlight });
     parent.add(lines);
+    const relationNode = getMesh({ foreground: '#00ff00'});
+    const sourceNode = getMesh({ foreground: '#006600'});
+    sourceNode.position.set(sourceX, sourceY, sourceZ);
+    relationNode.position.x += 1.5;
+    parent.add(relationNode);
+    parent.add(sourceNode);
+
 
     return () => {
       parent.remove(lines);

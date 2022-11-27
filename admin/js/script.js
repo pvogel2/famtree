@@ -259,6 +259,7 @@ window.pedigree.getMediaType = (mimetype) => {
 window.pedigree.editPerson = (id) => {
   const person = Person.find(id);
   if (person) {
+    window.scrollTo(0, 0);
     personEditor.edit.setPerson(person);
 
     const portraitForm = personEditor.portrait.getForm();
