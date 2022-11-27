@@ -86,6 +86,7 @@ function addRelationMinDist(rTarget) {
 
 const defaultSendSize = () => 0;
 
+const debugId = 21;
 
 function Node(props) {
   const { person, parent, sendSize = defaultSendSize, offsetY = 0, offsetZ = 0 } = props;
@@ -107,7 +108,6 @@ function Node(props) {
 
   useEffect(() => {
     if (!person) return;
-    const debugId = 10;
     if (debugId) console.log('--------------------------------------- debug totalSize effect start');
     let newTotalSize = nodeSize;
     let childMinZ = 0;
@@ -119,16 +119,16 @@ function Node(props) {
 
       if (person.id === debugId) console.log('Relation no ', idx, 'children length', children.length, 'childrenSize', childrenSize);
 
-     if (idx === 0) {
-        if (debugId) console.log('--> idx is 0');
+      if (person.id === debugId) console.log('idx', idx);
 
+      if (idx === 0) {
         relationTarget.add(new Vector3(0, 0,  -nodeDist));
         childMinZ = relationTarget.z;// - getNormalizedDistance(childrenSize);
         // newTotalSize += getNormalizedDistance(childrenSize); // left part of children group
       } else {
         if (children.length === 0) {
-          relationTarget.add(new Vector3(0, 0, -nodeDist));
-          childMinZ -= nodeDist;
+          // relationTarget.add(new Vector3(0, 0, -nodeDist));
+          // childMinZ -= nodeDist;
         } else {
           if (childMinZ > relationTarget.z) { // childMinZ is left side from relation target
             relationTarget.add(new Vector3(0, 0, -nodeDist));
@@ -138,12 +138,17 @@ function Node(props) {
           }
         }
       }
-    });
+      if (newTotalSize < childrenSize) {
+        newTotalSize = childrenSize;
+      }
+      if (newTotalSize < 12) { // minimum if relation existent
+        newTotalSize = 12;
+      }
+      });
     if (person.id === debugId) console.log('newTotalSize', newTotalSize);
-    newTotalSize += Math.abs(childMinZ);
+    // newTotalSize += Math.abs(childMinZ);
 
     sendSize(newTotalSize);
-
     if (totalSize !== newTotalSize) {
       setTotalSize(newTotalSize);
     }
@@ -258,7 +263,6 @@ function Node(props) {
         const updateNodeSize = (s) => {
           sizes[c.id] = s;
         }
-        const debugId = 10;
         if (c.id === debugId) console.log(c);
         const firstChild = idx === 0;
         const childSize = getChildSize(c.id, sizes);
