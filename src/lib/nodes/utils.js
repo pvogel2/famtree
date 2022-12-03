@@ -55,7 +55,7 @@ export function isMetaResourceNode(o = {}) {
 export function createNamedGroup(m, name) {
   const g = new Group();
   g.name = name;
-  if (name === 'relations') {
+  /* if (name === 'relations') {
     const markerNode = getMesh({ foreground: '#ff0000'});
     g.add(markerNode);
   }
@@ -63,7 +63,7 @@ export function createNamedGroup(m, name) {
     const markerNode = getMesh({ foreground: '#0000ff'});
     markerNode.position.x -= 0.5;
     g.add(markerNode);
-  }
+  } */
   m.add(g);
   return g;
 }

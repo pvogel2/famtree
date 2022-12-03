@@ -16,8 +16,8 @@ function getRelationLines(s, t, config = { foreground, highstart, highend, offse
   const colors = [];
 
   points.push(s.clone().add(new Vector3(0, 1.2, 0)));
-  points.push(s.clone().add(new Vector3(0, 2, 0)).add(config.offset));
-  points.push(t.clone().add(new Vector3(0, 2, 0)).add(config.offset));
+  points.push(s.clone().add(config.offset));
+  points.push(t.clone().add(config.offset));
   points.push(t.clone().add(new Vector3(0, 1.2, 0)));
 
   colors.push(...startColor.toArray());
@@ -34,12 +34,12 @@ const getForeground = (state) => state.layout.foreground;
 
 function PartnerRelation(props) {
   const foreground = useSelector(getForeground);
-  const { highstart = foreground, highend = foreground, source, targetX = 0, targetY = 0, targetZ = 0, parent, offsetX = 0, offsetY = 0, offsetZ = 0 } = props;
+  const { highstart = foreground, highend = foreground, targetX = 0, targetY = 0, targetZ = 0, parent, offsetX = 0, offsetY = 0, offsetZ = 0 } = props;
   const { renderer } = useContext(RenderContext);
 
   useEffect(() => {
     if (!renderer || !parent) return;
-    const s = source ? source.clone() : new Vector3();
+    const s = new Vector3();
     const target = new Vector3(targetX, targetY, targetZ);
     const offset = new Vector3(offsetX, offsetY, offsetZ);
 
@@ -48,7 +48,7 @@ function PartnerRelation(props) {
     return () => {
       parent.remove(lines);
     };
-  }, [renderer, source, parent, targetX, targetY, targetZ, offsetX, offsetY, offsetZ, foreground, highstart, highend]);
+  }, [renderer, parent, targetX, targetY, targetZ, offsetX, offsetY, offsetZ, foreground, highstart, highend]);
 
   return null;
 };
