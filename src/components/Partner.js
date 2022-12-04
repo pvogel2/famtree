@@ -5,8 +5,7 @@ import { Color, Vector3 } from 'three';
 
 import Person from '../lib/Person';
 
-import ThreeText from '../lib/three/Text';
-import { getPartnerGroup, getSymbolGroup, getDataGroup, addLabelText } from '../lib/nodes/utils';
+import { getPartnerGroup, getSymbolGroup, getDataGroup, addLabelText3D } from '../lib/nodes/utils';
 
 const getLayout = (state) => state.layout;
 
@@ -37,7 +36,7 @@ function Partner(props) {
     renderer.addObject(symbolId, symbolGroup, true, root);
 
     const dataGroup = getDataGroup(root);
-    const labelText = addLabelText(dataGroup, usedPerson.name, text);
+    const labelText = addLabelText3D(dataGroup, usedPerson.name, text);
 
     return () => {
       root.clear();

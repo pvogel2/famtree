@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
     founder={ parseInt(root.dataset.founder) }
     founderFAB={ root.dataset.founderFab === 'true' }
     background={ root.dataset.backgroundColor }
-    text={ root.dataset.text }
+    text={ root.dataset.textColor }
     foreground={ root.dataset.foregroundColor }
     highlight={ root.dataset.highlightColor }
     selection={ root.dataset.selectionColor }

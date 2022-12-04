@@ -2,6 +2,7 @@ import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3,
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import ThreeText from '../../lib/three/Text';
+import ThreeText3D from '../../lib/three/Text3D';
 import Transition from '../../lib/Transition';
 import avatarImage from './../../assets/images/avatar.png';
 import { getBaseUrl } from '../../mylib/Connect';
@@ -157,7 +158,19 @@ export function addLabelText(p, label, color = null) {
   });
 
   text.attach(null, p);
-  text.textMesh.geometry.center();
+  return text;
+}
+
+export function addLabelText3D(p, label, color = null) {
+  const text = new ThreeText3D({
+    text: label,
+    position: new Vector3(0.75, -1, 0),
+    rotation: new Vector3(0, Math.PI * 0.5, 0),
+    scale: 0.4,
+    color,
+  });
+
+  text.attach(null, p);
   return text;
 }
 

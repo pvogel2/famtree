@@ -198,6 +198,7 @@ class ThreeText {
     const textMaterial = this.getMaterial();
 
     this.textMesh = new Mesh( textGeometry, textMaterial );
+    this.textMesh.geometry.center();
 
     this.setPosition();
     this.setRotation();

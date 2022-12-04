@@ -31,7 +31,7 @@ function pedigree_form_select_field($name, $label, $callback = NULL, $options = 
   ?>
   <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
   <td>
-    <select name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.pedigree.' . $callback . '()"') ?> id="<?php print ($name) ?>" class="ped-form__data" disabled="disabled">
+    <select autocomplete name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.pedigree.' . $callback . '()"') ?> id="<?php print ($name) ?>" class="ped-form__data" disabled="disabled">
     <?php
       if(isset($options)) {
         foreach ($options as $option) {
@@ -137,7 +137,7 @@ function pedigree_render_edit_person_form() {
             pedigree_form_date_field('relEnd', 'End', 'relMetaChanged');
             ?>
             <tr>
-              <?php pedigree_form_select_field('relType', 'Kind of:', 'relMetaChanged', ['marriage', 'partnership']) ?>
+              <?php pedigree_form_select_field('relType', 'Kind of', 'relMetaChanged', ['marriage', 'partnership']) ?>
             </tr>
             <tr>
               <td><br/></td>

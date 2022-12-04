@@ -5,7 +5,7 @@ import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import { useSelector } from 'react-redux';
 
-import { getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, addLabelText, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
+import { getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, addLabelText3D, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
 import Person from '../lib/Person';
 import Partner from './Partner';
 
@@ -161,7 +161,7 @@ function Node(props) {
     renderer.addObject(symbolId, symbolGroup, true, newRoot);
 
     const dataGroup = getDataGroup(newRoot);
-    const labelText = addLabelText(dataGroup, usedPerson.name, text);
+    const labelText = addLabelText3D(dataGroup, usedPerson.name, text);
 
     setRoot(newRoot);
 
