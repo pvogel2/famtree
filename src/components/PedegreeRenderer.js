@@ -48,9 +48,9 @@ function PedegreeRenderer() {
   }
 
   if (!setteled) {
-    const grid = renderer.addGrid(20, 20);
-    grid.material.opacity = 0.1;
-    grid.rotation.z = Math.PI * 0.5;
+    // const grid = renderer.addGrid(20, 20);
+    // grid.material.opacity = 0.1;
+    // grid.rotation.z = Math.PI * 0.5;
     renderer.start();
     setteled = true;
   }
