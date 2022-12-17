@@ -157,9 +157,9 @@ function pedigree_render_edit_person_form() {
         </fieldset>
       </div>
       <p class="submit">
-        <button type="button" onclick="window.pedigree.resetPerson()" class="button ped-form__button">Reset Person</button>
-        <button type="button" onclick="window.pedigree.deletePerson()" class="button ped-form__button">Remove Person</button>
-        <button id="person-submit"  type="submit" value="Submit" class="button button-primary ped-form__button">Save Person</button>
+        <button type="button" onclick="window.pedigree.resetPerson()" class="button ped-form__button"><?php echo __('Reset Person', 'pedigree') ?></button>
+        <button type="button" onclick="window.pedigree.deletePerson()" class="button ped-form__button"><?php echo __('Remove Person', 'pedigree') ?></button>
+        <button id="person-submit"  type="submit" value="Submit" class="button button-primary ped-form__button"><?php echo __('Save Person', 'pedigree') ?></button>
       </p>
       </form>
     </div>
@@ -181,41 +181,41 @@ function pedigree_render_edit_person_form() {
             <tr>
               <td>
                 <input id="upload-button" type="button" class="button" value="Select Image" />
-                <input id="upload-submit"  type="submit" disabled value="Submit" class="button button-primary"/>
               </td>
             </tr>
           </table>
         </fieldset>
       </form>
     </div>
-    <div>
-      <form method="post" id="uploadMetadataForm" class="form ped-form">
-        <fieldset class="last">
-          <input hidden id="upload-metadata-refid" type="text" name="refid" />
-          <input hidden id="upload-metadata-id" type="text" name="metadata-id" />
-          <?php pedigree_render_legend('Additional files') ?>
-          <table>
-          <tr>
-              <td>
-                <?php printf(
-                '<img src="%1$s" id="person-metadata" width="100" height="100" style="object-fit: cover"/>',
-                  plugins_url( '../../admin/images/default.jpg', __FILE__ )
-                );?>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <input id="upload-metadata-button" type="button" class="button" value="Select Metadata" />
-                <input id="upload-metadata-submit"  type="submit" disabled value="Submit" class="button button-primary"/>
-              </td>
-            </tr>
-          </table>
-        </fieldset>
-      </form>
-    </div>
-    <div class="ped-metadata-list-container">
-      <table id="existingMetadata">
-      </table>
+    <div class="ped-metadata-container">
+      <?php pedigree_render_legend('Additional files') ?>
+      <div class="ped-metadata-container__list">
+        <table class="wp-list-table striped widefat toplevel_page_pedigree">
+          <thead>
+            <th scope="col"><?php echo __('Preview', 'pedigree') ?></th>
+            <th scope="col"><?php echo __('Name', 'pedigree') ?></th>
+            <th scope="col"><?php echo __('Description', 'pedigree') ?></th>
+            <th scope="col"><?php echo __('Edit', 'pedigree') ?></th> 
+          </thead>
+          <tbody  id="existingMetadata">
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <form method="post" id="uploadMetadataForm" class="form ped-form">
+          <fieldset class="last">
+            <input hidden id="upload-metadata-refid" type="text" name="refid" />
+            <input hidden id="upload-metadata-id" type="text" name="metadata-id" />
+            <table>
+              <tr>
+                <td>
+                  <input id="upload-metadata-button" type="button" class="button" value="Add Metadata" />
+                </td>
+              </tr>
+            </table>
+          </fieldset>
+        </form>
+      </div>
     </div>
   </div>
   <?php

@@ -47,17 +47,20 @@
   min-width: 100px;
 }
 
-.ped-metadata-list-container {
-  margin-top: 28px;
+.ped-metadata-container {
+  flex-grow: 1;
+}
+
+.ped-metadata-container__list {
   max-height: 300px;
   overflow: auto;
 }
 
-.ped-metadata-list-container img {
-  height: 80px;
+.ped-metadata-container__list img {
+  height: 40px;
 }
 
-.ped-metadata-list-container span.ped-dashicons-thumb.dashicons {
-  font-size: 80px;
-  height: 80px;
+.ped-metadata-container__list span.ped-dashicons-thumb.dashicons {
+  font-size: 40px;
+  height: 40px;
 }

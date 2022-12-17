@@ -276,16 +276,22 @@ window.pedigree.editPerson = (id) => {
         results.forEach((item) => {
           const tr = document.createElement('tr');
           const thumbTd = document.createElement('td');
+          const nameTd = document.createElement('td');
           const excerptTd = document.createElement('td');
           const editTd = document.createElement('td');
+          editTd.classList.add('column-edit');
+
           if (!item.thumbnail) {
-            thumbTd.innerHTML = `<span class="ped-dashicons-thumb dashicons dashicons-media-document"></span>`;
+            thumbTd.innerHTML = `<span title='${item.title}' class="ped-dashicons-thumb dashicons dashicons-media-document"></span>`;
           } else {
             thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
           }
+          nameTd.innerText = item.title;
+
           excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
           editTd.innerHTML = `<button type="button" class="button icon" onclick="window.pedigree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
           tr.appendChild(thumbTd);
+          tr.appendChild(nameTd);
           tr.appendChild(excerptTd);
           tr.appendChild(editTd);
           table.appendChild(tr);

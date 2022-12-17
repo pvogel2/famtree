@@ -279,13 +279,11 @@ const personEditor = {
 
       const form = this.getForm();
       const inp = form[this.idInput];
-      const subm = form.querySelector(this.uploadButton);
       inp.value = data.id;
-      subm.disabled = false;
+      form.submit();
     },
   },
   metadata: {
-    img: '#person-metadata',
     mediaTable: '#existingMetadata',
     uploadButton: '#upload-metadata-submit',
     idInput: 'metadata-id',
@@ -296,28 +294,14 @@ const personEditor = {
       return document.querySelector(this.form);
     },
 
-    setSource(s) {
-      const img = document.querySelector(this.img);
-      if (!this.default) {
-        this.default = img.src;
-      }
-      img.src = s || this.default;
-    },
-
     update(data) {
-      this.setSource(data.url);
       const form = this.getForm();
       const inp = form[this.idInput];
-      const subm = form.querySelector(this.uploadButton);
       inp.value = data.id;
-      subm.disabled = false;
+      form.submit();
     },
 
     reset() {
-      if (this.default) {
-        this.setSource(this.default);
-      }
-
       const form = this.getForm();
       const inp = form[this.idInput];
       const subm = form.querySelector(this.uploadButton);
