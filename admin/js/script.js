@@ -271,31 +271,7 @@ window.pedigree.editPerson = (id) => {
 
     window.pedigree.loadMetadata(id)
       .then((results) => {
-        const table = document.getElementById('existingMetadata');
-        table.innerHTML = '';
-        results.forEach((item) => {
-          const tr = document.createElement('tr');
-          const thumbTd = document.createElement('td');
-          const nameTd = document.createElement('td');
-          const excerptTd = document.createElement('td');
-          const editTd = document.createElement('td');
-          editTd.classList.add('column-edit');
-
-          if (!item.thumbnail) {
-            thumbTd.innerHTML = `<span title='${item.title}' class="ped-dashicons-thumb dashicons dashicons-media-document"></span>`;
-          } else {
-            thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
-          }
-          nameTd.innerText = item.title;
-
-          excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
-          editTd.innerHTML = `<button type="button" class="button icon" onclick="window.pedigree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
-          tr.appendChild(thumbTd);
-          tr.appendChild(nameTd);
-          tr.appendChild(excerptTd);
-          tr.appendChild(editTd);
-          table.appendChild(tr);
-        });
+        personEditor.metadata.set(results);
       })
       .catch((err) => {
         console.log('Could not load metadata', err);
@@ -339,12 +315,51 @@ window.pedigree.deletePerson = async () => {
 
 }
 
-
 window.pedigree.editMedia = (mediaId) => {
   const mediaLib = window.pedigree.wkEditMedia.open();
   // setTimeout(() => {
   //   mediaLib.$el[0].querySelector(`[data-id="${mediaId}"]`).click();
   // }, 1000);
+}
+
+window.pedigree.removeMeta = (mId) => {
+  const options = {
+    path: `pedigree/v1/metadata/${mId}`,
+    type: 'DELETE',
+  };
+
+  wp.apiRequest(options).then(() => {
+    // remove from html
+    personEditor.metadata.remove(mId);
+ })
+  .fail((request, statusText) => {
+    console.log('error', statusText)
+  });
+}
+
+window.pedigree.saveMeta = (attachment) => {
+  const metadataForm = personEditor.metadata.getForm();
+
+  const item = {
+    mediaId: attachment.id,
+    refId: metadataForm.refid.value,
+  };
+
+  const options = {
+    path: 'pedigree/v1/metadata/',
+    type: 'POST',
+    data: { ...item },
+  };
+
+  wp.apiRequest(options).then((resultId) => {
+    // console.log(result);
+    // remove from html
+    attachment.id = resultId;
+    personEditor.metadata.addItem(attachment);
+ })
+  .fail((request, statusText) => {
+    console.log('error', statusText)
+  });
 }
 
 window.pedigree.updateRoot = async (elem, pId) => {
@@ -394,9 +409,9 @@ jQuery(function($){
   document.querySelector('#upload-metadata-button').addEventListener('click', (e) => {
     e.preventDefault();
     // If the upload object has already been created, reopen the dialog
-      if (wkMedia) {
-        wkMedia.open();
-        return;
+    if (wkMedia) {
+      wkMedia.open();
+      return;
     }
     // Extend the wp.media object
     wkMedia = wp.media({
@@ -408,7 +423,7 @@ jQuery(function($){
     // When a file is selected, grab the URL and set it as the text field's value
     wkMedia.on('select', function() {
       const attachment = wkMedia.state().get('selection').first().toJSON();
-      personEditor.metadata.update(attachment);
+      window.pedigree.saveMeta(attachment);
     });
     // Open the upload dialog
     wkMedia.open();

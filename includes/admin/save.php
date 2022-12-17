@@ -25,6 +25,18 @@ function pedigree_upload_metadata() {
   return pedigree_database_save_metadata($personId, $metadataId);
 }
 
+function pedigree_delete_metadata(WP_REST_Request $req = null) {
+  $metadataId = '';
+  if (isset($req)) {
+    $result = preg_match('/\/metadata\/([0-9]+)$/', urldecode($req->get_route()), $matches);
+    if ($result == 1) {
+      $metadataId = $matches[1];
+    }
+  }
+
+  return pedigree_database_delete_metadata($metadataId);
+}
+
 function pedigree_update_family_root(WP_REST_Request $req = null) {
   $personId = '';
   if (isset($req)) {
@@ -108,6 +120,17 @@ function pedigree_sanitize_person($flag) {
   return $person;
 }
 
+function pedigree_sanitize_metadata($flag) {
+  $metadataArgs = array(
+    'refId' => FILTER_VALIDATE_INT,
+    'mediaId' => FILTER_VALIDATE_INT,
+  );
+
+  $metadata = filter_input_array($flag, $metadataArgs);
+
+  return $metadata;
+}
+
 function pedigree_save_relation() {
   $relation = pedigree_sanitize_relation(INPUT_POST);
 
@@ -150,5 +173,15 @@ function pedigree_save_person() {
     return pedigree_database_create_person($person);
   } else {
     return pedigree_database_update_person($person);
+  }
+}
+
+function pedigree_save_metadata() {
+  $metadata = pedigree_sanitize_metadata(INPUT_POST);
+
+  if (empty($metadata['id'])) {
+    return pedigree_database_create_metadata($metadata);
+  } else {
+    return false; // update not yet implemented
   }
 }

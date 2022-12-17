@@ -30,7 +30,7 @@ function pedigree_form_date_field($name, $label, $callback = NULL) {
 function pedigree_form_select_field($name, $label, $callback = NULL, $options = NULL, $rmCb = NULL) {
   ?>
   <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-  <td>
+  <td><div class="ped-form__flex">
     <select autocomplete name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.pedigree.' . $callback . '()"') ?> id="<?php print ($name) ?>" class="ped-form__data" disabled="disabled">
     <?php
       if(isset($options)) {
@@ -43,7 +43,7 @@ function pedigree_form_select_field($name, $label, $callback = NULL, $options = 
     <?php if(isset($rmCb)) {
       render_remove_button($rmCb);
     } ?>
-  </td>
+  </div></td>
   <?php
 }
 
@@ -196,13 +196,15 @@ function pedigree_render_edit_person_form() {
             <th scope="col"><?php echo __('Name', 'pedigree') ?></th>
             <th scope="col"><?php echo __('Description', 'pedigree') ?></th>
             <th scope="col"><?php echo __('Edit', 'pedigree') ?></th> 
+            <th scope="col"><?php echo __('Remove', 'pedigree') ?></th> 
           </thead>
           <tbody  id="existingMetadata">
+            <td colspan="5" class="column-nocontent"><?php echo __('no files found', 'pedigree') ?></td>
           </tbody>
         </table>
       </div>
       <div>
-        <form method="post" id="uploadMetadataForm" class="form ped-form">
+        <form method="post" id="uploadMetadataForm" action="javascript:;" class="form ped-form">
           <fieldset class="last">
             <input hidden id="upload-metadata-refid" type="text" name="refid" />
             <input hidden id="upload-metadata-id" type="text" name="metadata-id" />

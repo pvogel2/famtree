@@ -184,6 +184,16 @@ function pedigree_database_delete_person($id) {
   }
 }
 
+function pedigree_database_delete_metadata($id) {
+  global $wpdb;
+  $table_name = pedigree_metadata_tablename();
+  if (empty($id)) {
+    return false;
+  } else {
+    return $wpdb -> delete( $table_name, array('id' => $id ));
+  }
+}
+
 function pedigree_database_update_portrait_image($id, $mediaId) {
   global $wpdb;
   $table_name = pedigree_persons_tablename();
@@ -203,21 +213,26 @@ function pedigree_database_update_portrait_image($id, $mediaId) {
   }
 }
 
-function pedigree_database_save_metadata($personId, $metadataId) {
-  global $wpdb;
-  $table_name = pedigree_metadata_tablename();
-  if (empty($personId) || empty($metadataId)) {
+function pedigree_metadata_fields($metadata) {
+  return array(
+    'refId' => $metadata['refId'],
+    'mediaId' => $metadata['mediaId'],
+  );
+}
+
+function pedigree_database_create_metadata($metadata) {
+	global $wpdb;
+	$table_name = pedigree_metadata_tablename();
+
+  $result = (boolean) $wpdb->insert( 
+    $table_name, 
+    pedigree_metadata_fields($metadata)
+  );
+
+  if (!$result) {
     return false;
-  } else {
-    $result = (boolean) $wpdb->insert( 
-      $table_name, 
-      array(
-        'refId' => filter_var($personId, FILTER_SANITIZE_NUMBER_INT),
-        'mediaId' => filter_var($metadataId, FILTER_SANITIZE_NUMBER_INT),
-      ),
-    );
-    return $result;
   }
+  return $wpdb->insert_id;
 }
 
 function pedigree_database_update_root($id, $value) {

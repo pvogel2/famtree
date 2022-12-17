@@ -50,6 +50,18 @@ function pedigree_rest_register_routes() {
     'permission_callback' => 'pedigree_rest_permission_read',
   ));
 
+  register_rest_route( $namespace, '/metadata/', array(
+    'methods' => WP_REST_Server::EDITABLE,
+    'callback' => 'pedigree_save_metadata',
+    'permission_callback' => 'pedigree_rest_permission_write',
+  ));
+
+  register_rest_route( $namespace, '/metadata/(?P<id>[\w%]+)', array(
+    'methods' => WP_REST_Server::DELETABLE,
+    'callback' => 'pedigree_delete_metadata',
+    'permission_callback' => 'pedigree_rest_permission_write',
+  ));
+
   register_rest_route( $namespace, '/root/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::EDITABLE,
     'callback' => 'pedigree_update_family_root',

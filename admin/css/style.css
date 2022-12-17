@@ -14,6 +14,10 @@
   width: 3em;
 }
 
+.wp-list-table.toplevel_page_pedigree .column-nocontent {
+  text-align: center;
+}
+
 .wp-list-table.toplevel_page_pedigree .column-deathday,
 .wp-list-table.toplevel_page_pedigree .column-birthday {
   width: 8em;

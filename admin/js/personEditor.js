@@ -298,7 +298,37 @@ const personEditor = {
       const form = this.getForm();
       const inp = form[this.idInput];
       inp.value = data.id;
-      form.submit();
+      // form.submit();
+    },
+
+    addItem(item) {
+      const table = document.querySelector(this.mediaTable);
+      this.tableAddRow(item);
+    },
+
+    set(items) {
+      const table = document.querySelector(this.mediaTable);
+      table.innerHTML = '';
+      items.forEach((item) => {
+        this.tableAddRow(item);
+      });
+
+      if (!items.length) {
+        this.tableAddPlaceholder();
+      }
+    },
+
+    remove(id) {
+      const table = document.querySelector(this.mediaTable);
+      const tr = table.querySelector(`[data-id="${id}"]`);
+
+      if (tr) {
+        table.removeChild(tr);
+      };
+
+      if (!table.getElementsByTagName('tr').length) {  
+        this.tableAddPlaceholder();
+      }
     },
 
     reset() {
@@ -309,6 +339,49 @@ const personEditor = {
       inp.value = '';
       subm.disabled = true;
       table.innerHTML = '';
+      this.tableAddPlaceholder();
     },
+
+    tableAddPlaceholder() {
+      const table = document.querySelector(this.mediaTable);
+      const tr = document.createElement('tr');
+      const nocontentTd = document.createElement('td');
+      nocontentTd.classList.add('column-nocontent');
+      nocontentTd.setAttribute('colspan', '5');
+      nocontentTd.innerText = 'no files available';
+      tr.appendChild(nocontentTd);
+      table.appendChild(tr);
+    },
+
+    tableAddRow(item) {
+      const table = document.querySelector(this.mediaTable);
+
+      const tr = document.createElement('tr');
+      tr.dataset.id = item.id;
+      const thumbTd = document.createElement('td');
+      const nameTd = document.createElement('td');
+      const excerptTd = document.createElement('td');
+      const editTd = document.createElement('td');
+      const removeTd = document.createElement('td');
+      editTd.classList.add('column-edit');
+
+      if (!item.thumbnail) {
+        const type = window.pedigree.getMediaType(item.mimetype);
+        thumbTd.innerHTML = `<span title='${item.title}' class="ped-dashicons-thumb dashicons dashicons-media-${type}"></span>`;
+      } else {
+        thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
+      }
+      nameTd.innerText = item.title;
+
+      excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
+      editTd.innerHTML = `<button type="button" class="button icon" onclick="window.pedigree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
+      removeTd.innerHTML = `<button type="button" class="button icon" onclick="window.pedigree.removeMeta(${item.id})"><span class="dashicons dashicons-trash"></span></button>`;
+      tr.appendChild(thumbTd);
+      tr.appendChild(nameTd);
+      tr.appendChild(excerptTd);
+      tr.appendChild(editTd);
+      tr.appendChild(removeTd);
+      table.appendChild(tr);
+    }
   },
 };
