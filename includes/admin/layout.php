@@ -164,7 +164,7 @@ function pedigree_render_edit_person_form() {
       </form>
     </div>
     <div>
-      <form method="post" id="uploadPortraitForm" class="form ped-form">
+      <form method="post" id="uploadPortraitForm" action="javascript:;" class="form ped-form">
         <fieldset>
           <input hidden id="upload-media-id" type="text" name="portrait-id" class="form"/>
           <input hidden id="upload-person-id" type="text" name="id" />
@@ -207,7 +207,6 @@ function pedigree_render_edit_person_form() {
         <form method="post" id="uploadMetadataForm" action="javascript:;" class="form ped-form">
           <fieldset class="last">
             <input hidden id="upload-metadata-refid" type="text" name="refid" />
-            <input hidden id="upload-metadata-id" type="text" name="metadata-id" />
             <table>
               <tr>
                 <td>

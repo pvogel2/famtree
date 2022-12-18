@@ -351,12 +351,9 @@ window.pedigree.saveMeta = (attachment) => {
     data: { ...item },
   };
 
-  wp.apiRequest(options).then((resultId) => {
-    // console.log(result);
-    // remove from html
-    attachment.id = resultId;
-    personEditor.metadata.addItem(attachment);
- })
+  wp.apiRequest(options).then((resultData) => {
+    personEditor.metadata.addItem(resultData);
+  })
   .fail((request, statusText) => {
     console.log('error', statusText)
   });

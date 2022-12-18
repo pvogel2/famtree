@@ -232,7 +232,24 @@ function pedigree_database_create_metadata($metadata) {
   if (!$result) {
     return false;
   }
-  return $wpdb->insert_id;
+
+  $item = new stdClass();;
+  $post = get_post($metadata['mediaId']);
+
+  $item->thumbnail = wp_get_attachment_image_url($metadata['mediaId'], 'thumbnail');
+  $item->original = $post->guid;
+  $item->mimetype = $post->post_mime_type;
+  $item->title = $post->post_title;
+  $item->excerpt = $post->post_excerpt;
+  $item->description = $post->post_content;
+  $item->id = $wpdb->insert_id;
+  $item->refId = $metadata['refId'];
+  $item->mediaId = $metadata['mediaId'];
+  $item->refDate = null;
+  $item->content = null;
+
+
+  return $item;
 }
 
 function pedigree_database_update_root($id, $value) {
