@@ -169,6 +169,9 @@ function pedigree_save_person() {
 function pedigree_save_metadata() {
   $metadata = pedigree_sanitize_metadata(INPUT_POST);
 
+  if (empty($metadata['refId'])) {
+    return false;
+  }
   if (empty($metadata['id'])) {
     return pedigree_database_create_metadata($metadata);
   } else {

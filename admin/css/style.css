@@ -10,7 +10,8 @@
   width: 3em;
 }
 
-.wp-list-table.toplevel_page_pedigree .column-edit {
+.wp-list-table.toplevel_page_pedigree .column-edit,
+.wp-list-table.toplevel_page_pedigree .column-remove {
   width: 3em;
 }
 
@@ -24,10 +25,13 @@
 }
 
 .ped-form {
-  margin-right: 20px;
+  margin-right: 0;
   margin-bottom: 20px;
 }
 
+.ped-hidden {
+  display: none;
+}
 .ped-form__flex {
   display: flex;
 }

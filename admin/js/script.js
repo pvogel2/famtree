@@ -328,13 +328,27 @@ window.pedigree.removeMeta = (mId) => {
     type: 'DELETE',
   };
 
-  wp.apiRequest(options).then(() => {
-    // remove from html
+  wp.apiRequest(options).then(() => {    // remove from html
     personEditor.metadata.remove(mId);
+    window.pedigree.showMessage('Additional file removed');
  })
   .fail((request, statusText) => {
+    window.pedigree.showMessage('Additional file remove failed', 'error');
     console.log('error', statusText)
   });
+}
+
+window.pedigree.showMessage = (message, type = 'success') => {
+  const m = document.getElementById('ped-message');
+  m.classList.remove('ped-hidden', 'notice-success', 'notice-error');
+  m.classList.add(`notice-${type}`);
+   const p = m.querySelector('.ped-message__text');
+  p.textContent = message;
+}
+
+window.pedigree.hideMessage = () => {
+  const m = document.getElementById('ped-message');
+  m.classList.add('ped-hidden');
 }
 
 window.pedigree.saveMeta = (attachment) => {
@@ -353,9 +367,11 @@ window.pedigree.saveMeta = (attachment) => {
 
   wp.apiRequest(options).then((resultData) => {
     personEditor.metadata.addItem(resultData);
+    window.pedigree.showMessage('Additional file saved');
   })
   .fail((request, statusText) => {
-    console.log('error', statusText)
+    console.log('error', statusText);
+    window.pedigree.showMessage('Saving of additional file failed', 'error');
   });
 }
 

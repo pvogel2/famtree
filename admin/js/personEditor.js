@@ -364,6 +364,7 @@ const personEditor = {
       const editTd = document.createElement('td');
       const removeTd = document.createElement('td');
       editTd.classList.add('column-edit');
+      removeTd.classList.add('column-remove');
 
       if (!item.thumbnail) {
         const type = window.pedigree.getMediaType(item.mimetype);
@@ -374,8 +375,8 @@ const personEditor = {
       nameTd.innerText = item.title;
 
       excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
-      editTd.innerHTML = `<button type="button" class="button icon" onclick="window.pedigree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
-      removeTd.innerHTML = `<button type="button" class="button icon" onclick="window.pedigree.removeMeta(${item.id})"><span class="dashicons dashicons-trash"></span></button>`;
+      editTd.innerHTML = `<button type="button" title="edit" class="button icon" onclick="window.pedigree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
+      removeTd.innerHTML = `<button type="button" title="remove" class="button icon" onclick="window.pedigree.removeMeta(${item.id})"><span class="dashicons dashicons-trash"></span></button>`;
       tr.appendChild(thumbTd);
       tr.appendChild(nameTd);
       tr.appendChild(excerptTd);

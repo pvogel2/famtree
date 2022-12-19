@@ -109,6 +109,12 @@ function pedigree_options_page_html() {
   ?>
   <div class="pedigree wrap">
     <?php pedigree_render_page_title(__(get_admin_page_title(), 'pedigree')) ?>
+    <div id="ped-message" class="notice is-dismissible ped-hidden">
+      <p class="ped-message__text"></p>
+      <button type="button" class="notice-dismiss" onclick="window.pedigree.hideMessage()">
+        <span class="screen-reader-text">Dismiss this notice.</span>
+      </button>
+    </div>
   
     <form action="options.php" method="post" class="form">
       <?php

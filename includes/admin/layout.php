@@ -195,8 +195,8 @@ function pedigree_render_edit_person_form() {
             <th scope="col"><?php echo __('Preview', 'pedigree') ?></th>
             <th scope="col"><?php echo __('Name', 'pedigree') ?></th>
             <th scope="col"><?php echo __('Description', 'pedigree') ?></th>
-            <th scope="col"><?php echo __('Edit', 'pedigree') ?></th> 
-            <th scope="col"><?php echo __('Remove', 'pedigree') ?></th> 
+            <th scope="col"></th> 
+            <th scope="col"></th> 
           </thead>
           <tbody  id="existingMetadata">
             <td colspan="5" class="column-nocontent"><?php echo __('no files found', 'pedigree') ?></td>
