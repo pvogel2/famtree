@@ -96,6 +96,7 @@ function pedigree_sanitize_person($flag) {
     'birthName' => FILTER_SANITIZE_STRING,
     'birthday' => FILTER_SANITIZE_STRING,
     'deathday' => FILTER_SANITIZE_STRING,
+    'portraitImageId' => FILTER_VALIDATE_INT,
   );
 
   $person = filter_input_array($flag, $personArgs);

@@ -155,19 +155,8 @@ function pedigree_render_edit_person_form() {
             </tr>
            </table>
         </fieldset>
-      </div>
-      <p class="submit">
-        <button type="button" onclick="window.pedigree.resetPerson()" class="button ped-form__button"><?php echo __('Reset Person', 'pedigree') ?></button>
-        <button type="button" onclick="window.pedigree.deletePerson()" class="button ped-form__button"><?php echo __('Remove Person', 'pedigree') ?></button>
-        <button id="person-submit"  type="submit" value="Submit" class="button button-primary ped-form__button"><?php echo __('Save Person', 'pedigree') ?></button>
-      </p>
-      </form>
-    </div>
-    <div>
-      <form method="post" id="uploadPortraitForm" action="javascript:;" class="form ped-form">
         <fieldset>
-          <input hidden id="upload-media-id" type="text" name="portrait-id" class="form"/>
-          <input hidden id="upload-person-id" type="text" name="id" />
+          <input hidden id="portraitImageId" type="text" name="portraitImageId" class="form"/>
           <?php pedigree_render_legend('Portrait foto') ?>
           <table>  
             <tr>
@@ -180,11 +169,17 @@ function pedigree_render_edit_person_form() {
             </tr>
             <tr>
               <td>
-                <input id="upload-button" type="button" class="button" value="Select Image" />
+                <input id="portrait-upload-button" type="button" class="button" value="Select Image" />
               </td>
             </tr>
           </table>
         </fieldset>
+      </div>
+      <p class="submit">
+        <button type="button" onclick="window.pedigree.resetPerson()" class="button ped-form__button"><?php echo __('Reset Person', 'pedigree') ?></button>
+        <button type="button" onclick="window.pedigree.deletePerson()" class="button ped-form__button"><?php echo __('Remove Person', 'pedigree') ?></button>
+        <button id="person-submit"  type="submit" value="Submit" class="button button-primary ped-form__button"><?php echo __('Save Person', 'pedigree') ?></button>
+      </p>
       </form>
     </div>
     <div class="ped-metadata-container">

@@ -61,10 +61,25 @@ const personEditor = {
       f.birthName.value = p.birthName;
       f.birthday.value = p.birthday;
       f.deathday.value = p.deathday;
+      f.portraitImageId.value = p._portraitId;
+
+      this.setPortrait({ id: p._portraitId, url: p._portraitUrl });
 
       const rs = Relation.filter((r) => r.members.includes(p.id));
       this.setRelations(rs);
       this.setCandidatesSelect();
+    },
+
+    setPortrait(data = {}) {
+      const f = this.getForm();
+
+      const img = document.querySelector('#person-portrait');
+      if (!this.defaultPortraitImage) {
+        this.defaultPortraitImage = img.src;
+      }
+
+      img.src = data.url || this.defaultPortraitImage;
+      f.portraitImageId.value = data.id;
     },
 
     setCandidatesSelect() {
@@ -82,8 +97,8 @@ const personEditor = {
 
     getPerson() {
       const f = this.getForm();
-      const id = f['id'].value;
-
+      const id = f.id.value;
+      const imageId = f.portraitImageId.value;
       const p = {
         id: (id ? parseInt(id) : ''),
         firstName: f.firstName.value,
@@ -92,6 +107,7 @@ const personEditor = {
         birthName:f.birthName.value,
         birthday: f.birthday.value,
         deathday: f.deathday.value,
+        portraitImageId: (imageId ? parseInt(imageId) : ''),
       };
       return p;
     },
@@ -102,6 +118,7 @@ const personEditor = {
       this.resetChildrenSelect();
       this.resetPartnersSelect();
       this.resetCandidatesSelect();
+      this.setPortrait();
       this.relation = null;
       this.relations = [];
 
@@ -243,50 +260,10 @@ const personEditor = {
     },
   },
 
-  portrait: {
-    img: '#person-portrait',
-    idInput: 'portrait-id',
-    uploadButton: '#upload-submit',
-    default: '',
-    form: '#uploadPortraitForm',
-
-    getForm() {
-      return document.querySelector(this.form);
-    },
-
-    setSource(s) {
-      const img = document.querySelector(this.img);
-      if (!this.default) {
-        this.default = img.src;
-      }
-      img.src = s || this.default;
-    },
-
-    reset() {
-      if (this.default) {
-        this.setSource(this.default);
-      }
-
-      const form = this.getForm();
-      const inp = form[this.idInput];
-      const subm = form.querySelector(this.uploadButton);
-      inp.value = '';
-      subm.disabled = true;
-    },
-
-    update(data) {
-      this.setSource(data.url);
-
-      const form = this.getForm();
-      const inp = form[this.idInput];
-      inp.value = data.id;
-      form.submit();
-    },
-  },
   metadata: {
     mediaTable: '#existingMetadata',
     uploadButton: '#upload-metadata-submit',
-    idInput: 'metadata-id',
+    // idInput: 'metadata-id',
     default: '',
     form: '#uploadMetadataForm',
 
@@ -296,8 +273,8 @@ const personEditor = {
 
     update(data) {
       const form = this.getForm();
-      const inp = form[this.idInput];
-      inp.value = data.id;
+      // const inp = form[this.idInput];
+      // inp.value = data.id;
       // form.submit();
     },
 
@@ -333,10 +310,10 @@ const personEditor = {
 
     reset() {
       const form = this.getForm();
-      const inp = form[this.idInput];
+      // const inp = form[this.idInput];
       const subm = form.querySelector(this.uploadButton);
       const table = document.querySelector(this.mediaTable);
-      inp.value = '';
+      // inp.value = '';
       subm.disabled = true;
       table.innerHTML = '';
       this.tableAddPlaceholder();

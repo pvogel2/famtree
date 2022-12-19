@@ -262,10 +262,6 @@ window.pedigree.editPerson = (id) => {
     window.scrollTo(0, 0);
     personEditor.edit.setPerson(person);
 
-    const portraitForm = personEditor.portrait.getForm();
-    portraitForm.id.value = id;
-    personEditor.portrait.setSource(person.portraitUrl);
-
     const metadataForm = personEditor.metadata.getForm();
     metadataForm.refid.value = id;
 
@@ -281,7 +277,6 @@ window.pedigree.editPerson = (id) => {
 
 window.pedigree.resetPerson = () => {
   personEditor.edit.reset();
-  personEditor.portrait.reset();
   personEditor.metadata.reset();
 };
 
@@ -396,7 +391,7 @@ jQuery(function($){
     text: 'Save'
   }, multiple: false });
 
-  document.querySelector('#upload-button').addEventListener('click', (e) => {
+  document.querySelector('#portrait-upload-button').addEventListener('click', (e) => {
     e.preventDefault();
     // If the upload object has already been created, reopen the dialog
       if (wkMedia) {
@@ -413,7 +408,7 @@ jQuery(function($){
     // When a file is selected, grab the URL and set it as the text field's value
     wkMedia.on('select', function() {
       const attachment = wkMedia.state().get('selection').first().toJSON();
-      personEditor.portrait.update(attachment);
+      personEditor.edit.setPortrait(attachment);
     });
     // Open the upload dialog
     wkMedia.open();

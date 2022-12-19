@@ -287,6 +287,7 @@ function pedigree_person_fields($person) {
     'birthName' => $person['birthName'],
     'birthday' => $person['birthday'],
     'deathday' => $person['deathday'],
+    'portraitImageId' => $person['portraitImageId'],
   );
 }
 
