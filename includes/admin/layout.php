@@ -110,7 +110,7 @@ function pedigree_render_edit_person_form() {
     <form method="post" action="javascript:;" onsubmit="window.pedigree.saveAll()" id="editPersonForm" class="form ped-form">
       <input readonly hidden type="text" name="id" id="personId" />
       <div class="ped-form__flex">
-        <fieldset>
+        <fieldset disabled="disabled">
         <?php pedigree_render_legend('Attributes') ?>
           <table>
             <?php
@@ -123,7 +123,7 @@ function pedigree_render_edit_person_form() {
             ?>
           </table>
         </fieldset>
-        <fieldset>
+        <fieldset disabled="disabled">
         <?php pedigree_render_legend('Relations') ?>
           <table>  
             <tr>
@@ -155,7 +155,7 @@ function pedigree_render_edit_person_form() {
             </tr>
            </table>
         </fieldset>
-        <fieldset>
+        <fieldset disabled="disabled">
           <input hidden id="portraitImageId" type="text" name="portraitImageId" class="form"/>
           <?php pedigree_render_legend('Portrait foto') ?>
           <table>  
@@ -175,11 +175,11 @@ function pedigree_render_edit_person_form() {
           </table>
         </fieldset>
       </div>
-      <p class="submit">
+      <fieldset class="submit" disabled="disabled">
         <button type="button" onclick="window.pedigree.resetPerson()" class="button ped-form__button"><?php echo __('Reset Person', 'pedigree') ?></button>
         <button type="button" onclick="window.pedigree.deletePerson()" class="button ped-form__button"><?php echo __('Remove Person', 'pedigree') ?></button>
         <button id="person-submit"  type="submit" value="Submit" class="button button-primary ped-form__button"><?php echo __('Save Person', 'pedigree') ?></button>
-      </p>
+      </fieldset>
       </form>
     </div>
     <div class="ped-metadata-container">
@@ -205,7 +205,7 @@ function pedigree_render_edit_person_form() {
             <table>
               <tr>
                 <td>
-                  <input id="upload-metadata-button" type="button" class="button" value="Add Metadata" />
+                  <input id="upload-metadata-button" type="button" class="button" value="Add Metadata" disabled/>
                 </td>
               </tr>
             </table>

@@ -68,6 +68,10 @@ const personEditor = {
       const rs = Relation.filter((r) => r.members.includes(p.id));
       this.setRelations(rs);
       this.setCandidatesSelect();
+
+      f.querySelectorAll('fieldset').forEach((fs) => {
+        fs.disabled = false;
+      });
     },
 
     setPortrait(data = {}) {
@@ -112,6 +116,23 @@ const personEditor = {
       return p;
     },
 
+    removePerson(id) {
+      const f = this.getForm();
+      const pId = parseInt(f.id.value);
+      const rId = parseInt(id);
+
+      if (pId !== rId) {
+       return;
+      }
+
+      // const select = f.candidates;
+      // cs.forEach((p) => {
+      //   this._addOption(select, p);
+      // });
+
+      this.reset();
+    },
+
     reset() {
       const f = this.getForm();
       f.reset();
@@ -122,6 +143,9 @@ const personEditor = {
       this.relation = null;
       this.relations = [];
 
+      f.querySelectorAll('fieldset').forEach((fs) => {
+        fs.disabled = true;
+      });
     },
 
     removeRelation() {
@@ -262,7 +286,7 @@ const personEditor = {
 
   metadata: {
     mediaTable: '#existingMetadata',
-    uploadButton: '#upload-metadata-submit',
+    uploadButton: '#upload-metadata-button',
     // idInput: 'metadata-id',
     default: '',
     form: '#uploadMetadataForm',
@@ -284,11 +308,16 @@ const personEditor = {
     },
 
     set(items) {
+      const form = this.getForm();
       const table = document.querySelector(this.mediaTable);
+      const btn = form.querySelector(this.uploadButton);
+
       table.innerHTML = '';
       items.forEach((item) => {
         this.tableAddRow(item);
       });
+
+      btn.disabled = false;
 
       if (!items.length) {
         this.tableAddPlaceholder();
@@ -310,11 +339,9 @@ const personEditor = {
 
     reset() {
       const form = this.getForm();
-      // const inp = form[this.idInput];
-      const subm = form.querySelector(this.uploadButton);
+      const btn = form.querySelector(this.uploadButton);
       const table = document.querySelector(this.mediaTable);
-      // inp.value = '';
-      subm.disabled = true;
+      btn.disabled = true;
       table.innerHTML = '';
       this.tableAddPlaceholder();
     },

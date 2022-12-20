@@ -18,7 +18,7 @@ class Person {
   }
 
   static remove(id) {
-    Person.all[id] = undefined;
+    delete Person.all[id];
   }
 
   constructor(p) {

@@ -47,8 +47,14 @@ class Persons_List_Table extends WP_List_Table {
         $id = $item['id'];
         $portrait = $item['portraitImageId'];
 
+        $avatarUrl = wp_get_attachment_image_url($portrait, 'thumbnail');
+        if (!$avatarUrl) {
+          $avatarUrl = get_avatar_url( '' );
+        }
+
+        // wp_get_attachment_image_url($portrait, 'thumbnail')
         switch ($column_name) {
-          case 'portraitImageId' :return $item[$column_name];
+          case 'portraitImageId' :return '<img alt="" src="' . $avatarUrl . '" class="avatar avatar-32 photo" height="32" width="32" loading="lazy" decoding="async">';
           case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.pedigree.updateRoot(this, ' . $id . ')" />';
           case 'firstName': return $item[$column_name];
           case 'surNames': return $item[$column_name];

@@ -295,9 +295,7 @@ window.pedigree.deletePerson = async () => {
     Person.remove(pId);
 
     // remove from person editor
-    if (personEditor.edit.getPerson().id === pId) {
-      window.pedigree.resetPerson();
-    }
+    personEditor.edit.removePerson(pId);
 
     // remove from html
     const tBody = document.getElementById('the-list');
@@ -305,7 +303,6 @@ window.pedigree.deletePerson = async () => {
     if (tr) {
       tBody.removeChild(tr);
     };
-    console.log('all updated');
   });
 
 }
