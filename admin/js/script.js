@@ -124,6 +124,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       const mId = pId != rl.members[0] ? rl.members[0] : rl.members[1];
       const ps = Person.find(mId);
 
+      if (!ps) {
+        console.error('Relation Error: Could not find partner relation with id', mId, ', skipping relation.');
+        return;
+      }
+
       const o = document.createElement('option');
       o.value = ps.id;
       o.innerText = `${ps.name}`; 
@@ -132,6 +137,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       rl.children.forEach((cId) => {
         const ps = Person.find(cId);
+
+        if (!ps) {
+          console.error('Relation Error: Could not find child with id', cId, ', skipping relation.');
+          return;
+        }
+
         const o = document.createElement('option');
         o.value = ps.id;
         o.innerText = `>  ${ps.name}`; 
@@ -336,6 +347,7 @@ window.pedigree.showMessage = (message, type = 'success') => {
   m.classList.add(`notice-${type}`);
    const p = m.querySelector('.ped-message__text');
   p.textContent = message;
+  window.scrollTo(0,0);
 }
 
 window.pedigree.hideMessage = () => {
@@ -376,7 +388,14 @@ window.pedigree.updateRoot = async (elem, pId) => {
     data: { root },
   };
 
-  return wp.apiRequest(options);
+  const ps = Person.find(pId);
+
+  wp.apiRequest(options).then(() => {
+    window.pedigree.showMessage(`${ root ? 'Added' : 'Removed'} ${ ps.name } as available family founder.`);
+  })
+  .catch((err) => {
+    window.pedigree.showMessage('Updating roots failed', 'error');
+  });
 }
 
 jQuery(function($){

@@ -65,15 +65,6 @@ function pedigree_render_legend($text) {
   <?php
 }
 
-function pedigree_render_update_root_form() {
-  ?>
-  <form method="post" action="?page=pedigree" id="updateRootForm">
-    <input type="text" hidden name="rootId" id="rootId" />
-    <input type="text" hidden name="rootValue" />
-  </form>
-  <?php
-}
-
 function render_remove_button($callback) {
   ?>
   <button type="button" onclick="window.pedigree.<?php echo $callback ?>()" class="button icon">
@@ -214,6 +205,17 @@ function pedigree_render_edit_person_form() {
       </div>
     </div>
   </div>
+  <?php
+}
+
+function pedigree_render_runtime_message() {
+  ?>
+    <div id="ped-message" class="notice is-dismissible ped-hidden">
+      <p class="ped-message__text"></p>
+      <button type="button" class="notice-dismiss" onclick="window.pedigree.hideMessage()">
+        <span class="screen-reader-text">Dismiss this notice.</span>
+      </button>
+    </div>
   <?php
 }
 

@@ -82,56 +82,19 @@ function pedigree_options_page_html() {
   if ( ! current_user_can( 'pedigree_write' ) ) {
     return;
   }
-
-  if (!empty($_POST) && !isset($_POST['page'])) {
-    $result = FALSE;
-    $message = __('Undefined pedigree settings action', 'pedigree');
-
-    if (pedigree_is_update_portrait_image()) {
-      $result = pedigree_update_portrait_image();
-      $message = __('Portrait image updated', 'pedigree');
-    }
-
-    if ($result == TRUE) {
-      do_action( 'pedigree_success_feedback', $message);
-    } else {
-      do_action( 'pedigree_error_feedback', $message);
-    }
-  }
-
-  // check if the user have submitted the settings
-  // WordPress will add the "settings-updated" $_GET parameter to the url
-  if ( isset( $_GET['settings-updated'] ) ) {
-     add_settings_error( 'pedigree_messages', 'pedigree_message', __( 'Settings Saved', 'pedigree' ), 'updated' );
-  }
-  // show error/update messages
-  settings_errors( 'pedigree_messages' );
   ?>
-  <div class="pedigree wrap">
-    <?php pedigree_render_page_title(__(get_admin_page_title(), 'pedigree')) ?>
-    <div id="ped-message" class="notice is-dismissible ped-hidden">
-      <p class="ped-message__text"></p>
-      <button type="button" class="notice-dismiss" onclick="window.pedigree.hideMessage()">
-        <span class="screen-reader-text">Dismiss this notice.</span>
-      </button>
-    </div>
-  
-    <form action="options.php" method="post" class="form">
-      <?php
-      // settings_fields( 'pedigree-options' );
-      // do_settings_sections( 'pedigree' );
-      // submit_button( 'Save Families' );
-      ?>
-    </form>
 
+  <div class="pedigree wrap">
     <?php
+      pedigree_render_page_title(__(get_admin_page_title(), 'pedigree'));
+      pedigree_render_runtime_message();
+
       pedigree_render_section_title(__('Person configuration', 'pedigree'));
 
       $families = get_option( 'pedigree_families', array('default' => 'default') );
       $args = isset( $families ) ? (array) $families : array('default' => 'default');
     
       pedigree_render_edit_person_form();
-      pedigree_render_update_root_form();
     ?>
   </div>
   <?php
