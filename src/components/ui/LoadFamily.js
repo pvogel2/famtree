@@ -8,6 +8,7 @@ import { setFounder } from '../../store/familyReducer';
 function LoadFamily(props) {
   const {
     readonly,
+    instanceId,
   } = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -38,7 +39,7 @@ function LoadFamily(props) {
   };
 
   const getContainer = () => {
-    return document.getElementById('thepedegreerenderer');
+    return document.getElementById(instanceId);
   };
 
   const founderItems = families.map((item) => {

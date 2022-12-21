@@ -18,7 +18,6 @@ import './style.scss';
  * Internal dependencies
  */
 import Edit from './edit';
-import Save from './save';
 import metadata from './block.json';
 
 /**
@@ -34,7 +33,7 @@ registerBlockType( metadata.name, {
 	/**
 	 * @see ./save.js
 	 */
-	save: Save,
+	save: () => null,
 	title: metadata.title,
 	supports: {
 		align: [ 'left', 'right', 'full' ],

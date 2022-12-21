@@ -136,11 +136,12 @@ export default function Edit({ attributes, setAttributes  }) {
 					relations={ relations }
 					founderFAB={ founderFAB }	
 					readonly={ true }
-                    text={ textColor }
+          text={ textColor }
 					background={ backgroundColor }
 					foreground={ foregroundColor }
 					highlight={ highlightColor }
 					selection={ selectionColor }
+					idx={ `test${ Math.trunc(Math.random() * 100000) }` }
 				/>
 		  </div>
 		</div>

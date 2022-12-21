@@ -29,8 +29,34 @@ require_once(PEDIGREE__PLUGIN_DIR . 'includes/activation.php');
 require_once(PEDIGREE__PLUGIN_DIR . 'includes/rest.php');
 require_once(PEDIGREE__PLUGIN_DIR . 'includes/settings.php');
 
+function pedigree_render_block($attributes) {
+  return sprintf('<div
+	  class="pedigree-block-container" style="position:relative; min-height: 640px;"
+		data-founder="%1$s"
+		data-founder-fab="%2$s"
+		data-background-color="%3$s"
+		data-foreground-color="%4$s"
+		data-text-color="%5$s"
+		data-highlight-color="%6$s"
+		data-selection-color="%7$s"
+	></div>',
+	  esc_html( $attributes['founder'] ),
+	  esc_html( $attributes['founderFAB'] ),
+	  esc_html( $attributes['backgroundColor'] ),
+	  esc_html( $attributes['foregroundColor'] ),
+	  esc_html( $attributes['textColor'] ),
+	  esc_html( $attributes['highlightColor'] ),
+	  esc_html( $attributes['selectionColor'] )
+  );
+}
+
 function create_block_pedigree_block_init() {
-	register_block_type( __DIR__ . '/build' );
+	register_block_type(
+		__DIR__ . '/build',
+		array(
+			'render_callback' => 'pedigree_render_block',
+	  )
+	);
 }
 
 add_action( 'init', 'create_block_pedigree_block_init' );

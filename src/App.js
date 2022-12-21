@@ -56,6 +56,7 @@ function App(props) {
     foreground,
     highlight,
     selection,
+    idx = 0,
   } = props;
 
   const theme = createTheme({
@@ -120,16 +121,19 @@ function App(props) {
     }
   }, [selection]);
 
+  const instanceId = `test${idx}`;
+  console.log('>>>>>>>>>>>>>>>>> App', instanceId);
+
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
       <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
         <Provider store={ store }>
-          <RenderProvider>
+          <RenderProvider instanceId={ instanceId }>
             <PedigreeRenderer />
             <Intersector />
             <PersonSelector />
-            {founderFAB && <LoadFamily readonly={ readonly } /> }
+            { founderFAB && <LoadFamily readonly={ readonly } instanceId={ instanceId } /> }
             <InfoDialog readonly={ readonly } />
             <DetailsDialog />
           </RenderProvider>
