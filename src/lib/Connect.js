@@ -10,6 +10,10 @@ export async function loadFamily() {
   relations.forEach((r) => {
     const members = r.members;
     members.forEach((id) => {
+      if (!personsObj[id]) {
+        console.error('Relation Error: Could not find related person with id', id, ', skipping relation.');
+        return;
+      }
       personsObj[id].relations.push(r.id);
     });
   });

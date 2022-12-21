@@ -19,6 +19,10 @@ export async function loadFamily() {
     r.children = JSON.parse(r.children);
 
     r.members.forEach((id) => {
+      if (!personsObj[id]) {
+        console.error('Relation Error: Could not find related person with id', id, ', skipping relation.');
+        return;
+      }
       personsObj[id].relations.push(r.id);
     });
   });
