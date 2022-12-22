@@ -21,7 +21,7 @@
 	"attributes": {
 		"founder": {
 			"type": "number",
-			"default": "-1"
+			"default": -1
 		},
 		"founderFAB": {
 			"type": "boolean",

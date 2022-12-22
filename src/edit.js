@@ -36,9 +36,9 @@ import { loadFamily } from './mylib/Connect';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit({ attributes, setAttributes  }) {
+export default function Edit({ attributes, setAttributes, clientId  }) {
 	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor, selectionColor } = attributes;
-  const [families, setFamilies] = useState([]);
+    const [families, setFamilies] = useState([]);
 	const [relations, setRelations] = useState([]);
 	const [persons, setPersons] = useState([]);
 
@@ -55,6 +55,9 @@ export default function Edit({ attributes, setAttributes  }) {
 
 				const founders = data.persons.filter((p)=> p.root).map((p) => p.id);
 				setFamilies(founders);
+				if (founder < 0 && founders.length) {
+				  setAttributes({ founder: parseInt(founders[0]) })
+				}
 			} catch(err) {
 				console.log(err);
 			}
@@ -131,17 +134,17 @@ export default function Edit({ attributes, setAttributes  }) {
 			>
 			  <App
 				  founder={ founder }
-					families={ families }
-					persons={ persons }
-					relations={ relations }
-					founderFAB={ founderFAB }	
-					readonly={ true }
-          text={ textColor }
-					background={ backgroundColor }
-					foreground={ foregroundColor }
-					highlight={ highlightColor }
-					selection={ selectionColor }
-					idx={ `test${ Math.trunc(Math.random() * 100000) }` }
+				  families={ families }
+				  persons={ persons }
+				  relations={ relations }
+				  founderFAB={ founderFAB }	
+				  readonly={ true }
+                  text={ textColor }
+				  background={ backgroundColor }
+				  foreground={ foregroundColor }
+				  highlight={ highlightColor }
+				  selection={ selectionColor }
+				  idx={ `test${ clientId }` }
 				/>
 		  </div>
 		</div>

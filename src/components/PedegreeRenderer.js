@@ -7,8 +7,6 @@ import Node from './Node';
 import Metadata from './Metadata';
 import { clearPerson } from '../store/selectedPersonReducer';
 
-let setteled = false;
-
 const getBackground = (state) => state.layout.background;
 const getSelectedPerson = (state) => state.selectedPerson.person;
 const getCurrentMetadata = (state) => state.selectedPerson.metadata;
@@ -46,13 +44,12 @@ function PedegreeRenderer() {
   if (!renderer) {
     return null;
   }
-
-  if (!setteled) {
+  
+  if (!renderer.running ) {
     // const grid = renderer.addGrid(20, 20);
     // grid.material.opacity = 0.1;
     // grid.rotation.z = Math.PI * 0.5;
     renderer.start();
-    setteled = true;
   }
 
   return (

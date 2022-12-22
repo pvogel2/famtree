@@ -23,6 +23,7 @@ function RenderProvider(props) {
       parentSelector: `#${instanceId}renderer`,
     });
 
+    console.log('>', instanceId, newRenderer);
     newRenderer.setupLightsDone = true;
 
     const ambientLight = new AmbientLight( 0xFFFFFF, 1 );
