@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { StyledEngineProvider } from '@mui/material/styles';
@@ -32,18 +32,20 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import layoutReducer from './store/layoutReducer';
 
-const store = configureStore({ reducer: {
-  persons: personsReducer,
-  founder: familyReducer,
-  families: familiesReducer,
-  focusedPerson: focusedPersonReducer,
-  selectedPerson: selectedPersonReducer,
-  runtime: runtimeReducer,
-  layout: layoutReducer,
-  relations: relationsReducer,
-}});
-
 function App(props) {
+  const store = useMemo(() => configureStore({
+    reducer: {
+      persons: personsReducer,
+      founder: familyReducer,
+      families: familiesReducer,
+      focusedPerson: focusedPersonReducer,
+      selectedPerson: selectedPersonReducer,
+      runtime: runtimeReducer,
+      layout: layoutReducer,
+      relations: relationsReducer,
+    }
+  }), []);
+
   const {
     founder = -1,
     persons = null,
@@ -121,7 +123,7 @@ function App(props) {
     }
   }, [selection]);
 
-  const instanceId = `inst${idx}`;
+  const instanceId = `pedigree_instance${idx}`;
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

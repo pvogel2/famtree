@@ -7,24 +7,22 @@ import RenderContext from './RenderContext.js';
 const gltfLoader = new GLTFLoader();
 
 function RenderProvider(props) {
-  const { instanceId = 'test0' } = props;
+  const { instanceId = 'pedigree_instance0' } = props;
   const [renderer, setRenderer] = useState(null);
-  const test = Math.random();
   const renderTarget = useRef(null);
+  const rendererId = `${instanceId}renderer`;
 
   useEffect(() => {
-    if (renderer || !instanceId) return;
+    if (renderer || !rendererId) return;
 
-    console.log('>', renderer, instanceId);
     const newRenderer = new Renderer({
       fov: 45,
       cameraNear: 0.01,
       cameraFar: 5000,
       control: true,
-      parentSelector: `#${instanceId}renderer`,
+      parentSelector: `#${rendererId}`,
     });
 
-    console.log('>', instanceId, newRenderer, test);
     newRenderer.setupLightsDone = true;
 
     const ambientLight = new AmbientLight( 0xFFFFFF, 1 );
@@ -34,13 +32,12 @@ function RenderProvider(props) {
     newRenderer.three.gammaFactor = 2.2;
 
     setRenderer(newRenderer);
-  }, [renderer, instanceId]);
+  }, [renderer, rendererId]);
 
   const style = {left: 0, top: 0, bottom: 0, right: 0, position: 'absolute'};
 
-  console.log('rendering', instanceId, test);
   return (<RenderContext.Provider value={ { renderer, renderTarget, gltfLoader } }>
-      <div style={ style } id={ `${instanceId}renderer` } ref={ renderTarget }></div>
+      <div style={ style } id={ rendererId } ref={ renderTarget }></div>
       { props.children }
     </RenderContext.Provider>
   );
