@@ -6,10 +6,11 @@ import App from './App';
 window.addEventListener('DOMContentLoaded', () => {
   const nodes = document.querySelectorAll('.pedigree-block-container');
   nodes.forEach((root, idx) => {
-    root.setAttribute('id', `test${idx}`);
+    root.setAttribute('id', `pedigree${idx}`);
+
     ReactDOM.render(<App
       founder={ parseInt(root.dataset.founder) }
-      founderFAB={ root.dataset.founderFab === 'true' }
+      founderFAB={ root.dataset.founderFab === '1' }
       background={ root.dataset.backgroundColor }
       text={ root.dataset.textColor }
       foreground={ root.dataset.foregroundColor }

@@ -121,7 +121,7 @@ function App(props) {
     }
   }, [selection]);
 
-  const instanceId = idx;
+  const instanceId = `inst${idx}`;
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

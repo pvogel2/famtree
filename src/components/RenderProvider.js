@@ -9,12 +9,13 @@ const gltfLoader = new GLTFLoader();
 function RenderProvider(props) {
   const { instanceId = 'test0' } = props;
   const [renderer, setRenderer] = useState(null);
-
+  const test = Math.random();
   const renderTarget = useRef(null);
 
   useEffect(() => {
     if (renderer || !instanceId) return;
 
+    console.log('>', renderer, instanceId);
     const newRenderer = new Renderer({
       fov: 45,
       cameraNear: 0.01,
@@ -23,7 +24,7 @@ function RenderProvider(props) {
       parentSelector: `#${instanceId}renderer`,
     });
 
-    console.log('>', instanceId, newRenderer);
+    console.log('>', instanceId, newRenderer, test);
     newRenderer.setupLightsDone = true;
 
     const ambientLight = new AmbientLight( 0xFFFFFF, 1 );
@@ -37,6 +38,7 @@ function RenderProvider(props) {
 
   const style = {left: 0, top: 0, bottom: 0, right: 0, position: 'absolute'};
 
+  console.log('rendering', instanceId, test);
   return (<RenderContext.Provider value={ { renderer, renderTarget, gltfLoader } }>
       <div style={ style } id={ `${instanceId}renderer` } ref={ renderTarget }></div>
       { props.children }
