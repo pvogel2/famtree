@@ -8,9 +8,13 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import RenderContext from '../../components/RenderContext';
 import personsReducer, { setPersons } from '../../store/personsReducer';
+import selectedPersonReducer from '../../store/selectedPersonReducer';
 import focusedPersonReducer, { setPerson } from '../../store/focusedPersonReducer';
 import dialogsReducer, { showPersonDialog } from '../../store/dialogsReducer';
 import runtimeReducer from '../../store/runtimeReducer';
+import layoutReducer from '../../store/layoutReducer';
+import relationsReducer from '../../store/relationsReducer';
+
 import DataPerson from './../Person';
 
 const renderer = {
@@ -90,6 +94,9 @@ function renderWithContext(node, persons = [], config = {}) {
     focusedPerson: focusedPersonReducer,
     persons: personsReducer,
     config: dialogsReducer,
+    layout: layoutReducer,
+    selectedPerson: selectedPersonReducer,
+    relations: relationsReducer,
   }});
 
   if (persons.length) {

@@ -7,7 +7,7 @@ import Person from '../lib/Person';
 import { setPerson as setFocusedPerson, clearPerson as clearFocusedPerson } from '../store/focusedPersonReducer';
 import { setSelectedMeta, setMetadata, setPerson as setSelectedPerson } from '../store/selectedPersonReducer';
 import { setPoint } from '../store/runtimeReducer';
-import { loadMetadata } from './../mylib/Connect.js';
+import { loadMetadata } from '../lib/Connect.js';
 
 const getForeground = (state) => state.layout.foreground;
 const getHighlight = (state) => state.layout.highlight;

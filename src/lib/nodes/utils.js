@@ -5,7 +5,7 @@ import ThreeText from '../../lib/three/Text';
 import ThreeText3D from '../../lib/three/Text3D';
 import Transition from '../../lib/Transition';
 import avatarImage from './../../assets/images/avatar.png';
-import { getBaseUrl } from '../../mylib/Connect';
+import { getBaseUrl } from '../Connect';
 
 const textureLoader = new TextureLoader();
 const gltfLoader = new GLTFLoader();

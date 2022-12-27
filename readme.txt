@@ -1,7 +1,7 @@
 === FamTree ===
 Contributors:      Peter Vogel
 Tags:              block
-Tested up to:      6.0
+Tested up to:      6.1
 Stable tag:        0.0.1-beta
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,7 +14,7 @@ The plugin provides the FamTree Block showing configured family trees using thre
 
 Multiple families are supported and can be configured on the famtree options page.
 
-One block instance can be configured to visualize one configured family, this can be switched on run time.
+One block instance can be configured to visualize the configured family of a founder, this can be switched on run time.
 
 Kepp in mind that the plugin is still in beta and currently in development.
 
@@ -50,6 +50,3 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 = 0.10.1-beta =
 * First MVP Release candidate
-
-== Arbitrary section ==
-

@@ -5,6 +5,20 @@ import { Color, Vector3 } from 'three';
 import U from '../lib/tests/utils';
 import Node from './Node';
 
+jest.mock('../lib/nodes/utils', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      getPersonGroup: () => ({}),
+      getSymbolGroup: () => ({}),
+      getDataGroup: () => ({}),
+      getAssetsGroup: () => ({}),
+      addLabelText3D: () => ({}),
+      findNamedGroup: () => ({}),
+      createNamedGroup: () => ({}),
+    };
+  });
+});
+
 const nodeDist = 6;
 const genDist = 6;
 const prtOffset = nodeDist * 0.5;
@@ -16,7 +30,7 @@ const serializedPerson = U.getPerson().serialize();
 const serializedWithChild = U.getPersonWithChild().serialize();
 const serializedWithPartner = U.getPersonWithPartner().serialize();
 
-it('renders something for Node', () => {
+it.only('renders something for Node', () => {
   const { debug, container } = U.renderWithContext(<Node />);
   debug(container);
   expect(container.firstChild).toBeNull();

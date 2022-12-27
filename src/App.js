@@ -14,7 +14,7 @@ import runtimeReducer from './store/runtimeReducer';
 import relationsReducer from './store/relationsReducer';
 import RenderProvider from './components/RenderProvider';
 import FamTreeRenderer from './components/FamTreeRenderer';
-import { loadFamily } from './mylib/Connect';
+import { loadFamily } from './lib/Connect';
 
 import { setPersons } from './store/personsReducer';
 import { setFounder } from './store/familyReducer';

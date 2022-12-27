@@ -26,7 +26,7 @@ import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import './editor.scss';
 
 import App from './App';
-import { loadFamily } from './mylib/Connect';
+import { loadFamily } from './lib/Connect';
 
 /**
  * The edit function describes the structure of your block in the context of the
