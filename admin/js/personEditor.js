@@ -372,7 +372,7 @@ const personEditor = {
 
       if (!item.thumbnail) {
         const type = window.famtree.getMediaType(item.mimetype);
-        thumbTd.innerHTML = `<span title='${item.title}' class="ped-dashicons-thumb dashicons dashicons-media-${type}"></span>`;
+        thumbTd.innerHTML = `<span title='${item.title}' class="famtree-dashicons-thumb dashicons dashicons-media-${type}"></span>`;
       } else {
         thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
       }

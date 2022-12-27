@@ -30,8 +30,8 @@ function famtree_form_date_field($name, $label, $callback = NULL) {
 function famtree_form_select_field($name, $label, $callback = NULL, $options = NULL, $rmCb = NULL) {
   ?>
   <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-  <td><div class="ped-form__flex">
-    <select autocomplete name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . $callback . '()"') ?> id="<?php print ($name) ?>" class="ped-form__data" disabled="disabled">
+  <td><div class="famtree-form__flex">
+    <select autocomplete name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . $callback . '()"') ?> id="<?php print ($name) ?>" class="famtree-form__data" disabled="disabled">
     <?php
       if(isset($options)) {
         foreach ($options as $option) {
@@ -98,9 +98,9 @@ function famtree_render_edit_person_form() {
   ?>
   <div style="display: flex;">
     <div>
-    <form method="post" action="javascript:;" onsubmit="window.famtree.saveAll()" id="editPersonForm" class="form ped-form">
+    <form method="post" action="javascript:;" onsubmit="window.famtree.saveAll()" id="editPersonForm" class="form famtree-form">
       <input readonly hidden type="text" name="id" id="personId" />
-      <div class="ped-form__flex">
+      <div class="famtree-form__flex">
         <fieldset disabled="disabled">
         <?php famtree_render_legend('Attributes') ?>
           <table>
@@ -140,8 +140,8 @@ function famtree_render_edit_person_form() {
               <td>
               </td>
               <td>
-                <button type="button" onclick="window.famtree.addChild()" class="button ped-form__button"><?php echo __('as child', 'famtree') ?></button>
-                <button type="button" onclick="window.famtree.addPartner()" class="button ped-form__button"><?php echo __('as partner', 'famtree') ?></button>
+                <button type="button" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo __('as child', 'famtree') ?></button>
+                <button type="button" onclick="window.famtree.addPartner()" class="button famtree-form__button"><?php echo __('as partner', 'famtree') ?></button>
               </td>
             </tr>
            </table>
@@ -167,15 +167,15 @@ function famtree_render_edit_person_form() {
         </fieldset>
       </div>
       <fieldset class="submit" disabled="disabled">
-        <button type="button" onclick="window.famtree.resetPerson()" class="button ped-form__button"><?php echo __('Reset Person', 'famtree') ?></button>
-        <button type="button" onclick="window.famtree.deletePerson()" class="button ped-form__button"><?php echo __('Remove Person', 'famtree') ?></button>
-        <button id="person-submit"  type="submit" value="Submit" class="button button-primary ped-form__button"><?php echo __('Save Person', 'famtree') ?></button>
+        <button type="button" onclick="window.famtree.resetPerson()" class="button famtree-form__button"><?php echo __('Reset Person', 'famtree') ?></button>
+        <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo __('Remove Person', 'famtree') ?></button>
+        <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo __('Save Person', 'famtree') ?></button>
       </fieldset>
       </form>
     </div>
-    <div class="ped-metadata-container">
+    <div class="famtree-metadata-container">
       <?php famtree_render_legend('Additional files') ?>
-      <div class="ped-metadata-container__list">
+      <div class="famtree-metadata-container__list">
         <table class="wp-list-table striped widefat toplevel_page_famtree">
           <thead>
             <th scope="col"><?php echo __('Preview', 'famtree') ?></th>
@@ -190,7 +190,7 @@ function famtree_render_edit_person_form() {
         </table>
       </div>
       <div>
-        <form method="post" id="uploadMetadataForm" action="javascript:;" class="form ped-form">
+        <form method="post" id="uploadMetadataForm" action="javascript:;" class="form famtree-form">
           <fieldset class="last">
             <input hidden id="upload-metadata-refid" type="text" name="refid" />
             <table>
@@ -210,8 +210,8 @@ function famtree_render_edit_person_form() {
 
 function famtree_render_runtime_message() {
   ?>
-    <div id="ped-message" class="notice is-dismissible ped-hidden">
-      <p class="ped-message__text"></p>
+    <div id="famtree-message" class="notice is-dismissible famtree-hidden">
+      <p class="famtree-message__text"></p>
       <button type="button" class="notice-dismiss" onclick="window.famtree.hideMessage()">
         <span class="screen-reader-text">Dismiss this notice.</span>
       </button>

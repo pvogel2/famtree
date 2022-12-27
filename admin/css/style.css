@@ -28,51 +28,51 @@
   width: 3em;
 }
 
-.ped-form {
+.famtree-form {
   margin-right: 0;
   margin-bottom: 20px;
 }
 
-.ped-hidden {
+.famtree-hidden {
   display: none;
 }
-.ped-form__flex {
+.famtree-form__flex {
   display: flex;
 }
 
-.ped-form fieldset {
+.famtree-form fieldset {
   border-right: 1px solid #00000022;
   padding-right: 20px;
   margin-right: 20px;
 }
 
-.ped-form fieldset.last {
+.famtree-form fieldset.last {
   border: none;
 }
 
-.ped-form__data {
+.famtree-form__data {
   width: 177px;
   text-overflow: ellipsis;
 }
 
-.ped-form__button {
+.famtree-form__button {
   min-width: 100px;
 }
 
-.ped-metadata-container {
+.famtree-metadata-container {
   flex-grow: 1;
 }
 
-.ped-metadata-container__list {
+.famtree-metadata-container__list {
   max-height: 300px;
   overflow: auto;
 }
 
-.ped-metadata-container__list img {
+.famtree-metadata-container__list img {
   height: 40px;
 }
 
-.ped-metadata-container__list span.ped-dashicons-thumb.dashicons {
+.famtree-metadata-container__list span.famtree-dashicons-thumb.dashicons {
   font-size: 40px;
   height: 40px;
 }

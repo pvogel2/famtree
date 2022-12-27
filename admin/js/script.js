@@ -342,17 +342,17 @@ window.famtree.removeMeta = (mId) => {
 }
 
 window.famtree.showMessage = (message, type = 'success') => {
-  const m = document.getElementById('ped-message');
-  m.classList.remove('ped-hidden', 'notice-success', 'notice-error');
+  const m = document.getElementById('famtree-message');
+  m.classList.remove('famtree-hidden', 'notice-success', 'notice-error');
   m.classList.add(`notice-${type}`);
-   const p = m.querySelector('.ped-message__text');
+   const p = m.querySelector('.famtree-message__text');
   p.textContent = message;
   window.scrollTo(0,0);
 }
 
 window.famtree.hideMessage = () => {
-  const m = document.getElementById('ped-message');
-  m.classList.add('ped-hidden');
+  const m = document.getElementById('famtree-message');
+  m.classList.add('famtree-hidden');
 }
 
 window.famtree.saveMeta = (attachment) => {

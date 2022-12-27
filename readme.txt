@@ -1,4 +1,4 @@
-=== Pedigree ===
+=== FamTree ===
 Contributors:      Peter Vogel
 Tags:              block
 Tested up to:      6.0
@@ -10,7 +10,7 @@ Still experimental block to manage and visualize family trees (Scaffolded with C
 
 == Description ==
 
-The plugin provides the Pedigree Block showing configured family trees using threejs.
+The plugin provides the FamTree Block showing configured family trees using threejs.
 
 Multiple families are supported and can be configured on the famtree options page.
 
@@ -48,7 +48,7 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 == Changelog ==
 
-= 0.0.1-beta =
+= 0.10.1-beta =
 * First MVP Release candidate
 
 == Arbitrary section ==

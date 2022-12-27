@@ -13,7 +13,7 @@ import familiesReducer from './store/familiesReducer';
 import runtimeReducer from './store/runtimeReducer';
 import relationsReducer from './store/relationsReducer';
 import RenderProvider from './components/RenderProvider';
-import PedigreeRenderer from './components/PedegreeRenderer';
+import FamTreeRenderer from './components/FamTreeRenderer';
 import { loadFamily } from './mylib/Connect';
 
 import { setPersons } from './store/personsReducer';
@@ -131,7 +131,7 @@ function App(props) {
       <StyledEngineProvider injectFirst>
         <Provider store={ store }>
           <RenderProvider instanceId={ instanceId }>
-            <PedigreeRenderer />
+            <FamTreeRenderer />
             <Intersector />
             <PersonSelector />
             { founderFAB && <LoadFamily readonly={ readonly } instanceId={ instanceId } /> }

@@ -12,7 +12,7 @@ const getSelectedPerson = (state) => state.selectedPerson.person;
 const getCurrentMetadata = (state) => state.selectedPerson.metadata;
 
 
-function PedegreeRenderer() {
+function FamTreeRenderer() {
   const { renderer } = useContext(RenderContext);
 
   const dispatch = useDispatch();
@@ -60,4 +60,4 @@ function PedegreeRenderer() {
   );
 };
 
-export default PedegreeRenderer;
+export default FamTreeRenderer;
