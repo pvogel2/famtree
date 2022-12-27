@@ -4,9 +4,9 @@ import ReactDOM from "react-dom";
 import App from './App';
 
 window.addEventListener('DOMContentLoaded', () => {
-  const nodes = document.querySelectorAll('.pedigree-block-container');
+  const nodes = document.querySelectorAll('.famtree-block-container');
   nodes.forEach((root, idx) => {
-    root.setAttribute('id', `pedigree${idx}`);
+    root.setAttribute('id', `famtree${idx}`);
 
     ReactDOM.render(<App
       founder={ parseInt(root.dataset.founder) }

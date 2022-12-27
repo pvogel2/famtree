@@ -83,14 +83,14 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 					initialOpen={ true }
 				>
 				  <SelectControl
-  			    label={ __( 'Current founder', 'pedigree' ) }
+  			    label={ __( 'Current founder', 'famtree' ) }
 	  				labelPosition= 'side'
             value={ parseInt(founder) }
             onChange={ ( f ) => setAttributes({ founder: parseInt(f) }) }
 				  	options={ getFamiliesOptions() }
 					/>
           <ToggleControl
-  			    label={ __( 'Show founder FAB', 'pedigree' ) }
+  			    label={ __( 'Show founder FAB', 'famtree' ) }
 	  				labelPosition= 'side'
             checked={ founderFAB }
             onChange={ () => setAttributes({ founderFAB: !founderFAB }) }

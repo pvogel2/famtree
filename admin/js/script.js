@@ -1,6 +1,6 @@
-window.pedigree = window.pedigree || {};
+window.famtree = window.famtree || {};
 
-window.pedigree.saveRelations = function() {
+window.famtree.saveRelations = function() {
   const rls = personEditor.edit.relations.filter((rl) => rl.modified);
   const ps = [];
 
@@ -19,7 +19,7 @@ window.pedigree.saveRelations = function() {
     }
 
     const options = {
-      path: `pedigree/v1/relation/${rl.id >= 0 ? rl.id : ''}`,
+      path: `famtree/v1/relation/${rl.id >= 0 ? rl.id : ''}`,
       type: deleted ? 'DELETE' : 'POST',
     };
 
@@ -36,34 +36,34 @@ window.pedigree.saveRelations = function() {
   return ps;
 }
 
-window.pedigree.saveAll = function() {
-  const ps = window.pedigree.saveRelations();
-  ps.push(window.pedigree.savePerson());
+window.famtree.saveAll = function() {
+  const ps = window.famtree.saveRelations();
+  ps.push(window.famtree.savePerson());
 
   Promise.allSettled(ps).then((ress) => {
     document.location.reload();
   });
 }
 
-window.pedigree.loadFamilies = async () => {
+window.famtree.loadFamilies = async () => {
   const options = {
-    path: 'pedigree/v1/family/',
+    path: 'famtree/v1/family/',
     type: 'GET',
   };
 
   return wp.apiRequest(options);
 }
 
-window.pedigree.loadMetadata = async (id) => {
+window.famtree.loadMetadata = async (id) => {
   const options = {
-    path: `pedigree/v1/person/${id}/metadata`,
+    path: `famtree/v1/person/${id}/metadata`,
     type: 'GET',
   };
 
   return wp.apiRequest(options);
 }
 
-window.pedigree.savePerson = function() {
+window.famtree.savePerson = function() {
   const person = personEditor.edit.getPerson();
   if (!person.firstName || !person.lastName) {
     return;
@@ -76,7 +76,7 @@ window.pedigree.savePerson = function() {
   }
 
   const options = {
-    path: `pedigree/v1/person${person.id ? `/${person.id}` : ''}`,
+    path: `famtree/v1/person${person.id ? `/${person.id}` : ''}`,
     type: 'POST',
     data: { ...person },
   };
@@ -85,7 +85,7 @@ window.pedigree.savePerson = function() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const { relations, persons } = await window.pedigree.loadFamilies();
+  const { relations, persons } = await window.famtree.loadFamilies();
 
   relations.forEach((r) => {
     Relation.add(r);
@@ -152,7 +152,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-window.pedigree.partnerSelected = () => {
+window.famtree.partnerSelected = () => {
   const form = personEditor.edit.getForm();
   const partnersSelect = form.partners;
 
@@ -162,7 +162,7 @@ window.pedigree.partnerSelected = () => {
   }
 };
 
-window.pedigree.relMetaChanged = () => {
+window.famtree.relMetaChanged = () => {
   if (personEditor.edit.relation) {
     const f = personEditor.edit.getForm();
     personEditor.edit.relation.start = f.relStart.value;
@@ -171,7 +171,7 @@ window.pedigree.relMetaChanged = () => {
   }
 };
 
-window.pedigree.removePartner = () => {
+window.famtree.removePartner = () => {
   const form = personEditor.edit.getForm();
   const partnersSelect = form.partners;
   const rId = parseInt(partnersSelect.value);
@@ -188,7 +188,7 @@ window.pedigree.removePartner = () => {
   }
 }
 
-window.pedigree.addPartner = (id) => {
+window.famtree.addPartner = (id) => {
   let pId = parseInt(id);
   if (isNaN(pId)) {
     const cSelect = document.getElementById('candidates');
@@ -232,12 +232,12 @@ window.pedigree.addPartner = (id) => {
   }
 };
 
-window.pedigree.removeChild = () => {
+window.famtree.removeChild = () => {
   if (!personEditor.edit.relation) return;
   personEditor.edit.removeChild();
 }
 
-window.pedigree.addChild = (id) => {
+window.famtree.addChild = (id) => {
   let cId = parseInt(id);
   if (isNaN(cId)) {
     const cSelect = document.getElementById('candidates');
@@ -247,7 +247,7 @@ window.pedigree.addChild = (id) => {
   personEditor.edit.addChild(cId);
 };
 
-window.pedigree.getMediaType = (mimetype) => {
+window.famtree.getMediaType = (mimetype) => {
   if (mimetype.startsWith('image')) {
     return 'image';
   }
@@ -267,7 +267,7 @@ window.pedigree.getMediaType = (mimetype) => {
   return 'unknown';
 };
 
-window.pedigree.editPerson = (id) => {
+window.famtree.editPerson = (id) => {
   const person = Person.find(id);
   if (person) {
     window.scrollTo(0, 0);
@@ -276,7 +276,7 @@ window.pedigree.editPerson = (id) => {
     const metadataForm = personEditor.metadata.getForm();
     metadataForm.refid.value = id;
 
-    window.pedigree.loadMetadata(id)
+    window.famtree.loadMetadata(id)
       .then((results) => {
         personEditor.metadata.set(results);
       })
@@ -286,18 +286,18 @@ window.pedigree.editPerson = (id) => {
   }
 };
 
-window.pedigree.resetPerson = () => {
+window.famtree.resetPerson = () => {
   personEditor.edit.reset();
   personEditor.metadata.reset();
 };
 
-window.pedigree.deletePerson = async () => {
+window.famtree.deletePerson = async () => {
   const person = personEditor.edit.getPerson();
   const pId = person.id;
   if (!pId) return;
 
   const options = {
-    path: `pedigree/v1/person/${pId}`,
+    path: `famtree/v1/person/${pId}`,
     type: 'DELETE',
   };
 
@@ -318,30 +318,30 @@ window.pedigree.deletePerson = async () => {
 
 }
 
-window.pedigree.editMedia = (mediaId) => {
-  const mediaLib = window.pedigree.wkEditMedia.open();
+window.famtree.editMedia = (mediaId) => {
+  const mediaLib = window.famtree.wkEditMedia.open();
   // setTimeout(() => {
   //   mediaLib.$el[0].querySelector(`[data-id="${mediaId}"]`).click();
   // }, 1000);
 }
 
-window.pedigree.removeMeta = (mId) => {
+window.famtree.removeMeta = (mId) => {
   const options = {
-    path: `pedigree/v1/metadata/${mId}`,
+    path: `famtree/v1/metadata/${mId}`,
     type: 'DELETE',
   };
 
   wp.apiRequest(options).then(() => {    // remove from html
     personEditor.metadata.remove(mId);
-    window.pedigree.showMessage('Additional file removed');
+    window.famtree.showMessage('Additional file removed');
  })
   .fail((request, statusText) => {
-    window.pedigree.showMessage('Additional file remove failed', 'error');
+    window.famtree.showMessage('Additional file remove failed', 'error');
     console.log('error', statusText)
   });
 }
 
-window.pedigree.showMessage = (message, type = 'success') => {
+window.famtree.showMessage = (message, type = 'success') => {
   const m = document.getElementById('ped-message');
   m.classList.remove('ped-hidden', 'notice-success', 'notice-error');
   m.classList.add(`notice-${type}`);
@@ -350,12 +350,12 @@ window.pedigree.showMessage = (message, type = 'success') => {
   window.scrollTo(0,0);
 }
 
-window.pedigree.hideMessage = () => {
+window.famtree.hideMessage = () => {
   const m = document.getElementById('ped-message');
   m.classList.add('ped-hidden');
 }
 
-window.pedigree.saveMeta = (attachment) => {
+window.famtree.saveMeta = (attachment) => {
   const metadataForm = personEditor.metadata.getForm();
 
   const item = {
@@ -364,26 +364,26 @@ window.pedigree.saveMeta = (attachment) => {
   };
 
   const options = {
-    path: 'pedigree/v1/metadata/',
+    path: 'famtree/v1/metadata/',
     type: 'POST',
     data: { ...item },
   };
 
   wp.apiRequest(options).then((resultData) => {
     personEditor.metadata.addItem(resultData);
-    window.pedigree.showMessage('Additional file saved');
+    window.famtree.showMessage('Additional file saved');
   })
   .fail((request, statusText) => {
     console.log('error', statusText);
-    window.pedigree.showMessage('Saving of additional file failed', 'error');
+    window.famtree.showMessage('Saving of additional file failed', 'error');
   });
 }
 
-window.pedigree.updateRoot = async (elem, pId) => {
+window.famtree.updateRoot = async (elem, pId) => {
   const root = elem.checked;
 
   const options = {
-    path: `pedigree/v1/root/${pId}`,
+    path: `famtree/v1/root/${pId}`,
     type: 'POST',
     data: { root },
   };
@@ -391,17 +391,17 @@ window.pedigree.updateRoot = async (elem, pId) => {
   const ps = Person.find(pId);
 
   wp.apiRequest(options).then(() => {
-    window.pedigree.showMessage(`${ root ? 'Added' : 'Removed'} ${ ps.name } as available family founder.`);
+    window.famtree.showMessage(`${ root ? 'Added' : 'Removed'} ${ ps.name } as available family founder.`);
   })
   .catch((err) => {
-    window.pedigree.showMessage('Updating roots failed', 'error');
+    window.famtree.showMessage('Updating roots failed', 'error');
   });
 }
 
 jQuery(function($){
   let wkMedia;
 
-  window.pedigree.wkEditMedia = wp.media({
+  window.famtree.wkEditMedia = wp.media({
     title: 'Edit media',
     button: {
     text: 'Save'
@@ -447,7 +447,7 @@ jQuery(function($){
     // When a file is selected, grab the URL and set it as the text field's value
     wkMedia.on('select', function() {
       const attachment = wkMedia.state().get('selection').first().toJSON();
-      window.pedigree.saveMeta(attachment);
+      window.famtree.saveMeta(attachment);
     });
     // Open the upload dialog
     wkMedia.open();

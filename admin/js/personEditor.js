@@ -371,7 +371,7 @@ const personEditor = {
       removeTd.classList.add('column-remove');
 
       if (!item.thumbnail) {
-        const type = window.pedigree.getMediaType(item.mimetype);
+        const type = window.famtree.getMediaType(item.mimetype);
         thumbTd.innerHTML = `<span title='${item.title}' class="ped-dashicons-thumb dashicons dashicons-media-${type}"></span>`;
       } else {
         thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
@@ -379,8 +379,8 @@ const personEditor = {
       nameTd.innerText = item.title;
 
       excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
-      editTd.innerHTML = `<button type="button" title="edit" class="button icon" onclick="window.pedigree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
-      removeTd.innerHTML = `<button type="button" title="remove" class="button icon" onclick="window.pedigree.removeMeta(${item.id})"><span class="dashicons dashicons-trash"></span></button>`;
+      editTd.innerHTML = `<button type="button" title="edit" class="button icon" onclick="window.famtree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
+      removeTd.innerHTML = `<button type="button" title="remove" class="button icon" onclick="window.famtree.removeMeta(${item.id})"><span class="dashicons dashicons-trash"></span></button>`;
       tr.appendChild(thumbTd);
       tr.appendChild(nameTd);
       tr.appendChild(excerptTd);

@@ -3,7 +3,7 @@ if (!class_exists('WP_List_Table')) {
   require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
   
-require_once(PEDIGREE__PLUGIN_DIR . 'includes/database.php');
+require_once(FAMTREE_PLUGIN_DIR . 'includes/database.php');
 
 class Persons_List_Table extends WP_List_Table {
   private $persons_data;
@@ -55,7 +55,7 @@ class Persons_List_Table extends WP_List_Table {
         // wp_get_attachment_image_url($portrait, 'thumbnail')
         switch ($column_name) {
           case 'portraitImageId' :return '<img alt="" src="' . $avatarUrl . '" class="avatar avatar-32 photo" height="32" width="32" loading="lazy" decoding="async">';
-          case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.pedigree.updateRoot(this, ' . $id . ')" />';
+          case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.famtree.updateRoot(this, ' . $id . ')" />';
           case 'firstName': return $item[$column_name];
           case 'surNames': return $item[$column_name];
           case 'lastName': return $item[$column_name];
@@ -63,7 +63,7 @@ class Persons_List_Table extends WP_List_Table {
           case 'birthday': return $item[$column_name];
           case 'deathday': return $item[$column_name];
           case 'relations': return '<select disabled="disabled"></select>';
-          case 'edit': return '<button type="button" title="edit" onclick="window.pedigree.editPerson(' . $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
+          case 'edit': return '<button type="button" title="edit" onclick="window.famtree.editPerson(' . $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
           default:
             return print_r($item, true); //Show the whole array for troubleshooting purposes
             }
@@ -99,7 +99,7 @@ class Persons_List_Table extends WP_List_Table {
       }
 
       private function get_persons_data($search = '') {
-        $persons = pedigree_database_get_persons_new($search);
+        $persons = famtree_database_get_persons_new($search);
         return $persons;
       }      //...
 }

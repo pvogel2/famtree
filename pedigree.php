@@ -23,15 +23,15 @@
 
 if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define( 'PEDIGREE__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'FAMTREE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
-require_once(PEDIGREE__PLUGIN_DIR . 'includes/activation.php');
-require_once(PEDIGREE__PLUGIN_DIR . 'includes/rest.php');
-require_once(PEDIGREE__PLUGIN_DIR . 'includes/settings.php');
+require_once(FAMTREE_PLUGIN_DIR . 'includes/activation.php');
+require_once(FAMTREE_PLUGIN_DIR . 'includes/rest.php');
+require_once(FAMTREE_PLUGIN_DIR . 'includes/settings.php');
 
-function pedigree_render_block($attributes) {
+function famtree_render_block($attributes) {
   return sprintf('<div
-	  class="pedigree-block-container"
+	  class="famtree-block-container"
 		data-founder="%1$s"
 		data-founder-fab="%2$s"
 		data-background-color="%3$s"
@@ -50,18 +50,18 @@ function pedigree_render_block($attributes) {
   );
 }
 
-function create_block_pedigree_block_init() {
+function create_block_famtree_block_init() {
 	register_block_type(
 		__DIR__ . '/build',
 		array(
-			'render_callback' => 'pedigree_render_block',
+			'render_callback' => 'famtree_render_block',
 	  )
 	);
 }
 
-add_action( 'init', 'create_block_pedigree_block_init' );
+add_action( 'init', 'create_block_famtree_block_init' );
 
-register_activation_hook( __FILE__, 'pedigree_activate' );
-register_deactivation_hook( __FILE__, 'pedigree_role_teardown' );
+register_activation_hook( __FILE__, 'famtree_activate' );
+register_deactivation_hook( __FILE__, 'famtree_role_teardown' );
 // To debug extra createt text messages:
-// add_action('activated_plugin','my_save_error'); function my_save_error() { file_put_contents(dirname(__file__).'/error_activation.txt', ob_get_contents()); } 
+add_action('activated_plugin','my_save_error'); function my_save_error() { file_put_contents(dirname(__file__).'/error_activation.txt', ob_get_contents()); } 

@@ -7,7 +7,7 @@ import RenderContext from './RenderContext.js';
 const gltfLoader = new GLTFLoader();
 
 function RenderProvider(props) {
-  const { instanceId = 'pedigree_instance0' } = props;
+  const { instanceId = 'famtree_instance0' } = props;
   const [renderer, setRenderer] = useState(null);
   const renderTarget = useRef(null);
   const rendererId = `${instanceId}renderer`;

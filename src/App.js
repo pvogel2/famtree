@@ -123,7 +123,7 @@ function App(props) {
     }
   }, [selection]);
 
-  const instanceId = `pedigree_instance${idx}`;
+  const instanceId = `famtree_instance${idx}`;
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

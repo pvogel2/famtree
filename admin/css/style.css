@@ -6,25 +6,25 @@
   padding: 0;
 }
 
-.wp-list-table.toplevel_page_pedigree .column-root {
+.wp-list-table.toplevel_page_famtree .column-root {
   width: 3em;
 }
 
-.wp-list-table.toplevel_page_pedigree .column-edit,
-.wp-list-table.toplevel_page_pedigree .column-remove {
+.wp-list-table.toplevel_page_famtree .column-edit,
+.wp-list-table.toplevel_page_famtree .column-remove {
   width: 3em;
 }
 
-.wp-list-table.toplevel_page_pedigree .column-nocontent {
+.wp-list-table.toplevel_page_famtree .column-nocontent {
   text-align: center;
 }
 
-.wp-list-table.toplevel_page_pedigree .column-deathday,
-.wp-list-table.toplevel_page_pedigree .column-birthday {
+.wp-list-table.toplevel_page_famtree .column-deathday,
+.wp-list-table.toplevel_page_famtree .column-birthday {
   width: 8em;
 }
 
-.wp-list-table.toplevel_page_pedigree .column-portraitImageId {
+.wp-list-table.toplevel_page_famtree .column-portraitImageId {
   width: 3em;
 }
 

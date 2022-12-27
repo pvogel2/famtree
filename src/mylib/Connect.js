@@ -1,7 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 
 export async function loadFamily() {
-  const data = await apiFetch({ path: 'pedigree/v1/family/' });
+  const data = await apiFetch({ path: 'famtree/v1/family/' });
   const { persons = [], relations = [] } = { ...data };
 
   persons.forEach(p => {
@@ -32,7 +32,7 @@ export async function loadFamily() {
 
 
 export async function loadMetadata(personId) {
-  const data = await apiFetch({ path: `pedigree/v1/person/${personId}/metadata` });
+  const data = await apiFetch({ path: `famtree/v1/person/${personId}/metadata` });
 
   return data;
 }

@@ -13,7 +13,7 @@
 			"gradients": true
 		}
 	},
-	"textdomain": "pedigree",
+	"textdomain": "famtree",
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
 	"editorStyle": "file:./index.css",
