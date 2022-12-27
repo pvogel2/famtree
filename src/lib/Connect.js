@@ -11,7 +11,7 @@ export async function loadFamily() {
     const members = r.members;
     members.forEach((id) => {
       if (!personsObj[id]) {
-        console.error('Relation Error: Could not find related person with id', id, ', skipping relation.');
+        console.warn('Relation Error: Could not find related person with id', id, ', skipping relation.');
         return;
       }
       personsObj[id].relations.push(r.id);

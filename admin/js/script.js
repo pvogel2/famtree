@@ -125,7 +125,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       const ps = Person.find(mId);
 
       if (!ps) {
-        console.error('Relation Error: Could not find partner relation with id', mId, ', skipping relation.');
+        console.warn('Relation Error: Could not find partner relation with id', mId, ', skipping relation.');
         return;
       }
 
@@ -139,7 +139,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const ps = Person.find(cId);
 
         if (!ps) {
-          console.error('Relation Error: Could not find child with id', cId, ', skipping relation.');
+          console.warn('Relation Error: Could not find child with id', cId, ', skipping relation.');
           return;
         }
 

@@ -31,7 +31,7 @@ require_once(PEDIGREE__PLUGIN_DIR . 'includes/settings.php');
 
 function pedigree_render_block($attributes) {
   return sprintf('<div
-	  class="pedigree-block-container" style="position:relative; min-height: 640px;"
+	  class="pedigree-block-container"
 		data-founder="%1$s"
 		data-founder-fab="%2$s"
 		data-background-color="%3$s"
