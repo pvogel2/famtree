@@ -38,5 +38,5 @@ export async function loadMetadata(personId) {
 }
 
 export function getBaseUrl() {
-  return `${apiFetch.nonceEndpoint.replace(/(wp-admin).*/, '')}wp-content/plugins/pedigree/`;
+  return `${apiFetch.nonceEndpoint.replace(/(wp-admin).*/, '')}wp-content/plugins/famtree/`;
 }

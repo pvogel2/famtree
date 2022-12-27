@@ -20,6 +20,7 @@ import './style.scss';
 import Edit from './edit';
 import metadata from './block.json';
 
+import { BlockIcon } from './assets/components/BlockIcon';
 /**
  * Every block starts by registering a new block type definition.
  *
@@ -34,6 +35,7 @@ registerBlockType( metadata.name, {
 	 * @see ./save.js
 	 */
 	save: () => null,
+	icon: BlockIcon,
 	title: metadata.title,
 	supports: {
 		align: [ 'left', 'right', 'full' ],

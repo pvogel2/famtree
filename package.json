@@ -1,5 +1,5 @@
 {
-	"name": "pedigree",
+	"name": "famtree",
 	"version": "0.10.0-beta",
 	"description": "Still experimental block to manage and visualize family trees (Scaffolded with Create Block tool).",
 	"author": "Peter Vogel",

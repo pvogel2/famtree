@@ -1,11 +1,11 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
-	"name": "create-block/pedigree",
+	"name": "create-block/famtree",
 	"version": "0.10.0-beta",
-	"title": "Pedigree",
+	"title": "FamTree",
 	"category": "widgets",
-	"icon": "smiley",
+	"icon": "famtree",
 	"description": "Example static block scaffolded with Create Block tool.",
 	"supports": {
 		"html": false,
