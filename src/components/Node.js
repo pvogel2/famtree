@@ -5,7 +5,7 @@ import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import { useSelector } from 'react-redux';
 
-import { getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, addLabelText3D, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
+import { getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, addLabelText3D, findNamedGroup, createNamedGroup } from '../lib/nodes/utils2';
 import Person from '../lib/Person';
 import Partner from './Partner';
 

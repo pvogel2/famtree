@@ -13,7 +13,7 @@ import focusedPersonReducer, { setPerson } from '../../store/focusedPersonReduce
 import dialogsReducer, { showPersonDialog } from '../../store/dialogsReducer';
 import runtimeReducer from '../../store/runtimeReducer';
 import layoutReducer from '../../store/layoutReducer';
-import relationsReducer from '../../store/relationsReducer';
+import relationsReducer, { setRelations } from '../../store/relationsReducer';
 
 import DataPerson from './../Person';
 
@@ -34,13 +34,26 @@ function getPersonWithListing(add, n = 1) {
 }
 
 /* Interface ------------------------------------------------------------- */
-
 let globalPersonCounter = 1;
-function getPerson() {
+let globalRelationCounter = 1;
+
+function getRelation(members = [],  children = []) {
+  return {
+    id: globalRelationCounter++,
+    members,
+    children,
+    start: null,
+    end: null,
+    type: null,
+  };
+}
+
+function getPerson(config = { relations: [] }) {
   return new DataPerson({
-    id: `p${globalPersonCounter++}`,
+    id: globalPersonCounter++,
     firstName: `First${Math.random()}`,
     lastName: 'Book',
+    ...config,
   });
 }
 
@@ -73,6 +86,8 @@ function getDataThreeGroup(n) {
 }
 
 function getRelationsThreeGroup(n) {
+  // console.log('->', n.name, '<->', n.children.length);
+  // n.children.forEach((g) => console.log('name', g.name));
   return n.children.find((g) => g.name.startsWith('relations'));
 }
 
@@ -80,14 +95,12 @@ function getAssetsThreeGroup(n) {
   return n.children.find((g) => g.name === 'assets');
 }
 
-function renderWithContext(node, persons = [], config = {}) {
-  let focusedPerson;
-
-  if (!Array.isArray(persons)) {
-    config = persons.config || {};
-    focusedPerson = persons.focusedPerson || null;
-    persons = persons.persons || [];
-  }
+function renderWithContext(node, config = {}) {
+  const {
+    focusedPerson = null,
+    persons = [],
+    relations = [],
+  } = config;
 
   const store = configureStore({ reducer: {
     runtime: runtimeReducer,
@@ -103,6 +116,10 @@ function renderWithContext(node, persons = [], config = {}) {
     store.dispatch(setPersons(persons.map((p) => p.serialize())));
   }
 
+  if (relations.length) {
+    store.dispatch(setRelations(relations));
+  }
+
   const {
     edit = null,
   } = config;
@@ -115,10 +132,12 @@ function renderWithContext(node, persons = [], config = {}) {
     store.dispatch(setPerson(focusedPerson));
   }
 
+  renderer._objects = {};
   renderer.addObject.mockImplementation((meshId, m, doIntercept, parent) => {
     if (parent) {
       parent.add(m);
     };
+    renderer._objects[meshId] = m;
   });
 
   const result = render(
@@ -151,6 +170,7 @@ export async function getSelectOptions(base, container) {
 export default {
   renderWithContext,
   getPerson,
+  getRelation,
   clonePerson,
   getPersonWithChild,
   getPersonWithPartner,

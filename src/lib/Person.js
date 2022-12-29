@@ -58,8 +58,6 @@ export default class Person {
     this.pDeathday = parseDate(config.deathday);
 
     this.id = config.id || `${this.pFirstName}${this.pLastName}${this.pBirthday}`; // TODO: remove generated id stuff
-    this.pChildren = getInitializedArray(config.children);
-    this.pPartners = getInitializedArray(config.partners);
 
     this.pRelations = getInitializedArray(config.relations);
 
@@ -122,28 +120,12 @@ export default class Person {
     this.pPortraitUrl = portraitUrl;
   }
 
-  get children() {
-    return this.pChildren.slice();
-  }
-
-  get partners() {
-    return this.pPartners.slice();
-  }
-
   get relations() {
     return this.pRelations.slice();
   }
 
   get portraitUrl() {
     return this.pPortraitUrl;
-  }
-
-  hasChildren() {
-    return !!this.pChildren.length;
-  }
-  
-  hasPartners() {
-    return !!this.pPartners.length;
   }
 
   hasRelations() {
@@ -154,30 +136,10 @@ export default class Person {
     return p?.id === this.id;
   }
 
-  addChild(newId) {
-    if (!this.pChildren.find((id) => newId === id) && isValidId(newId)) {
-      this.pChildren.push(newId);
-    }
-  }
-
-  removeChild(id) {
-    removeItem(this.pChildren, id);
-  }
-
-  addPartner(newId) {
-    if (!this.pPartners.find((id) => newId === id) && isValidId(newId)) {
-      this.pPartners.push(newId);
-    }
-  }
-
   addRelation(newId) {
     if (!this.pRelations.find((id) => newId === id) && isValidId(newId)) {
       this.pRelations.push(newId);
     }
-  }
-
-  removePartner(id) {
-    removeItem(this.pPartners, id);
   }
 
   removeRelation(id) {
@@ -193,8 +155,6 @@ export default class Person {
       birthName: this.pBirthName,
       birthday: this.pBirthday,
       deathday: this.pDeathday,
-      partners: this.pPartners.slice(),
-      children: this.pChildren.slice(),
       relations: this.pRelations.slice(),
       portraitUrl: this.pPortraitUrl,
     };

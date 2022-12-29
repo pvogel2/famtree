@@ -1,23 +1,8 @@
-import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
 
-import ThreeText from '../../lib/three/Text';
-import ThreeText3D from '../../lib/three/Text3D';
-import Transition from '../../lib/Transition';
-import avatarImage from './../../assets/images/avatar.png';
-import { getBaseUrl } from '../Connect';
-
-const textureLoader = new TextureLoader();
-const gltfLoader = new GLTFLoader();
+import Transition from '../Transition';
 
 let personMesh;
-
-function getGLTFPerson() {
-    gltfLoader.load(`${getBaseUrl()}public/models/personMesh.gltf`, (gltf) => {
-    personMesh = gltf.scene.children[0];
-  });
-}
-getGLTFPerson();
 
 export function getRootNode(m) {
   if (isValidNode(m) && !m?.name.match(/^(person|partner)$/)) {
@@ -130,14 +115,6 @@ export function getSymbolGroup(person = {}, layout = {}) {
   if (layout.foreground) {
     baseMesh.material.setValues({ color: layout.foreground });
   }
-
-  let texture;
-  if (person.portraitUrl) {
-    texture = textureLoader.load(person.portraitUrl);
-  } else {
-    texture = textureLoader.load(avatarImage);
-  }
-  texture.flipY = false;
   portraitMesh.material = portraitMesh.material.clone();
   portraitMesh.material.setValues({ map: texture });
 
@@ -148,30 +125,8 @@ export function getSymbolGroup(person = {}, layout = {}) {
   return newPersonMesh;
 }
 
-export function addLabelText(p, label, color = null) {
-  const text = new ThreeText({
-    text: label,
-    position: new Vector3(0.75, -1, 0),
-    rotation: new Vector3(0, Math.PI * 0.5, 0),
-    scale: 0.4,
-    color,
-  });
-
-  text.attach(null, p);
-  return text;
-}
-
 export function addLabelText3D(p, label, color = null) {
-  const text = new ThreeText3D({
-    text: label,
-    position: new Vector3(0.75, -1, 0),
-    rotation: new Vector3(0, Math.PI * 0.5, 0),
-    scale: 0.4,
-    color,
-  });
-
-  text.attach(null, p);
-  return text;
+  return {};
 }
 
 export function findLabelText(m) {

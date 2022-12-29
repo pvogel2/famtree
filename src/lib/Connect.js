@@ -6,8 +6,6 @@ export async function loadFamily() {
 
   persons.forEach(p => {
     p.id = Number(p.id);
-    p.children = [];
-    p.partners = [];
     p.root = p.root === '1';
   });
 
