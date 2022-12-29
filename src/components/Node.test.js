@@ -1,38 +1,39 @@
 import React from 'react';
 import { cleanup } from '@testing-library/react';
-import { Color, Vector3 } from 'three';
-
+import { Color, Vector3, Group as MockGroup } from 'three';
+import { ThreeText3D as MockThreeText3D } from '../lib/nodes/utils';
 import U from '../lib/tests/utils';
 import Node from './Node';
 
-jest.mock('../lib/nodes/utils', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      getPersonGroup: () => ({}),
-      getSymbolGroup: () => ({}),
-      getDataGroup: () => ({}),
-      getAssetsGroup: () => ({}),
-      addLabelText3D: () => ({}),
-      findNamedGroup: () => ({}),
-      createNamedGroup: () => ({}),
-    };
-  });
-});
+jest.mock('../lib/nodes/utils', () => ({
+      getPersonGroup: () => (new MockGroup()),
+      getSymbolGroup: () => (new MockGroup()),
+      getDataGroup: () => (new MockGroup()),
+      getAssetsGroup: () => (new MockGroup()),
+      addLabelText3D: () => ({
+        remove: jest.fn(),
+      }),
+      findNamedGroup: () => (new MockGroup()),
+      createNamedGroup: () => (new MockGroup()),
+  })
+);
 
 const nodeDist = 6;
 const genDist = 6;
 const prtOffset = nodeDist * 0.5;
 const cldDist = nodeDist;
 
-afterEach(cleanup);
+// afterEach(cleanup);
+afterEach(() => {
+  jest.clearAllMocks()
+});
 
 const serializedPerson = U.getPerson().serialize();
 const serializedWithChild = U.getPersonWithChild().serialize();
 const serializedWithPartner = U.getPersonWithPartner().serialize();
 
-it.only('renders something for Node', () => {
-  const { debug, container } = U.renderWithContext(<Node />);
-  debug(container);
+it('renders something for Node', () => {
+  const { container } = U.renderWithContext(<Node />);
   expect(container.firstChild).toBeNull();
 });
 
@@ -43,30 +44,29 @@ it('adds no mesh without given person', () => {
 
 it('adds a mesh to the scene', () => {
   const { renderer } = U.renderWithContext(<Node person={ serializedPerson }/>);
-  expect(renderer.addObject).toHaveBeenCalledWith(expect.any(String), expect.any(Object), true, undefined);
+  expect(renderer.addObject).toHaveBeenCalledWith(expect.any(String), expect.any(Object), false, undefined);
 });
 
-it('adds a name to the mesh', () => {
-  const { renderer } = U.renderWithContext(<Node person={ serializedPerson }/>);
-  const node = renderer.addObject.mock.calls[0][1];
-  expect(node.name).toEqual(expect.stringMatching(/^node/));
+it('adds several groups to the mesh', () => {
+  const { renderer } = U.renderWithContext(<Node person={ serializedPerson } parent={ new MockGroup() }/>);
+  expect(renderer.addObject).toHaveBeenCalledWith(expect.stringMatching(/^symbol/), expect.anything(), expect.anything(), expect.anything());
+  expect(renderer.addObject).toHaveBeenCalledWith(expect.stringMatching(/^person/), expect.anything(), expect.anything(), expect.anything());
 });
 
 it('adds an offset to the node', () => {
-  const offset = new Vector3(1, 1, 1);
-  const { renderer } = U.renderWithContext(<Node person={ serializedPerson } offset={ offset }/>);
+  const offset = new Vector3(0, 1, 2);
+  const { renderer } = U.renderWithContext(<Node person={ serializedPerson } offsetY={ offset.y } offsetZ={ offset.z }/>);
   const node = renderer.addObject.mock.calls[0][1];
   expect(node.position).toEqual(offset);
 });
 
 describe('For a child', () => {
-  it('use child nodes', () => {
+  it.only('use child nodes', () => {
     const { renderer } = U.renderWithContext(<Node person={ serializedWithChild }/>);
     const node = renderer.addObject.mock.calls[0][1];
-    expect(renderer.addObject).toHaveBeenCalledTimes(1);
 
-    const childsGroup = U.getChildrenThreeGroup(node);
-    expect(childsGroup.isGroup).toEqual(true);
+    const relationsGroup = U.getRelationsThreeGroup(node);
+    expect(relationsGroup.isGroup).toEqual(true);
   });
   
   it('adds correct y offset', () => {

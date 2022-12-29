@@ -72,8 +72,8 @@ function getDataThreeGroup(n) {
   return n.children.find((g) => g.name === 'data');
 }
 
-function getChildrenThreeGroup(n) {
-  return n.children.find((g) => g.name === 'children');
+function getRelationsThreeGroup(n) {
+  return n.children.find((g) => g.name.startsWith('relations'));
 }
 
 function getAssetsThreeGroup(n) {
@@ -156,6 +156,6 @@ export default {
   getPersonWithPartner,
   getPartnerThreeGroup,
   getDataThreeGroup,
-  getChildrenThreeGroup,
+  getRelationsThreeGroup,
   getAssetsThreeGroup,
 };

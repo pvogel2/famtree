@@ -277,7 +277,6 @@ function Node(props) {
           </Fragment>
         );
       });
-
       return (
         <Fragment key={ `relation${r.id}` }>
           { partnerNode }
