@@ -2,7 +2,7 @@ import { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { Vector3, Line, BufferGeometry, BufferAttribute, LineBasicMaterial, Color } from 'three';
 import RenderContext from '../RenderContext.js';
-import { getMesh } from '../../lib/nodes/utils';
+// import { getMesh } from '../../lib/nodes/utils';
 
 function getRelationLines(s, t, config = { foreground, highlight }) {
   const foreColor = new Color(config.foreground);

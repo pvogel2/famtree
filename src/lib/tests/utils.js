@@ -86,9 +86,16 @@ function getDataThreeGroup(n) {
 }
 
 function getRelationsThreeGroup(n) {
-  // console.log('->', n.name, '<->', n.children.length);
-  // n.children.forEach((g) => console.log('name', g.name));
   return n.children.find((g) => g.name.startsWith('relations'));
+}
+
+function getChildNodes(n) {
+  const rg = getRelationsThreeGroup(n);
+  if (!rg) {
+    return [];
+  }
+
+  return rg.children.filter((c) => c.name.startsWith('person'));
 }
 
 function getAssetsThreeGroup(n) {
@@ -177,5 +184,6 @@ export default {
   getPartnerThreeGroup,
   getDataThreeGroup,
   getRelationsThreeGroup,
+  getChildNodes,
   getAssetsThreeGroup,
 };

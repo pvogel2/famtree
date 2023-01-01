@@ -1,23 +1,26 @@
 import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import ThreeText from '../../lib/three/Text';
 import ThreeText3D from '../../lib/three/Text3D';
+import ThreePreparedMeshes from '../../lib/three/PreparedMeshes';
 import Transition from '../../lib/Transition';
 import avatarImage from './../../assets/images/avatar.png';
-import { getBaseUrl } from '../Connect';
+// import { getBaseUrl } from '../Connect';
 
+console.log('ThreePreparedMeshes', ThreePreparedMeshes);
 const textureLoader = new TextureLoader();
-const gltfLoader = new GLTFLoader();
+// const gltfLoader = new GLTFLoader();
 
-let personMesh;
+/* let personMesh;
 
-function getGLTFPerson() {
+  function getGLTFPerson() {
     gltfLoader.load(`${getBaseUrl()}public/models/personMesh.gltf`, (gltf) => {
     personMesh = gltf.scene.children[0];
   });
 }
 getGLTFPerson();
+*/
 
 export function getRootNode(m) {
   if (isValidNode(m) && !m?.name.match(/^(person|partner)$/)) {
@@ -118,7 +121,7 @@ export function getPartnerGroup(person = {}) {
 }
 
 export function getSymbolGroup(person = {}, layout = {}) {
-  const newPersonMesh = personMesh.clone();
+  const newPersonMesh = (ThreePreparedMeshes.getPerson()).clone();
 
   const portraitMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshPortrait');
   portraitMesh.userData.refId = person.id;
