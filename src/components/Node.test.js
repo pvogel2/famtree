@@ -69,6 +69,11 @@ function getPersonWithChilds(persons = [], relations = [], n = 1) {
   return ps;
 }
 
+function getAddObjectNode(r, id) {
+  const calls = r.addObject.mock.calls.filter((c) => c[0] === id)
+  return calls[calls.length - 1][1];
+}
+
 const serializedPerson = U.getPerson();
 const serializedPartner = U.getPerson().serialize();
 const serializedChild = U.getPerson().serialize();
@@ -186,7 +191,7 @@ describe('For multiple grand childs', () => {
     expect(grandChildNodes[1].position).toEqual(new Vector3(0, genDist, -cldDist));
   });
 
-  it.only('adds correct grand child offsets for multiple childs', () => {
+  it('adds correct grand child offsets for multiple childs', () => {
     const persons = [];
     const relations = [];
     const person = U.getPerson();
@@ -201,30 +206,39 @@ describe('For multiple grand childs', () => {
     persons.push(person, partner, childTwo);
 
     const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>, { persons, relations });
-    const node = renderer.addObject.mock.calls[0][1];
 
-    const childNodes = U.getChildNodes(node);
-    expect(childNodes[0].position).toEqual(new Vector3(0, genDist, cldDist * 0.5));
-    expect(childNodes[1].position).toEqual(new Vector3(0, genDist, -cldDist * 1.5));
+    const cOneNode = getAddObjectNode(renderer, `person${childOne.id}`);
+    const cTwoNode = getAddObjectNode(renderer, `person${childTwo.id}`);
+
+    expect(cOneNode.position).toEqual(new Vector3(0, genDist, 3));
+    expect(cTwoNode.position).toEqual(new Vector3(0, genDist, -cldDist * 1.5));
   });
 });
 
-describe.skip('For a partner', () => {
+describe.only('For a partner', () => {
   it('adds a mesh to the node', () => {
-    const { renderer } = U.renderWithContext(<Node person={ serializedWithPartner.serialize() }/>);
-    const node = renderer.addObject.mock.lastCall[1];
-    const partnersGroup = U.getPartnerThreeGroup(node);
+    const persons = [];
+    const relations = [];
+    const person = getPersonWithChilds(persons, relations, 0);
 
-    expect(partnersGroup.isGroup).toEqual(true);
+    const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>,  { persons, relations });
+    const node = renderer.addObject.mock.calls[0][1];
+    const partner = U.getPartnerNodes(node)[0];
+
+    expect(partner.isGroup).toEqual(true);
   });
   
   it('adds offset', () => {
-    const { renderer } = U.renderWithContext(<Node person={ serializedWithPartner.serialize() }/>);
-    const node = renderer.addObject.mock.lastCall[1];
-    const partnersGroup = U.getPartnerThreeGroup(node);
+    const persons = [];
+    const relations = [];
+    const person = getPersonWithChilds(persons, relations, 0);
 
-    expect(node.position).toEqual(new Vector3(0, 0, prtOffset));
-    expect(partnersGroup.position).toEqual(new Vector3(0, 0, -prtOffset * 2));
+    const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>,  { persons, relations });
+    const node = renderer.addObject.mock.calls[0][1];
+    const partner = U.getPartnerNodes(node)[0];
+
+    expect(node.position).toEqual(new Vector3(0, 0, 0));
+    expect(partner.position).toEqual(new Vector3(0, 0, -nodeDist));
   });
 });
 

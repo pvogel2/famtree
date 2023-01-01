@@ -139,7 +139,7 @@ function Node(props) {
     sendSize(newTotalSize);
     if (totalSize !== newTotalSize) {
       if (person.id === debugId) console.log('set newTotalSize', newTotalSize);
-    setTotalSize(newTotalSize);
+      setTotalSize(newTotalSize);
     }
   }, [person, relations, sizes, sendSize]);
 
@@ -255,6 +255,9 @@ function Node(props) {
 
         currentChildTarget.add(new Vector3(0, 0, -childSize)); // shift right to end of current childSize (prepare for next child)
 
+        if (person.id === debugId) {
+          console.log('childTarget', c.id, childTarget.z);
+        }
         return (
           <Fragment key={ `children${c.id}` }>
             <Node

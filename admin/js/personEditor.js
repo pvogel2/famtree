@@ -144,7 +144,7 @@ const personEditor = {
       this.relations = [];
 
       f.querySelectorAll('fieldset').forEach((fs) => {
-        fs.disabled = true;
+        // fs.disabled = true;
       });
     },
 
