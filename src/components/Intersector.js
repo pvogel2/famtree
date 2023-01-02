@@ -53,7 +53,6 @@ function Intersector(props) {
       renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       dispatch(setSelectedMeta(intersectedObj.userData.refId));
     };
-
     if (isPersonNode(intersectedObj) && !isSelected) {
       renderer.registerEventCallback('click', selectFocusedPerson);
       focusNode(intersectedObj, { highlight, renderer });
@@ -90,7 +89,6 @@ function Intersector(props) {
     if (!renderer) return;
 
     const setIntersected = (event, intersected) => {
-
       if (intersected.length) {
         const maybeObj = intersected[0].object;
         if (intersectedObj?.uuid !== maybeObj.uuid && isValidNode(maybeObj)) {

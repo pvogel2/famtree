@@ -8,7 +8,6 @@ import Transition from '../../lib/Transition';
 import avatarImage from './../../assets/images/avatar.png';
 // import { getBaseUrl } from '../Connect';
 
-console.log('ThreePreparedMeshes', ThreePreparedMeshes);
 const textureLoader = new TextureLoader();
 // const gltfLoader = new GLTFLoader();
 

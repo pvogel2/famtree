@@ -108,6 +108,11 @@ function getPartnerNodes(n) {
 }
 
 function getAssetsThreeGroup(n) {
+  return n.children.find((g) => g.name === 'symbols');
+}
+
+
+function getSymbolsThreeGroup(n) {
   return n.children.find((g) => g.name === 'assets');
 }
 
@@ -196,4 +201,5 @@ export default {
   getChildNodes,
   getPartnerNodes,
   getAssetsThreeGroup,
+  getSymbolsThreeGroup,
 };

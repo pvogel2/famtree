@@ -178,7 +178,7 @@ function Node(props) {
   }
 
   function getNodeRelations() {
-    if (!relations?.length) {
+     if (!relations?.length) {
       return null;
     }
 
