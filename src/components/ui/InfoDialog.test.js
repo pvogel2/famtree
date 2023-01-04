@@ -1,5 +1,7 @@
 import React from 'react';
 import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
 import U from '../../lib/tests/utils';
 import InfoDialog from './InfoDialog';
 
@@ -9,7 +11,7 @@ function getDialog(base) {
 
 function getTitle(base) {
   const dialog = getDialog(base);
-  return dialog.querySelector('.MuiCardHeader-content');
+  return dialog.querySelector('.MuiDialogTitle-root');
 }
 
 afterEach(cleanup);
@@ -24,15 +26,17 @@ it('is not in the document', () => {
   expect(dialogElement).not.toBeInTheDocument();
 });
 
-it('is in the document if not editing', () => {
+it('is in the document for focused person', () => {
   const { baseElement } = U.renderWithContext(<InfoDialog />, defaultContext);
   const dialogElement = getDialog(baseElement);
 
   expect(dialogElement).toBeInTheDocument();
 });
 
-it.only('is not in the document if editing', () => {
-  const { baseElement, store } = U.renderWithContext(<InfoDialog />, { ...defaultContext, config: { edit: '' } });
+it('is not in the document if person selected', () => {
+  const selectedPerson = U.getPerson();
+
+  const { baseElement } = U.renderWithContext(<InfoDialog />, { ...defaultContext, selectedPerson: selectedPerson.serialize() });
   const dialogElement = getDialog(baseElement);
 
   expect(dialogElement).not.toBeInTheDocument();

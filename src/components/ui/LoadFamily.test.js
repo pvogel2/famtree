@@ -7,7 +7,7 @@ import LoadFamily from './LoadFamily';
 
 jest.useFakeTimers();
 
-jest.mock("../../lib/Connect");
+jest.mock('../../lib/Connect');
 
 afterEach(cleanup);
 
@@ -16,6 +16,8 @@ beforeEach(() => {
 });
 
 it('renders elements for LoadFamily', () => {
-  const { container } = U.renderWithContext(<LoadFamily />);
+  const persons = [];
+  const families = [];
+  const { container } = U.renderWithContext(<LoadFamily />, { persons, families });
   expect(container.firstChild).not.toBeNull();
 });

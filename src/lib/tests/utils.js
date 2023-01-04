@@ -8,12 +8,13 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import RenderContext from '../../components/RenderContext';
 import personsReducer, { setPersons } from '../../store/personsReducer';
-import selectedPersonReducer from '../../store/selectedPersonReducer';
+import selectedPersonReducer, { setPerson as setSelected } from '../../store/selectedPersonReducer';
 import focusedPersonReducer, { setPerson } from '../../store/focusedPersonReducer';
 import dialogsReducer, { showPersonDialog } from '../../store/dialogsReducer';
 import runtimeReducer from '../../store/runtimeReducer';
 import layoutReducer from '../../store/layoutReducer';
 import relationsReducer, { setRelations } from '../../store/relationsReducer';
+import familiesReducer from '../../store/familiesReducer';
 
 import DataPerson from './../Person';
 
@@ -119,6 +120,7 @@ function getSymbolsThreeGroup(n) {
 function renderWithContext(node, config = {}) {
   const {
     focusedPerson = null,
+    selectedPerson = null,
     persons = [],
     relations = [],
   } = config;
@@ -131,6 +133,7 @@ function renderWithContext(node, config = {}) {
     layout: layoutReducer,
     selectedPerson: selectedPersonReducer,
     relations: relationsReducer,
+    families: familiesReducer,
   }});
 
   if (persons.length) {
@@ -151,6 +154,10 @@ function renderWithContext(node, config = {}) {
 
   if (focusedPerson) {
     store.dispatch(setPerson(focusedPerson));
+  }
+
+  if (selectedPerson) {
+    store.dispatch(setSelected(selectedPerson));
   }
 
   renderer._objects = {};
