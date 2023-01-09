@@ -39,31 +39,25 @@ const properties = [
   {
     key: 'birthday',
     default: null,
-    config: { birthday: '29.03.1972' },
-    expect: '29.03.1972',
+    config: { birthday: '1972-03-29' },
+    expect: '70675200000',
     setter: true,
   },
   {
     key: 'deathday',
     default: null,
-    config: { deathday: '1.1.2200' },
-    expect: '1.1.2200',
+    config: { deathday: '2200-01-01' },
+    expect: '7258118400000',
     setter: true,
   },
 ];
 
 const lists = [
   {
-    key: 'children',
-    add: 'addChild',
-    remove: 'removeChild',
-    has: 'hasChildren',
-  },
-  ,  {
-    key: 'partners',
-    add: 'addPartner',
-    remove: 'removePartner',
-    has: 'hasPartners',
+    key: 'relations',
+    add: 'addRelation',
+    remove: 'removeRelation',
+    has: 'hasRelations'
   },
 ];
 
@@ -172,7 +166,6 @@ it('serialize returns serialiable person data', () => {
     lastName: expect.any(String),
     birthday: null,
     deathday: null,
-    children: expect.any(Array),
-    partners: expect.any(Array),
+    relations: expect.any(Array),
   }));
 });

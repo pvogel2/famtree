@@ -41,6 +41,7 @@ function parseDate(d) {
   if (!isNaN(result)) {
     return `${result}`;
   }
+
   return null;
 }
 export default class Person {
