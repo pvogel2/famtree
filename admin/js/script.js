@@ -154,6 +154,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       });
     });
   });
+
+  personEditor.initialize();
 });
 
 window.famtree.partnerSelected = () => {

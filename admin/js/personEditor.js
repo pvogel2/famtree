@@ -1,6 +1,25 @@
 const personEditor = {
+  initialize() {
+    const f = this.edit.getForm();
+    const firstname = f['firstName'];
+    const lastname = f['lastName'];
+
+    if (!firstname || !lastname) {
+      console.error('missing mandatory form elements');
+      return;
+    }
+
+    const checkForEditing = () => {
+      this.edit.editing = !!firstname.value && !!lastname.value;
+      console.log('>>>', this.edit.editing);
+    };
+    firstname.addEventListener('input', checkForEditing);
+
+    lastname.addEventListener('input', checkForEditing);
+  },
   edit: {
     stageCounter: -1,
+    editing: false,
     relations: [], // Relation class instances
     relation: null, //Relation class instance
     form: '#editPersonForm',
@@ -133,6 +152,7 @@ const personEditor = {
       this.setPortrait();
       this.relation = null;
       this.relations = [];
+      this.editing = false;
    },
 
     removeRelation() {
