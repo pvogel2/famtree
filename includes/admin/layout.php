@@ -41,7 +41,7 @@ function famtree_form_select_field($name, $label, $callback = NULL, $options = N
     ?>
     </select>
     <?php if(isset($rmCb)) {
-      render_remove_button($rmCb);
+      render_remove_button($rmCb, $name);
     } ?>
   </div></td>
   <?php
@@ -65,9 +65,9 @@ function famtree_render_legend($text) {
   <?php
 }
 
-function render_remove_button($callback) {
+function render_remove_button($callback, $prefix) {
   ?>
-  <button type="button" onclick="window.famtree.<?php echo $callback ?>()" class="button icon">
+  <button disabled="disabled" type="button" onclick="window.famtree.<?php echo $callback ?>()" class="button icon" <?php if(isset($prefix)) print('name="' . $prefix . '_remove"') ?>>
     <span title="<?php echo __('remove', 'famtree') ?>" class="dashicons dashicons-trash"></span>
   </button>
   <?php
@@ -101,7 +101,7 @@ function famtree_render_edit_person_form() {
     <form method="post" action="javascript:;" onsubmit="window.famtree.saveAll()" id="editPersonForm" class="form famtree-form">
       <input readonly hidden type="text" name="id" id="personId" />
       <div class="famtree-form__flex">
-        <fieldset disabled="disabled">
+        <fieldset>
         <?php famtree_render_legend('Attributes') ?>
           <table>
             <?php
@@ -114,7 +114,7 @@ function famtree_render_edit_person_form() {
             ?>
           </table>
         </fieldset>
-        <fieldset disabled="disabled">
+        <fieldset>
         <?php famtree_render_legend('Relations') ?>
           <table>  
             <tr>
@@ -146,7 +146,7 @@ function famtree_render_edit_person_form() {
             </tr>
            </table>
         </fieldset>
-        <fieldset disabled="disabled">
+        <fieldset>
           <input hidden id="portraitImageId" type="text" name="portraitImageId" class="form"/>
           <?php famtree_render_legend('Portrait foto') ?>
           <table>  
@@ -166,7 +166,7 @@ function famtree_render_edit_person_form() {
           </table>
         </fieldset>
       </div>
-      <fieldset class="submit" disabled="disabled">
+      <fieldset class="submit">
         <button type="button" onclick="window.famtree.resetPerson()" class="button famtree-form__button"><?php echo __('Reset Person', 'famtree') ?></button>
         <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo __('Remove Person', 'famtree') ?></button>
         <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo __('Save Person', 'famtree') ?></button>
@@ -196,7 +196,7 @@ function famtree_render_edit_person_form() {
             <table>
               <tr>
                 <td>
-                  <input id="upload-metadata-button" type="button" class="button" value="Add Metadata" disabled/>
+                  <input id="upload-metadata-button" type="button" class="button" value="Add Metadata"/>
                 </td>
               </tr>
             </table>

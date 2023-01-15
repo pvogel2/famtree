@@ -37,8 +37,16 @@ window.famtree.saveRelations = function() {
 }
 
 window.famtree.saveAll = function() {
+  const person = personEditor.edit.getPerson();
+
+  // validate minimal valid input
+  if (!person.firstName || !person.lastName) {
+    window.famtree.showMessage('Persons need at least firstname and lastname', 'error');
+    return;
+  };
+
   const ps = window.famtree.saveRelations();
-  ps.push(window.famtree.savePerson());
+  ps.push(window.famtree.savePerson(person));
 
   Promise.allSettled(ps).then((ress) => {
     document.location.reload();
@@ -63,12 +71,8 @@ window.famtree.loadMetadata = async (id) => {
   return wp.apiRequest(options);
 }
 
-window.famtree.savePerson = function() {
-  const person = personEditor.edit.getPerson();
-  if (!person.firstName || !person.lastName) {
-    return;
-  };
-
+// returns a Promise
+window.famtree.savePerson = function(person) {
   // get root information from table, the only place where it is modified
   const input = document.querySelector(`.wp-list-table tbody tr[data-id="${person.id}"] .root input`);
   if (input) {
@@ -188,6 +192,15 @@ window.famtree.removePartner = () => {
   }
 }
 
+window.famtree._addPartner = (id) => {
+  let pId = parseInt(id);
+  if (isNaN(pId)) {
+    const cSelect = document.getElementById('candidates');
+    pId =  parseInt(cSelect.value);
+  }
+  if (isNaN(pId)) return;
+}
+
 window.famtree.addPartner = (id) => {
   let pId = parseInt(id);
   if (isNaN(pId)) {
@@ -219,13 +232,6 @@ window.famtree.addPartner = (id) => {
       members: [form.id.value, pId],
     };
     const rId = personEditor.edit.addRelation(relation);
-    const newOption = document.createElement('option');
-    const partnerPerson = Person.find(pId);
-    newOption.setAttribute('value', rId);
-    newOption.text = `${partnerPerson.name} (p:${partnerPerson.id}, r:${rId})`;
-    partnersSelect.add(newOption);
-    partnersSelect.disabled = false;
-    partnersSelect.selectedIndex = Math.max(partnersSelect.options.length - 1, 0);
 
     relation.id = rId;
     Relation.add({ ...relation, members: [...relation.members], children: [...relation.children] });
