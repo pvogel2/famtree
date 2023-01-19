@@ -13,15 +13,13 @@ const personEditor = {
       const wasEditing = !!this.edit.editing;
       this.edit.editing = !!firstname.value && !!lastname.value;
       if (wasEditing !== this.edit.editing) {
-        f['fs_relations'].disabled = !this.edit.editing;
-        f['fs_portrait'].disabled = !this.edit.editing;
         f['fs_buttons'].disabled = !this.edit.editing;
+        this.edit.update(this.edit.editing);
         this.metadata.update(this.edit.editing);
-        this.edit.updateCandidatesSelect();
       }
     };
-    firstname.addEventListener('input', checkForEditing);
 
+    firstname.addEventListener('input', checkForEditing);
     lastname.addEventListener('input', checkForEditing);
   },
   edit: {
@@ -31,15 +29,20 @@ const personEditor = {
     relation: null, //Relation class instance
     form: '#editPersonForm',
 
+    update(editing) {
+      const f = this.getForm();
+      f['fs_portrait'].disabled = !editing;
+      f['fs_relations'].disabled = !editing;
+      this.updateCandidatesSelect();
+    },
+
     getForm() {
       return document.querySelector(this.form);
     },
 
     setRelations(rs) {
       const f = this.getForm();
-      const relType = f.relType;
       const pId = f['id'].value;
-      relType.disabled = false;
 
       if (!pId) {
         return;
@@ -65,8 +68,12 @@ const personEditor = {
   
         this._addOption(select, person.name, r.id);
       });
-
-      select.selectedIndex = 0;
+      if (this.relations.length) {
+        select.selectedIndex = 0;
+        f.relType.disabled = false;
+        f.relStart.disabled = false;
+        f.relEnd.disabled = false;
+        }
     },
   
     updateRelations() {
@@ -178,6 +185,11 @@ const personEditor = {
     },
 
     removeRelation() {
+      const f = this.getForm();
+      if (!f.partners.options.length) {
+        this.resetPartnersSelect();
+      }
+
       if (!this.relation) return;
       const rId = this.relation.id;
       this.relation = null;
@@ -213,14 +225,20 @@ const personEditor = {
       const partners = this.getForm().partners;
       this._addOption(partners, newPartner.name, rId);
 
+      const f = this.getForm();
+      f.relType.disabled = false;
+      f.relStart.disabled = false;
+      f.relEnd.disabled = false;
+
       return rId;
     },
 
     removeChild() {
-      const childrenSelect = this.getForm().children;
-      const partnersSelect = this.getForm().partners;
-      const cId = parseInt(childrenSelect.value);
-      const rId = parseInt(partnersSelect.value);
+      const f = this.getForm();
+      const children = f.children;
+      const partners = f.partners;
+      const cId = parseInt(children.value);
+      const rId = parseInt(partners.value);
 
       if (cId) {
         // update current relation
@@ -233,10 +251,14 @@ const personEditor = {
         }
 
         // update form children options
-        [...childrenSelect.options]
+        [...children.options]
           .filter((o) => parseInt(o.value) === cId)
-          .forEach((o) => childrenSelect.remove(o))
+          .forEach((o) => children.remove(o))
         ;
+
+        if (!children.options.length) {
+          this.resetChildrenSelect();
+        }
       }
     },
 
@@ -280,6 +302,10 @@ const personEditor = {
 
     resetPartnersSelect() {
       this._resetSelect('partners');
+      const f = this.getForm();
+      f.relType.disabled = true;
+      f.relStart.disabled = true;
+      f.relEnd.disabled = true;
     },
 
     resetCandidatesSelect() {

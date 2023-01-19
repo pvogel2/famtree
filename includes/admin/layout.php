@@ -18,11 +18,11 @@ function famtree_form_text_field($name, $label) {
   <?php
 }
 
-function famtree_form_date_field($name, $label, $callback = NULL) {
+function famtree_form_date_field($name, $label, $callback = NULL, $disabled = NULL) {
   ?>
   <tr>
     <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-    <td><input type="date" name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . $callback . '()"') ?> min="1700-01-01" id="<?php print ($name) ?>" /></td>
+    <td><input type="date" name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . $callback . '()"') ?> min="1700-01-01" id="<?php print ($name) ?>" <?php if(isset($disabled)) print('disabled="disabled"') ?> /></td>
   </tr>
   <?php
 }
@@ -124,8 +124,8 @@ function famtree_render_edit_person_form() {
               <?php famtree_form_select_field('children', 'Children', NULL, NULL, 'removeChild') ?>
             </tr>
             <?php
-            famtree_form_date_field('relStart', 'Begin', 'relMetaChanged');
-            famtree_form_date_field('relEnd', 'End', 'relMetaChanged');
+            famtree_form_date_field('relStart', 'Begin', 'relMetaChanged', TRUE);
+            famtree_form_date_field('relEnd', 'End', 'relMetaChanged', TRUE);
             ?>
             <tr>
               <?php famtree_form_select_field('relType', 'Kind of', 'relMetaChanged', ['marriage', 'partnership']) ?>
