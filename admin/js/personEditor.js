@@ -10,8 +10,15 @@ const personEditor = {
     }
 
     const checkForEditing = () => {
+      const wasEditing = !!this.edit.editing;
       this.edit.editing = !!firstname.value && !!lastname.value;
-      console.log('>>>', this.edit.editing);
+      if (wasEditing !== this.edit.editing) {
+        f['fs_relations'].disabled = !this.edit.editing;
+        f['fs_portrait'].disabled = !this.edit.editing;
+        f['fs_buttons'].disabled = !this.edit.editing;
+        this.metadata.update(this.edit.editing);
+        this.edit.updateCandidatesSelect();
+      }
     };
     firstname.addEventListener('input', checkForEditing);
 
@@ -82,6 +89,9 @@ const personEditor = {
       f.deathday.value = p.deathday;
       f.portraitImageId.value = p._portraitId;
 
+      f.firstName.dispatchEvent(new Event('input'));
+      f.lastName.dispatchEvent(new Event('input'));
+
       this.setPortrait({ id: p._portraitId, url: p._portraitUrl });
 
       const rs = Relation.filter((r) => r.members.includes(p.id));
@@ -101,6 +111,13 @@ const personEditor = {
       f.portraitImageId.value = data.id;
     },
 
+    updateCandidatesSelect() {
+      if (this.editing) {
+        this.setCandidatesSelect();
+      } else {
+        this.resetCandidatesSelect();
+      }
+    },
     setCandidatesSelect() {
       const f = this.getForm();
       const select = f.candidates;
@@ -112,6 +129,7 @@ const personEditor = {
       });
 
       select.selectedIndex = 0;
+      select.disabled = false;
     },
 
     getPerson() {
@@ -152,8 +170,12 @@ const personEditor = {
       this.setPortrait();
       this.relation = null;
       this.relations = [];
+
+      f.firstName.dispatchEvent(new Event('input'));
+      f.lastName.dispatchEvent(new Event('input'));
+
       this.editing = false;
-   },
+    },
 
     removeRelation() {
       if (!this.relation) return;
@@ -329,11 +351,9 @@ const personEditor = {
       return document.querySelector(this.form);
     },
 
-    update(data) {
-      const form = this.getForm();
-      // const inp = form[this.idInput];
-      // inp.value = data.id;
-      // form.submit();
+    update(enable) {
+      const f = this.getForm();
+      f['fs_add'].disabled = !enable;
     },
 
     addItem(item) {

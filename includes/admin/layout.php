@@ -114,7 +114,7 @@ function famtree_render_edit_person_form() {
             ?>
           </table>
         </fieldset>
-        <fieldset>
+        <fieldset name="fs_relations" disabled="disabled">
         <?php famtree_render_legend('Relations') ?>
           <table>  
             <tr>
@@ -146,7 +146,7 @@ function famtree_render_edit_person_form() {
             </tr>
            </table>
         </fieldset>
-        <fieldset>
+        <fieldset name="fs_portrait" disabled="disabled">
           <input hidden id="portraitImageId" type="text" name="portraitImageId" class="form"/>
           <?php famtree_render_legend('Portrait foto') ?>
           <table>  
@@ -166,7 +166,7 @@ function famtree_render_edit_person_form() {
           </table>
         </fieldset>
       </div>
-      <fieldset class="submit">
+      <fieldset class="submit" name="fs_buttons" disabled="disabled">
         <button type="button" onclick="window.famtree.resetPerson()" class="button famtree-form__button"><?php echo __('Reset Person', 'famtree') ?></button>
         <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo __('Remove Person', 'famtree') ?></button>
         <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo __('Save Person', 'famtree') ?></button>
@@ -191,7 +191,7 @@ function famtree_render_edit_person_form() {
       </div>
       <div>
         <form method="post" id="uploadMetadataForm" action="javascript:;" class="form famtree-form">
-          <fieldset class="last">
+          <fieldset class="last" disabled="disabled" name="fs_add">
             <input hidden id="upload-metadata-refid" type="text" name="refid" />
             <table>
               <tr>
