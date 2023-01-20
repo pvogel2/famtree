@@ -15,6 +15,7 @@ function famtree_field_families_cb() {
 function famtree_admin_init() {
   wp_register_script( 'famtree-admin-script-s', plugins_url('/../admin/js/script.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-r', plugins_url('/../admin/js/relation.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-ms', plugins_url('/../admin/js/ManagedSelect.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-p', plugins_url('/../admin/js/person.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-e', plugins_url('/../admin/js/personEditor.js', __FILE__) );
   wp_register_style( 'famtree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
@@ -25,6 +26,7 @@ function famtree_admin_scripts() {
    * It will be called only on your plugin admin page, enqueue our script here
    */
   wp_enqueue_script( 'famtree-admin-script-r' );
+  wp_enqueue_script( 'famtree-admin-script-ms' );
   wp_enqueue_script( 'famtree-admin-script-p' );
   wp_enqueue_script( 'famtree-admin-script-e' );
   wp_enqueue_script( 'famtree-admin-script-s' );

@@ -105,6 +105,10 @@ class Relation {
     this._id = parseInt(id);
   }
 
+  hasMember(id) {
+    return this._members.find((mId) => mId === parseInt(id));
+  }
+
   addChild(id) {
     const newId = parseInt(id);
     if (this._children.findIndex(_id => _id === newId) === -1) {

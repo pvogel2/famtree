@@ -178,29 +178,11 @@ window.famtree.relMetaChanged = () => {
 };
 
 window.famtree.removePartner = () => {
-  const form = personEditor.edit.getForm();
-  const partnersSelect = form.partners;
-  const rId = parseInt(partnersSelect.value);
+  const rId = personEditor.edit.rSelect.removeSelected();
   if (rId) {
-    const options = [...partnersSelect.options];
-    const option = options.find(o =>parseInt(o.value) === rId);
-  
-    // remove option
-    if (option) {
-      partnersSelect.removeChild(option);
-      Relation.remove(rId);
-      personEditor.edit.removeRelation(rId);
-    }
+    Relation.remove(rId);
+    personEditor.edit.removeRelation(rId);
   }
-}
-
-window.famtree._addPartner = (id) => {
-  let pId = parseInt(id);
-  if (isNaN(pId)) {
-    const cSelect = document.getElementById('candidates');
-    pId =  parseInt(cSelect.value);
-  }
-  if (isNaN(pId)) return;
 }
 
 window.famtree.addPartner = (id) => {
@@ -211,29 +193,21 @@ window.famtree.addPartner = (id) => {
   }
   if (isNaN(pId)) return;
 
-  const form = personEditor.edit.getForm();
-  const partnersSelect = form.partners;
-
-  let relation = null;
-  personEditor.edit.relations.forEach((rId) => {
-    const rel = Relation.find(rId);
-    if (rel?.members.find((mId) => mId == pId)) {
-      relation = { ...rel };
-    }
-  });
-
-  const options = [...partnersSelect.options];
-  const option = options.find(o => o.value == relation?.id);
-
-  if (!option) {
+  const person = personEditor.edit.getPerson();
+  if (!personEditor.edit.findInvolvedRelation(pId)) {
     // new relation
-    relation = {
+    const relation = {
       start: null,
       end: null,
       children: [],
-      members: [form.id.value, pId],
+      members: [person.id, pId],
     };
+
     const rId = personEditor.edit.addRelation(relation);
+
+    if (!rId) {
+      return;
+    }
 
     relation.id = rId;
     Relation.add({ ...relation, members: [...relation.members], children: [...relation.children] });

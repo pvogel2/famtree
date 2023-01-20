@@ -21,6 +21,10 @@ const personEditor = {
 
     firstname.addEventListener('input', checkForEditing);
     lastname.addEventListener('input', checkForEditing);
+
+    this.edit.rSelect = new ManagedSelect(f.partners, f[`${f.partners.name}_remove`], [f.relType, f.relStart, f.relEnd]);
+    this.edit.cSelect = new ManagedSelect(f.children, f[`${f.children.name}_remove`]);
+    this.edit.caSelect = new ManagedSelect(f.candidates);
   },
   edit: {
     stageCounter: -1,
@@ -28,6 +32,7 @@ const personEditor = {
     relations: [], // Relation class instances
     relation: null, //Relation class instance
     form: '#editPersonForm',
+    rSelect: null,
 
     update(editing) {
       const f = this.getForm();
@@ -50,7 +55,7 @@ const personEditor = {
 
       this.relations = rs.map((r) => new Relation(r));
 
-      this.resetPartnersSelect();
+      this.rSelect.reset();
       this.setPartnersSelect();
       if (this.relations.length) {
         this.setRelation(this.relations[0].clone());
@@ -59,23 +64,16 @@ const personEditor = {
 
     setPartnersSelect() {
       const f = this.getForm();
-      const select = f.partners;
       const pId = parseInt(f['id'].value);
 
       this.relations.forEach((r) => {
         const ps = r.members.filter((id) => id !== pId);
         const person = Person.find(ps[0]);
   
-        this._addOption(select, person.name, r.id);
+        this.rSelect.addOption(person.name, r.id);
       });
-      if (this.relations.length) {
-        select.selectedIndex = 0;
-        f.relType.disabled = false;
-        f.relStart.disabled = false;
-        f.relEnd.disabled = false;
-        }
     },
-  
+
     updateRelations() {
       this.relations = this.relations.filter((rl) => !rl.deleted);
       this.relations.forEach((rl) => {
@@ -122,21 +120,19 @@ const personEditor = {
       if (this.editing) {
         this.setCandidatesSelect();
       } else {
-        this.resetCandidatesSelect();
+        this.caSelect.reset();
       }
     },
+
     setCandidatesSelect() {
       const f = this.getForm();
-      const select = f.candidates;
       const id = parseInt(f.id.value);
       const cs = Person.filter((p) => (id !== p.id));
 
       cs.forEach((p) => {
-        this._addOption(select, p.name, p.id);
+        this.caSelect.addOption(p.name, p.id);
       });
-
-      select.selectedIndex = 0;
-      select.disabled = false;
+      this.caSelect.setIndex();
     },
 
     getPerson() {
@@ -171,9 +167,9 @@ const personEditor = {
     reset() {
       const f = this.getForm();
       f.reset();
-      this.resetChildrenSelect();
-      this.resetPartnersSelect();
-      this.resetCandidatesSelect();
+      this.cSelect.reset();
+      this.rSelect.reset();
+      this.caSelect.reset();
       this.setPortrait();
       this.relation = null;
       this.relations = [];
@@ -187,7 +183,7 @@ const personEditor = {
     removeRelation() {
       const f = this.getForm();
       if (!f.partners.options.length) {
-        this.resetPartnersSelect();
+        this.rSelect.reset();
       }
 
       if (!this.relation) return;
@@ -198,7 +194,17 @@ const personEditor = {
       if (rl) {
         rl.deleted = true;
       }
-      this.resetChildrenSelect();
+      this.cSelect.reset();
+    },
+
+    findInvolvedRelation(personId) {
+      let r = null;
+      this.relations.forEach((rl) => {
+        if (rl.hasMember(personId)) {
+          r = rl.serialize();
+        }
+      });
+      return r;
     },
 
     addRelation(r) {
@@ -207,7 +213,7 @@ const personEditor = {
 
       // no partner is defined
       if (!rl.members.length > 1) {
-        return;
+        return null;
       }
 
       const pId = rl.members[1];
@@ -215,30 +221,22 @@ const personEditor = {
 
       // defined partner can not be found
       if (!newPartner) {
-        return;
+        return null;
       }
 
       rl.modified = true;
       this.relations.push(rl.clone());
+
       this.setRelation(rl.clone());
 
-      const partners = this.getForm().partners;
-      this._addOption(partners, newPartner.name, rId);
-
-      const f = this.getForm();
-      f.relType.disabled = false;
-      f.relStart.disabled = false;
-      f.relEnd.disabled = false;
+      this.rSelect.addOption(newPartner.name, rId);
 
       return rId;
     },
 
     removeChild() {
-      const f = this.getForm();
-      const children = f.children;
-      const partners = f.partners;
-      const cId = parseInt(children.value);
-      const rId = parseInt(partners.value);
+      const cId = this.cSelect.value();
+      const rId = this.rSelect.value();
 
       if (cId) {
         // update current relation
@@ -250,86 +248,25 @@ const personEditor = {
           rl.removeChild(cId);
         }
 
-        // update form children options
-        [...children.options]
-          .filter((o) => parseInt(o.value) === cId)
-          .forEach((o) => children.remove(o))
-        ;
-
-        if (!children.options.length) {
-          this.resetChildrenSelect();
-        }
+        this.cSelect.removeOption(cId);
       }
-    },
-
-    _isId(v) {
-      return !isNaN(v) && typeof(v) === 'number';
-    },
-
-    _resetSelect(name) {
-      const s = this.getForm()[name];
-      if (!s) return;
-
-      while (s.options.length > 0) {
-        s.remove(s.options[0]);
-      }
-      s.disabled = 'disabled';
-      const b = this.getForm()[`${name}_remove`];
-      if (b) {
-        b.disabled = 'disabled';
-      }
-    },
-
-    _addOption(select, text, value) {
-      if (!text || !this._isId(value)) return;
-
-      const o = document.createElement('option');
-
-      o.setAttribute('value', value);
-      o.text = `${text} (${value})`;
-      select.appendChild(o);
-      select.disabled = false;
-
-      const rmBtn = this.getForm()[`${select.name}_remove`];
-      if (rmBtn) {
-        rmBtn.disabled = false;
-      }
-    },
-
-    resetChildrenSelect() {
-      this._resetSelect('children');
-    },
-
-    resetPartnersSelect() {
-      this._resetSelect('partners');
-      const f = this.getForm();
-      f.relType.disabled = true;
-      f.relStart.disabled = true;
-      f.relEnd.disabled = true;
-    },
-
-    resetCandidatesSelect() {
-      this._resetSelect('candidates');
     },
 
     setChildrenSelect(cnIds) {
-      const select = this.getForm().children;
-
       cnIds.forEach((cId)=>{
         const person = Person.find(cId);
         if (!person) {
           return;
         }
 
-        this._addOption(select, person.name, person.id);
+        this.cSelect.addOption(person.name, person.id);
       });
-
-      select.selectedIndex = 0;
+      this.cSelect.setIndex();
     },
 
     setRelation(rl = null) {
       const f = this.getForm();
-      this.resetChildrenSelect();
+      this.cSelect.reset();
       f.relStart.value = null;
       f.relEnd.value = null;
       f.relType.value = null;
@@ -358,11 +295,10 @@ const personEditor = {
       }
 
       // add to form child options
-      const children = this.getForm().children;
       const person = Person.find(id);
 
-      this._addOption(children, person.name, person.id);
-      children.value = id;
+      this.cSelect.addOption(person.name, person.id);
+      this.cSelect.setLast();
     },
   },
 
