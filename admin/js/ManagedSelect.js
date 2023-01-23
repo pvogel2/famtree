@@ -1,10 +1,10 @@
-class ManagedSelect {
+export const ManagedSelect = class ManagedSelect {
     constructor(select, button, related = []) {
       this.s = select;
       this.b = button;
       this.related = [...related];
     }
-  
+
     value() {
       return parseInt(this.s.value);
     }
@@ -13,6 +13,7 @@ class ManagedSelect {
       const rId = this.s.value;
       if (rId) {
         this.removeOption(rId);
+        this.disableIfEmpty();
         return parseInt(rId);
       }
       return null;
@@ -22,6 +23,7 @@ class ManagedSelect {
       while (this.s.options.length > 0) {
         this.removeOption(this.s.options[0]);
       }
+      this.disableIfEmpty();
     }
   
     isId(v) {
@@ -49,7 +51,7 @@ class ManagedSelect {
       o.text = `${text} (${value})`;
       this.s.appendChild(o);
       this.s.disabled = false;
-  
+
       if (this.b) {
         this.b.disabled = false;
       }
@@ -67,7 +69,9 @@ class ManagedSelect {
       } else {
         this.s.removeChild(valueOrOption);
       }
-  
+    }
+
+    disableIfEmpty() {
       if (!this.s.options.length) {
         this.s.disabled = true;
         this.related.forEach((rl) => rl.disabled = true);
@@ -76,5 +80,4 @@ class ManagedSelect {
         }
       }
     }
-  }
-  
+}

@@ -1,19 +1,31 @@
-const personEditor = {
-  initialize() {
-    const f = this.edit.getForm();
-    const firstname = f['firstName'];
-    const lastname = f['lastName'];
+import { ManagedSelect } from './ManagedSelect.js';
+import { Person } from './person.js';
+import { Relation } from './relation.js';
 
-    if (!firstname || !lastname) {
+export const PersonEditor = class PersonEditor {
+  constructor() {
+    const f = this.edit.getForm();
+    const firstname = f.elements['firstName'];
+    const lastname = f.elements['lastName'];
+    const partners = f.elements['partners'];
+    const partnersBtn = f.elements['partners_remove'];
+    const children = f.elements['children'];
+    const childrenBtn = f.elements['children_remove'];
+    const candidates = f.elements['candidates'];
+    const relType = f.elements['relType'];
+    const relStart = f.elements['relStart'];
+    const relEnd = f.elements['relEnd'];
+
+     if (!firstname || !lastname) {
       console.error('missing mandatory form elements');
       return;
     }
 
-    const checkForEditing = () => {
+    const checkForEditing = (ev) => {
       const wasEditing = !!this.edit.editing;
       this.edit.editing = !!firstname.value && !!lastname.value;
       if (wasEditing !== this.edit.editing) {
-        f['fs_buttons'].disabled = !this.edit.editing;
+        f.elements['fs_buttons'].disabled = !this.edit.editing;
         this.edit.update(this.edit.editing);
         this.metadata.update(this.edit.editing);
       }
@@ -22,11 +34,12 @@ const personEditor = {
     firstname.addEventListener('input', checkForEditing);
     lastname.addEventListener('input', checkForEditing);
 
-    this.edit.rSelect = new ManagedSelect(f.partners, f[`${f.partners.name}_remove`], [f.relType, f.relStart, f.relEnd]);
-    this.edit.cSelect = new ManagedSelect(f.children, f[`${f.children.name}_remove`]);
-    this.edit.caSelect = new ManagedSelect(f.candidates);
-  },
-  edit: {
+    this.edit.rSelect = new ManagedSelect(partners, partnersBtn, [relType, relStart, relEnd]);
+    this.edit.cSelect = new ManagedSelect(children, childrenBtn);
+    this.edit.caSelect = new ManagedSelect(candidates);
+  }
+
+  edit = {
     stageCounter: -1,
     editing: false,
     relations: [], // Relation class instances
@@ -36,8 +49,8 @@ const personEditor = {
 
     update(editing) {
       const f = this.getForm();
-      f['fs_portrait'].disabled = !editing;
-      f['fs_relations'].disabled = !editing;
+      f.elements['fs_portrait'].disabled = !editing;
+      f.elements['fs_relations'].disabled = !editing;
       this.updateCandidatesSelect();
     },
 
@@ -113,7 +126,7 @@ const personEditor = {
       }
 
       img.src = data.url || this.defaultPortraitImage;
-      f.portraitImageId.value = data.id;
+      f.elements['portraitImageId'].value = data.id;
     },
 
     updateCandidatesSelect() {
@@ -128,7 +141,6 @@ const personEditor = {
       const f = this.getForm();
       const id = parseInt(f.id.value);
       const cs = Person.filter((p) => (id !== p.id));
-
       cs.forEach((p) => {
         this.caSelect.addOption(p.name, p.id);
       });
@@ -174,8 +186,8 @@ const personEditor = {
       this.relation = null;
       this.relations = [];
 
-      f.firstName.dispatchEvent(new Event('input'));
-      f.lastName.dispatchEvent(new Event('input'));
+      f.elements['firstName'].dispatchEvent(new Event('input'));
+      f.elements['lastName'].dispatchEvent(new Event('input'));
 
       this.editing = false;
     },
@@ -267,17 +279,20 @@ const personEditor = {
     setRelation(rl = null) {
       const f = this.getForm();
       this.cSelect.reset();
-      f.relStart.value = null;
-      f.relEnd.value = null;
-      f.relType.value = null;
+      const rs = f.elements['relStart']
+      rs.value = null;
+      const re = f.elements['relEnd']
+      re.value = null;
+      const rt = f.elements['relType']
+      rt.value = null;
 
       this.relation = rl;
 
       if (this.relation) {
         this.setChildrenSelect(rl.children);
-        f.relStart.value = this.relation.start;
-        f.relEnd.value = this.relation.end;
-        f.relType.value = this.relation.type;
+        rs.value = this.relation.start;
+        re.value = this.relation.end;
+        rt.value = this.relation.type;
       }
     },
   
@@ -300,9 +315,9 @@ const personEditor = {
       this.cSelect.addOption(person.name, person.id);
       this.cSelect.setLast();
     },
-  },
+  }
 
-  metadata: {
+  metadata = {
     mediaTable: '#existingMetadata',
     uploadButton: '#upload-metadata-button',
     // idInput: 'metadata-id',
@@ -315,11 +330,10 @@ const personEditor = {
 
     update(enable) {
       const f = this.getForm();
-      f['fs_add'].disabled = !enable;
+      f.elements['fs_add'].disabled = !enable;
     },
 
     addItem(item) {
-      const table = document.querySelector(this.mediaTable);
       this.tableAddRow(item);
     },
 
@@ -404,5 +418,5 @@ const personEditor = {
       tr.appendChild(removeTd);
       table.appendChild(tr);
     }
-  },
+  }
 };

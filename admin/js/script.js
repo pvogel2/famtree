@@ -1,3 +1,6 @@
+import { PersonEditor } from './personEditor.js';
+import { Person } from './person.js';
+
 window.famtree = window.famtree || {};
 
 window.famtree.saveRelations = function() {
@@ -88,6 +91,8 @@ window.famtree.savePerson = function(person) {
   return wp.apiRequest(options);
 }
 
+let personEditor;
+
 window.addEventListener('DOMContentLoaded', async () => {
   const { relations, persons } = await window.famtree.loadFamilies();
 
@@ -155,7 +160,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  personEditor.initialize();
+  personEditor = new PersonEditor();
 });
 
 window.famtree.partnerSelected = () => {

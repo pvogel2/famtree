@@ -21,6 +21,21 @@ function famtree_admin_init() {
   wp_register_style( 'famtree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
 }
 
+function add_type_attribute($tag, $handle, $src) {
+  // if not your script, do nothing and return original $tag
+  if ( 'famtree-admin-script-ms' !== $handle
+    && 'famtree-admin-script-s' !== $handle
+    && 'famtree-admin-script-e' !== $handle
+    && 'famtree-admin-script-p' !== $handle ) {
+      return $tag;
+  }
+  // change the script tag by adding type="module" and return it.
+  $tag = '<script type="module" src="' . esc_url( $src ) . '"></script>';
+  return $tag;
+}
+
+add_filter('script_loader_tag', 'add_type_attribute' , 10, 3);
+
 function famtree_admin_scripts() {
   /*
    * It will be called only on your plugin admin page, enqueue our script here
