@@ -26,6 +26,7 @@ function add_type_attribute($tag, $handle, $src) {
   if ( 'famtree-admin-script-ms' !== $handle
     && 'famtree-admin-script-s' !== $handle
     && 'famtree-admin-script-e' !== $handle
+    && 'famtree-admin-script-r' !== $handle
     && 'famtree-admin-script-p' !== $handle ) {
       return $tag;
   }

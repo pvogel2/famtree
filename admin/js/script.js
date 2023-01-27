@@ -1,5 +1,6 @@
 import { PersonEditor } from './personEditor.js';
 import { Person } from './person.js';
+import { Relation } from './relation.js';
 
 window.famtree = window.famtree || {};
 
