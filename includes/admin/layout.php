@@ -140,7 +140,7 @@ function famtree_render_edit_person_form() {
               <td>
               </td>
               <td>
-                <button type="button" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo __('as child', 'famtree') ?></button>
+                <button type="button" name="btn_addChild" disabled="disabled" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo __('as child', 'famtree') ?></button>
                 <button type="button" onclick="window.famtree.addPartner()" class="button famtree-form__button"><?php echo __('as partner', 'famtree') ?></button>
               </td>
             </tr>

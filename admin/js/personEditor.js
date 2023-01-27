@@ -2,7 +2,7 @@ import { ManagedSelect } from './ManagedSelect.js';
 import { Person } from './person.js';
 import { Relation } from './relation.js';
 
-export const PersonEditor = class PersonEditor {
+export default class PersonEditor {
   constructor() {
     const f = this.edit.getForm();
     const firstname = f.elements['firstName'];
@@ -16,7 +16,7 @@ export const PersonEditor = class PersonEditor {
     const relStart = f.elements['relStart'];
     const relEnd = f.elements['relEnd'];
 
-     if (!firstname || !lastname) {
+    if (!firstname || !lastname) {
       console.error('missing mandatory form elements');
       return;
     }
@@ -33,7 +33,6 @@ export const PersonEditor = class PersonEditor {
 
     firstname.addEventListener('input', checkForEditing);
     lastname.addEventListener('input', checkForEditing);
-
     this.edit.rSelect = new ManagedSelect(partners, partnersBtn, [relType, relStart, relEnd]);
     this.edit.cSelect = new ManagedSelect(children, childrenBtn);
     this.edit.caSelect = new ManagedSelect(candidates);
@@ -96,7 +95,6 @@ export const PersonEditor = class PersonEditor {
 
     setPerson(p) {
       this.reset();
-
       const f = this.getForm();
       f.id.value = p.id;
       f.firstName.value = p.firstName;
@@ -194,25 +192,26 @@ export const PersonEditor = class PersonEditor {
 
     removeRelation() {
       const f = this.getForm();
-      if (!f.partners.options.length) {
-        this.rSelect.reset();
-      }
+      const rId = this.rSelect.removeSelected();
 
-      if (!this.relation) return;
-      const rId = this.relation.id;
-      this.relation = null;
+      if (this.relation) {
+        this.relation = null;
+      }
 
       const rl = this.relations.find(rl => rl.id === rId);
       if (rl) {
         rl.deleted = true;
       }
+
       this.cSelect.reset();
+      f.elements['btn_addChild'].disabled = this.rSelect.isDisabled();
+      return rId;
     },
 
     findInvolvedRelation(personId) {
       let r = null;
       this.relations.forEach((rl) => {
-        if (rl.hasMember(personId)) {
+        if (rl.hasMember(personId) && !rl.deleted) {
           r = rl.serialize();
         }
       });
@@ -220,6 +219,7 @@ export const PersonEditor = class PersonEditor {
     },
 
     addRelation(r) {
+      const f = this.getForm();
       const rl = new Relation({ ...r, id: this.stageCounter-- });
       const rId = rl.id; 
 
@@ -242,6 +242,7 @@ export const PersonEditor = class PersonEditor {
       this.setRelation(rl.clone());
 
       this.rSelect.addOption(newPartner.name, rId);
+      f.elements['btn_addChild'].disabled = false;
 
       return rId;
     },
@@ -259,7 +260,6 @@ export const PersonEditor = class PersonEditor {
         if (rl) {
           rl.removeChild(cId);
         }
-
         this.cSelect.removeOption(cId);
       }
     },

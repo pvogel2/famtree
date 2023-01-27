@@ -42,8 +42,19 @@ export const ManagedSelect = class ManagedSelect {
       }
     }
   
+    #getOption(value) {
+      const os = [...this.s.options];
+      return os.find((_o) => parseInt(_o.value) === parseInt(value));
+    }
+
     addOption(text, value) {
-      if (!text || !this.isId(value)) return;
+      if (!text || !this.isId(value)) {
+        return;
+      }
+
+      if (!!this.#getOption(value)) {
+        return;
+      }
   
       const o = document.createElement('option');
   
@@ -61,14 +72,15 @@ export const ManagedSelect = class ManagedSelect {
   
     removeOption(valueOrOption) {
       if (typeof valueOrOption === 'string' || typeof valueOrOption === 'number') {
-        const os = [...this.s.options];
-        const op = os.find((o) => parseInt(o.value) === parseInt(valueOrOption));
+        const op = this.#getOption(valueOrOption);
+
         if (op) {
           this.s.removeChild(op);
         }
       } else {
         this.s.removeChild(valueOrOption);
       }
+      this.disableIfEmpty();
     }
 
     disableIfEmpty() {
@@ -79,5 +91,9 @@ export const ManagedSelect = class ManagedSelect {
           this.b.disabled = true;
         }
       }
+    }
+
+    isDisabled() {
+      return !!this.b.disabled;
     }
 }

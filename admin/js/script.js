@@ -1,4 +1,4 @@
-import { PersonEditor } from './personEditor.js';
+import PersonEditor from './personEditor.js';
 import { Person } from './person.js';
 import { Relation } from './relation.js';
 
@@ -184,10 +184,11 @@ window.famtree.relMetaChanged = () => {
 };
 
 window.famtree.removePartner = () => {
-  const rId = personEditor.edit.rSelect.removeSelected();
+  const rId = personEditor.edit.removeRelation();
+  // const rId = personEditor.edit.rSelect.removeSelected();
   if (rId) {
     Relation.remove(rId);
-    personEditor.edit.removeRelation(rId);
+    // personEditor.edit.removeRelation(rId);
   }
 }
 
