@@ -14,10 +14,10 @@ function famtree_field_families_cb() {
 /* Register settings script. */
 function famtree_admin_init() {
   wp_register_script( 'famtree-admin-script-s', plugins_url('/../admin/js/script.js', __FILE__) );
-  wp_register_script( 'famtree-admin-script-r', plugins_url('/../admin/js/relation.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-r', plugins_url('/../admin/js/Relation.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-ms', plugins_url('/../admin/js/ManagedSelect.js', __FILE__) );
-  wp_register_script( 'famtree-admin-script-p', plugins_url('/../admin/js/person.js', __FILE__) );
-  wp_register_script( 'famtree-admin-script-e', plugins_url('/../admin/js/personEditor.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-p', plugins_url('/../admin/js/Person.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-e', plugins_url('/../admin/js/PersonEditor.js', __FILE__) );
   wp_register_style( 'famtree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
 }
 
@@ -63,7 +63,7 @@ function famtree_admin_styles() {
 function famtree_options_page() {
   $page = add_menu_page(
     'FamTree',
-    'FamTree Options',
+    'FamTree',
     'famtree_write',
     'famtree',
     'famtree_options_page_html'

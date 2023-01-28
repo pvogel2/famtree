@@ -1,6 +1,6 @@
 import ManagedSelect from './ManagedSelect.js';
-import Person from './person.js';
-import Relation from './relation.js';
+import Person from './Person.js';
+import Relation from './Relation.js';
 
 export default class PersonEditor {
   constructor() {
