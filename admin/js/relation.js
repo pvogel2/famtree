@@ -1,4 +1,4 @@
-export const Relation = class Relation {
+export default class Relation {
   static all = {};
 
   static add(data) {

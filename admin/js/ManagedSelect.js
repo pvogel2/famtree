@@ -1,4 +1,4 @@
-export const ManagedSelect = class ManagedSelect {
+export default class ManagedSelect {
     constructor(select, button, related = []) {
       this.s = select;
       this.b = button;

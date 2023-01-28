@@ -1,6 +1,6 @@
-import { ManagedSelect } from './ManagedSelect.js';
-import { Person } from './person.js';
-import { Relation } from './relation.js';
+import ManagedSelect from './ManagedSelect.js';
+import Person from './person.js';
+import Relation from './relation.js';
 
 export default class PersonEditor {
   constructor() {
@@ -59,7 +59,7 @@ export default class PersonEditor {
 
     setRelations(rs) {
       const f = this.getForm();
-      const pId = f['id'].value;
+      const pId = f.elements['id'].value;
 
       if (!pId) {
         return;
@@ -71,6 +71,7 @@ export default class PersonEditor {
       this.setPartnersSelect();
       if (this.relations.length) {
         this.setRelation(this.relations[0].clone());
+        f.elements['btn_addChild'].disabled = false;
       }
     },
 
@@ -96,21 +97,22 @@ export default class PersonEditor {
     setPerson(p) {
       this.reset();
       const f = this.getForm();
-      f.id.value = p.id;
-      f.firstName.value = p.firstName;
-      f.surNames.value = p.surNames;
-      f.lastName.value = p.lastName;
-      f.birthName.value = p.birthName;
-      f.birthday.value = p.birthday;
-      f.deathday.value = p.deathday;
-      f.portraitImageId.value = p._portraitId;
+      f.elements['id'].value = p.id;
+      f.elements['firstName'].value = p.firstName;
+      f.elements['surNames'].value = p.surNames;
+      f.elements['lastName'].value = p.lastName;
+      f.elements['birthName'].value = p.birthName;
+      f.elements['birthday'].value = p.birthday;
+      f.elements['deathday'].value = p.deathday;
+      f.elements['portraitImageId'].value = p._portraitId;
 
-      f.firstName.dispatchEvent(new Event('input'));
-      f.lastName.dispatchEvent(new Event('input'));
+      f.elements['firstName'].dispatchEvent(new Event('input'));
+      f.elements['lastName'].dispatchEvent(new Event('input'));
 
       this.setPortrait({ id: p._portraitId, url: p._portraitUrl });
 
       const rs = Relation.filter((r) => r.members.includes(p.id));
+
       this.setRelations(rs);
       this.setCandidatesSelect();
     },

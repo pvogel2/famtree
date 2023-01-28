@@ -1,5 +1,6 @@
 import PersonEditor from './personEditor.js';
-import { Person } from './person.js';
+import Person from './person.js';
+import Relation from './relation.js';
 import { addButton, addElement, addFieldset, addInput, addSelect } from '../../tests/utils.js';
 
 function mountForms() {
@@ -8,6 +9,12 @@ function mountForms() {
 
   const fm = document.createElement('form');
   fm.id = 'uploadMetadataForm';
+
+  const personId = addInput(f, { name: 'id' });
+  addInput(f, { name: 'surNames', disabled: 'disabled' });
+  addInput(f, { name: 'birthName', disabled: 'disabled' });
+  addInput(f, { name: 'birthday', disabled: 'disabled' });
+  addInput(f, { name: 'deathday', disabled: 'disabled' });
 
   const firstName = addInput(f, { name: 'firstName' });
   const lastName = addInput(f, { name: 'lastName' });
@@ -33,7 +40,7 @@ function mountForms() {
   const form = document.body.appendChild(f);
   document.body.appendChild(fm);
 
-  return { form, firstName, lastName, partners, children, candidates, partnersBtn, childrenBtn, addChildBtn };
+  return { form, personId, firstName, lastName, partners, children, candidates, partnersBtn, childrenBtn, addChildBtn };
 }
 
 function unmountForm() {
@@ -47,6 +54,8 @@ function unmountForm() {
 
 const spyPersonFilter = jest.spyOn(Person, 'filter');
 const spyPersonFind = jest.spyOn(Person, 'find');
+
+const spyRelationFilter = jest.spyOn(Relation, 'filter');
 
 describe('The person editor', () => {
   beforeEach(() => {
@@ -77,7 +86,7 @@ describe('The person editor', () => {
       ln.dispatchEvent(new Event('input'));
     }
 
-    const person = {name: 'person', id: 1 };
+    const person = {name: 'person', id: 1, firstName: 'First', lastName: 'Last' };
     const partner = { name: 'partner', id: 2 };
     const child = { name: 'child', id: 3 };
   
@@ -129,6 +138,32 @@ describe('The person editor', () => {
 
       expect(form.elements['fs_portrait'].disabled).toBe(false);
       expect(form.elements['fs_relations'].disabled).toBe(false);
+    });
+
+    describe.only('setting a person for editing', () => {
+      it('enables correct person fields', () => {
+        const { personId, firstName, lastName } = mountForms();
+
+        const pe = new PersonEditor();
+        pe.edit.setPerson(person);
+
+        expect(parseInt(personId.value)).toBe(person.id);
+        expect(firstName.value).toBe(person.firstName);
+        expect(lastName.value).toBe(person.lastName);
+      });
+
+      it('enables correct relation fields', () => {
+        const { addChildBtn } = mountForms();
+
+        const pe = new PersonEditor();
+
+        spyRelationFilter.mockReturnValueOnce([relation]);
+        spyPersonFind.mockReturnValueOnce([person]);
+
+        pe.edit.setPerson(person);
+
+        expect(addChildBtn.disabled).toBe(false);
+      });
     });
 
     describe('for relation', () => {

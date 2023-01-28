@@ -1,4 +1,4 @@
-export const Person = class Person {
+export default class Person {
   static all = {};
 
   static add(data) {
