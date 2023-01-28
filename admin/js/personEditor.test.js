@@ -1,46 +1,17 @@
 import PersonEditor from './personEditor.js';
 import Person from './person.js';
 import Relation from './relation.js';
-import { addButton, addElement, addFieldset, addInput, addSelect } from '../../tests/utils.js';
+import { getEditFormElements, getMetadataFormElements } from '../../tests/utils.js';
 
-function mountForms() {
-  const f = document.createElement('form');
-  f.id = 'editPersonForm';
+function render() {
+  const eElems = getEditFormElements();
+  const fElems = getMetadataFormElements();
+  document.body.appendChild(eElems.form);
+  document.body.appendChild(fElems.form);
 
-  const fm = document.createElement('form');
-  fm.id = 'uploadMetadataForm';
+  const pe = new PersonEditor();
 
-  const personId = addInput(f, { name: 'id' });
-  addInput(f, { name: 'surNames', disabled: 'disabled' });
-  addInput(f, { name: 'birthName', disabled: 'disabled' });
-  addInput(f, { name: 'birthday', disabled: 'disabled' });
-  addInput(f, { name: 'deathday', disabled: 'disabled' });
-
-  const firstName = addInput(f, { name: 'firstName' });
-  const lastName = addInput(f, { name: 'lastName' });
-  const partners = addSelect(f, { name: 'partners', disabled: 'disabled' });
-  const children = addSelect(f, { name: 'children', disabled: 'disabled' });
-  const candidates = addSelect(f, { name: 'candidates', disabled: 'disabled' });
-  const partnersBtn = addButton(f, { name: 'partners_remove', disabled: 'disabled' });
-  const childrenBtn = addButton(f, { name: 'children_remove', disabled: 'disabled' });
-
-  addInput(f, { name: 'portraitImageId' });
-  addElement(f, 'img', { id: 'person-portrait' });
-  addInput(f, { name: 'relType' });
-  addInput(f, { name: 'relStart' });
-  addInput(f, { name: 'relEnd' });
-
-  addFieldset(f, { name: 'fs_buttons', disabled: 'disabled' });
-  addFieldset(f, { name: 'fs_portrait', disabled: 'disabled' });
-  const relationsFs = addFieldset(f, { name: 'fs_relations', disabled: 'disabled' });
-
-  addFieldset(fm, { name: 'fs_add' });
-  const addChildBtn = addButton(relationsFs, { name: 'btn_addChild', disabled: 'disabled' });
-
-  const form = document.body.appendChild(f);
-  document.body.appendChild(fm);
-
-  return { form, personId, firstName, lastName, partners, children, candidates, partnersBtn, childrenBtn, addChildBtn };
+  return { pe, eElems };
 }
 
 function unmountForm() {
@@ -71,7 +42,7 @@ describe('The person editor', () => {
   });
 
   it('initialized correctly', () => {
-    mountForms();
+    render();
 
     expect(() => {process.nextTick
       new PersonEditor();
@@ -98,9 +69,9 @@ describe('The person editor', () => {
     };
 
     it('resets the entire form', () => {
-      const { form, firstName, lastName, partners, partnersBtn, children, childrenBtn, candidates, addChildBtn } = mountForms();
+      const { pe, eElems } = render();
+      const { form, firstName, lastName, partners, partnersBtn, children, childrenBtn, candidates, addChildBtn } = eElems;
 
-      const pe = new PersonEditor();
       const resetSpy = jest.spyOn(form, 'reset');
 
       setName(firstName, lastName);
@@ -121,9 +92,7 @@ describe('The person editor', () => {
     });
 
     it('activates the entire form for firstname and lastname set', () => {
-      const { form, firstName, lastName, partners, children, candidates } = mountForms();
-
-      new PersonEditor();
+      const { form, firstName, lastName, partners, children, candidates } = render().eElems;
  
       spyPersonFilter.mockReturnValueOnce([person]);
 
@@ -140,11 +109,11 @@ describe('The person editor', () => {
       expect(form.elements['fs_relations'].disabled).toBe(false);
     });
 
-    describe.only('setting a person for editing', () => {
+    describe('setting a person for editing', () => {
       it('enables correct person fields', () => {
-        const { personId, firstName, lastName } = mountForms();
+        const { pe, eElems } = render();
+        const { personId, firstName, lastName } = eElems;
 
-        const pe = new PersonEditor();
         pe.edit.setPerson(person);
 
         expect(parseInt(personId.value)).toBe(person.id);
@@ -153,25 +122,22 @@ describe('The person editor', () => {
       });
 
       it('enables correct relation fields', () => {
-        const { addChildBtn } = mountForms();
-
-        const pe = new PersonEditor();
+        const { pe, eElems } = render();
 
         spyRelationFilter.mockReturnValueOnce([relation]);
         spyPersonFind.mockReturnValueOnce([person]);
 
         pe.edit.setPerson(person);
 
-        expect(addChildBtn.disabled).toBe(false);
+        expect(eElems.addChildBtn.disabled).toBe(false);
       });
     });
 
     describe('for relation', () => {
       it('when partner is added activates relation fields', () => {
-        const { firstName, lastName, partners, partnersBtn, children, childrenBtn, addChildBtn } = mountForms();
+        const { pe, eElems } = render();
+        const { firstName, lastName, partners, partnersBtn, children, childrenBtn, addChildBtn } = eElems;
 
-        const pe = new PersonEditor();
- 
         spyPersonFilter.mockReturnValueOnce([person]);
 
         setName(firstName, lastName);
@@ -188,16 +154,13 @@ describe('The person editor', () => {
       });
 
       it('when last partner is removed deactivates add child button', () => {
-        const { firstName, lastName, partners, partnersBtn, children, childrenBtn, addChildBtn } = mountForms();
+        const { pe, eElems } = render();
+        const { firstName, lastName, partners, partnersBtn, children, childrenBtn, addChildBtn } = eElems;
 
-        const pe = new PersonEditor();
- 
         spyPersonFilter.mockReturnValueOnce([person]);
-
         setName(firstName, lastName);
 
         spyPersonFind.mockReturnValueOnce(partner);
-
         const addedId = pe.edit.addRelation(relation);
 
         const rId = pe.edit.removeRelation();
@@ -218,20 +181,17 @@ describe('The person editor', () => {
         { id: 5000, found: false },
       ];
       it.each(params)('returns the relation if id $id of one members matches', ({ id, found }) => {
-        mountForms();
-        const pe = new PersonEditor();
+        const { pe } = render();
 
         spyPersonFind.mockReturnValueOnce({ ...person, id });
-
         pe.edit.addRelation(relation);
-        const result = !!pe.edit.findInvolvedRelation(id);
 
+        const result = !!pe.edit.findInvolvedRelation(id);
         expect(result).toBe(found);
       });
 
       it('returns no deleted relation even if id of one members matches', () => {
-        mountForms();
-        const pe = new PersonEditor();
+        const { pe } = render();
         const pId = relation.members[0];
 
         spyPersonFind.mockReturnValueOnce({ ...person, id: pId });
@@ -240,17 +200,15 @@ describe('The person editor', () => {
         pe.edit.removeRelation();
 
         const result = !!pe.edit.findInvolvedRelation(pId);
-
         expect(result).toBe(false);
       });
     });
 
     describe('children', () => {
     it('fields activated when child is added to partner', () => {
-      const { firstName, lastName, children, childrenBtn } = mountForms();
+      const { pe, eElems } = render();
+      const { firstName, lastName, children, childrenBtn } = eElems;
 
-      const pe = new PersonEditor();
- 
       spyPersonFilter.mockReturnValueOnce([person]);
 
       setName(firstName, lastName);
@@ -268,10 +226,9 @@ describe('The person editor', () => {
     });
 
     it('do not add a child when already existing', () => {
-      const { firstName, lastName, children } = mountForms();
+      const { pe, eElems } = render();
+      const { firstName, lastName, children } = eElems;
 
-      const pe = new PersonEditor();
- 
       spyPersonFilter.mockReturnValueOnce([person]);
 
       setName(firstName, lastName);
@@ -292,10 +249,9 @@ describe('The person editor', () => {
     });
 
     it('are deactivated when last child removed', () => {
-      const { firstName, lastName, children, childrenBtn, addChildBtn } = mountForms();
+      const { pe, eElems } = render();
+      const { firstName, lastName, children, childrenBtn, addChildBtn } = eElems;
 
-      const pe = new PersonEditor();
- 
       spyPersonFilter.mockReturnValueOnce([person]);
       setName(firstName, lastName);
 
