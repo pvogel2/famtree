@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Vector3, Color, PlaneGeometry, Mesh, MeshBasicMaterial, DoubleSide } from 'three';
 import RenderContext from '../RenderContext.js';
 
-const OFFSET_LEFT = 0.4;
+const OFFSET_LEFT = 0; // can be used to extend left border size
 
 function getRelationPlane(config = { highlight, width, height }) {
   const highColor = new Color(config.highlight);
@@ -34,7 +34,7 @@ function MetaRelation(props) {
   useEffect(() => {
     if (!renderer || !parent) return;
 
-    const center = new Vector3(0.975, 0, -width * 0.5 - 1.7 + OFFSET_LEFT * 0.5);
+    const center = new Vector3(0.475, 0, -width * 0.5 - 1.7 + OFFSET_LEFT * 0.5);
 
     const bgPlane = getRelationPlane({ highlight: selection, width, height });
 

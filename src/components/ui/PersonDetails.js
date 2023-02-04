@@ -8,7 +8,7 @@ function PersonDetails(props) {
   const birthDate = showDate(person?.birthday);
   const deathDate = showDate(person?.deathday);
 
-  return (birthDate || deathDate) ? (
+  return (person?.hasDetails()) ? (
     <Table
       size="small"
       sx={{ width: '100%', marginBottom: 2 }}

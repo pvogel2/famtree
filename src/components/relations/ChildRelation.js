@@ -28,7 +28,7 @@ function getRelationLines(s, t, config = { foreground, highlight }) {
     points.push(t.clone().sub(new Vector3(0, dy * 0.5, 0)));
     colors.push(...foreColor.toArray());
   }
-  points.push(t.clone().sub(new Vector3(0, 1.2, 0)));
+  points.push(t.clone().sub(new Vector3(0, 1.5, 0)));
   colors.push(...highColor.toArray());
 
   const geometry = new BufferGeometry().setFromPoints( points );

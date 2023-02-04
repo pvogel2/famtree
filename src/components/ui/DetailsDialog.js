@@ -84,6 +84,7 @@ function DetailsDialog(props) {
     paperProps.sx.height = `calc(100vh - ${offset * 2}px)`;
   }
 
+  const showContent = currentPerson.hasDetails() || selectedMeta;
   return (
     <Popover
       open
@@ -107,21 +108,23 @@ function DetailsDialog(props) {
         icon={ <PersonIcon /> }
         onClose={ handleClose }
       />
-      <CardContent sx={{ flex: '1 0 auto', height: 'calc(100% - 160px)' }}>
-        <Grid container sx={{ height: '100%' }} columnSpacing={ 2 }>
-          <Grid item xs={ selectedMeta ? 4 : 12 } sx={{ height: '100%', overflowY: 'auto' }}>
-            <PersonDetails person={ currentPerson } />
-            { getLayoutedInfo('Excerpt', selectedMeta?.excerpt) }
-            { getLayoutedInfo('Description', selectedMeta?.description) }
+      { showContent && (
+        <CardContent sx={{ flex: '1 0 auto', height: 'calc(100% - 160px)' }}>
+          <Grid container sx={{ height: '100%' }} columnSpacing={ 2 }>
+            <Grid item xs={ selectedMeta ? 4 : 12 } sx={{ height: '100%', overflowY: 'auto' }}>
+              <PersonDetails person={ currentPerson } />
+              { getLayoutedInfo('Excerpt', selectedMeta?.excerpt) }
+              { getLayoutedInfo('Description', selectedMeta?.description) }
+            </Grid>
+            { selectedMeta && (
+            <Grid item xs={ 8 } sx={{ height: '100%', overflowY: 'auto' }}>
+              <CardActionArea  sx={{ height: '100%' }}>
+                { getMetaContainer(selectedMeta) }
+              </CardActionArea>
+            </Grid>) }
           </Grid>
-          { selectedMeta && (
-          <Grid item xs={ 8 } sx={{ height: '100%', overflowY: 'auto' }}>
-            <CardActionArea  sx={{ height: '100%' }}>
-              { getMetaContainer(selectedMeta) }
-            </CardActionArea>
-          </Grid>) }
-        </Grid>
-      </CardContent>
+        </CardContent>
+      ) }
       { selectedMeta && (
       <CardActions sx={{ flex: '0 0 auto', justifyContent: 'flex-end' }}>
         <Button disabled={ index <= 0 } onClick={ previousMeta } variant="text">previous</Button>

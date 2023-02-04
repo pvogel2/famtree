@@ -147,6 +147,10 @@ export default class Person {
     removeItem(this.pRelations, id);
   }
 
+  hasDetails() {
+    return !!this.pBirthday || !!this.pDeathday;
+  }
+
   serialize() {
     return {
       id: this.id,

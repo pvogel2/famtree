@@ -12,15 +12,15 @@ const selectedPersonSlice = createSlice({
       return { person: { ...action.payload }, metadata: [], selectedMeta: null };
     },
     setMetadata(state, action) {
-      const person = state.person;
       const metadata = action.payload.map((m) => ({ ...m }));
-      const selectedMeta = state.selectedMeta ? { ...state.selectedMeta } : null; 
-      return { person: { ...person }, metadata, selectedMeta };
+      // only renew target objects
+      return { ...state, metadata, selectedMeta: null };
     },
     setSelectedMeta(state, action) {
       const metadata = state.metadata.map((m) => ({ ...m }));
       const selectedMeta = metadata.find((md) => parseInt(md.id) === parseInt(action.payload));
-      return { person: { ...state.person }, metadata, selectedMeta };
+      // only renew target objects
+      return { ...state, selectedMeta };
     },
     clearPerson(_) {
       return { person: null, metadata: [], selectedMeta: null };

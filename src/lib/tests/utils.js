@@ -2,6 +2,12 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { getByRole, getAllByRole, fireEvent } from '@testing-library/react';
+import {
+  Group as MockGroup,
+  Mesh as MockMesh,
+  MeshBasicMaterial as MockMaterial,
+  BoxGeometry as MockGeometry,
+} from 'three';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -15,14 +21,42 @@ import runtimeReducer from '../../store/runtimeReducer';
 import layoutReducer from '../../store/layoutReducer';
 import relationsReducer, { setRelations } from '../../store/relationsReducer';
 import familiesReducer from '../../store/familiesReducer';
+import { getAssetsGroup, getSymbolGroup, getNavigationGroup } from '../../lib/nodes/utils';
 
 import DataPerson from './../Person';
 
+jest.mock('../../assets/images/avatar.png', () => {
+  return {};
+});
+
+jest.mock('../../lib/three/Text3D');
+jest.mock ('../../lib/three/PreparedMeshes', () => {
+  const personMesh = new MockGroup();
+  const portraitMaterial = new MockMaterial({ name: 'personMeshPortrait' });
+  const portraitMesh = new MockMesh(new MockGeometry(), portraitMaterial);
+  const baseMaterial = new MockMaterial({ name: 'personMeshBase' });
+  const baseMesh = new MockMesh(new MockGeometry(), baseMaterial);
+  personMesh.add(portraitMesh);
+  personMesh.add(baseMesh);
+  personMesh.userData.refId = '1';
+
+  const arrowMesh = new MockMesh(new MockGeometry(), new MockMaterial());
+  return {
+    getPerson: () => personMesh,
+    getNavigationArrow: () => arrowMesh,
+  };
+}
+);
+
+
 const renderer = {
-  addObject: jest.fn(),
+  addObject: jest.fn((id, obj, intersect, parent) => {
+    parent.add(obj);
+  }),
   removeObject: jest.fn(),
   registerEventCallback: jest.fn(),
   unregisterEventCallback: jest.fn(),
+  transition: jest.fn(),
 };
 
 function getPersonWithListing(add, n = 1) {
@@ -70,28 +104,39 @@ function clonePerson(original) {
   return new DataPerson(original.serialize());
 }
 
-function getPersonWithChild(n = 1) {
-  return getPersonWithListing('addChild', n);
+function getPersonWithChilds(persons = [], relations = [], n = 1) {
+  const ps = getPerson();
+  const pr = getPerson();
+
+  const rl = getRelation([ps.id, pr.id]);
+
+  for (let i = 0; i < n; i++) {
+    const c = getPerson();
+    rl.children.push(c.id);
+    persons.push(c);
+  }
+
+  ps.addRelation(rl.id);
+  persons.push(ps, pr);
+  relations.push(rl);
+
+  return ps;
 }
 
 function getPersonWithPartner() {
   return getPersonWithListing('addPartner');
 }
 
-function getPartnerThreeGroup(n) {
-  return n.children.find((g) => g.name === 'partners');
-}
-
-function getDataThreeGroup(n) {
+function findDataGroup(n) {
   return n.children.find((g) => g.name === 'data');
 }
 
-function getRelationsThreeGroup(n) {
+function findRelationsGroup(n) {
   return n.children.find((g) => g.name.startsWith('relations'));
 }
 
 function getChildNodes(n) {
-  const rg = getRelationsThreeGroup(n);
+  const rg = findRelationsGroup(n);
   if (!rg) {
     return [];
   }
@@ -100,7 +145,7 @@ function getChildNodes(n) {
 }
 
 function getPartnerNodes(n) {
-  const rg = getRelationsThreeGroup(n);
+  const rg = findRelationsGroup(n);
   if (!rg) {
     return [];
   }
@@ -108,13 +153,16 @@ function getPartnerNodes(n) {
   return rg.children.filter((c) => c.name.startsWith('partner'));
 }
 
-function getAssetsThreeGroup(n) {
+function findSymbolsGroup(n) {
   return n.children.find((g) => g.name === 'symbols');
 }
 
-
-function getSymbolsThreeGroup(n) {
+function findAssetsGroup(n) {
   return n.children.find((g) => g.name === 'assets');
+}
+
+function findNavigationGroup(n) {
+  return n.children.find((g) => g.name === 'navigation');
 }
 
 function renderWithContext(node, config = {}) {
@@ -195,18 +243,53 @@ export async function getSelectOptions(base, container) {
   return await getAllByRole(l, 'option');
 }
 
+function getRenderer() {
+  return renderer;
+}
+
+function createPersonMesh() {
+  const m = new MockMesh(new MockGeometry(), new MockMaterial());
+  m.name = 'person';
+  const assetsGroup = getAssetsGroup(m);
+  m.add(getSymbolGroup(getPerson().serialize()));
+  const naviGroup = getNavigationGroup(m);
+
+  naviGroup.visible = false;
+  return {
+    personMesh: m,
+    assetsGroup,
+    naviGroup,
+  };
+}
+
+function createNaviMesh(config = { refId: 1, parent: null }) {
+  const m = new MockMesh(new MockGeometry(), new MockMaterial());
+  const parent = config.parent || new MockGroup();
+  parent.add(m);
+
+  if (!config.parent) {
+    parent.name = 'navigation';
+  }
+  m.userData.refId = config.refId;
+
+  return m;
+}
+
 export default {
   renderWithContext,
   getPerson,
   getRelation,
   clonePerson,
-  getPersonWithChild,
+  getPersonWithChilds,
   getPersonWithPartner,
-  getPartnerThreeGroup,
-  getDataThreeGroup,
-  getRelationsThreeGroup,
+  findDataGroup,
+  findRelationsGroup,
   getChildNodes,
   getPartnerNodes,
-  getAssetsThreeGroup,
-  getSymbolsThreeGroup,
+  findAssetsGroup,
+  findSymbolsGroup,
+  findNavigationGroup,
+  getRenderer,
+  createPersonMesh,
+  createNaviMesh,
 };

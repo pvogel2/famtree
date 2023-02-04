@@ -7,10 +7,9 @@ import Node from './Node';
 import Metadata from './Metadata';
 import { clearPerson } from '../store/selectedPersonReducer';
 
+
 const getBackground = (state) => state.layout.background;
 const getSelectedPerson = (state) => state.selectedPerson.person;
-const getCurrentMetadata = (state) => state.selectedPerson.metadata;
-
 
 function FamTreeRenderer() {
   const { renderer } = useContext(RenderContext);
@@ -24,7 +23,6 @@ function FamTreeRenderer() {
   });
 
   const selectedPerson = useSelector(getSelectedPerson);
-  const currentMetadata = useSelector(getCurrentMetadata);
   const background = useSelector(getBackground);
 
   useEffect(() => {
@@ -55,7 +53,7 @@ function FamTreeRenderer() {
   return (
     <>
     <Node person={ root }/>
-    { (selectedPerson && currentMetadata.length ) &&  <Metadata selectedPerson={ selectedPerson } currentMeta={ currentMetadata }/> }
+    { (selectedPerson ) &&  <Metadata selectedPerson={ selectedPerson } /> }
     </>
   );
 };
