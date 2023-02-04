@@ -1,13 +1,11 @@
 import React from 'react';
-import { cleanup /*, fireEvent, act */} from '@testing-library/react';
 import {
-  Color,
   Group as MockGroup,
   Mesh as MockMesh,
   MeshBasicMaterial as MockMaterial,
   BoxGeometry as MockGeometry,
 } from 'three';
-import { getMesh, getDataGroup, addLabelText3D, findLabelText, focusNode } from '../lib/nodes/utils';
+import { getMesh, getDataGroup, addLabelText3D, focusNode } from '../lib/nodes/utils';
 
 import U from '../lib/tests/utils';
 import Intersector from './Intersector';
