@@ -1,25 +1,17 @@
 import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-import ThreeText from '../../lib/three/Text';
+// import ThreeText from '../../lib/three/Text';
 import ThreeText3D from '../../lib/three/Text3D';
 import ThreePreparedMeshes from '../../lib/three/PreparedMeshes';
 import Transition from '../../lib/Transition';
-import avatarImage from './../../assets/images/avatar.png';
+import avatarImage from '../../assets/images/avatar.png';
 // import { getBaseUrl } from '../Connect';
 
 const textureLoader = new TextureLoader();
-// const gltfLoader = new GLTFLoader();
 
-/* let personMesh;
-
-  function getGLTFPerson() {
-    gltfLoader.load(`${getBaseUrl()}public/models/personMesh.gltf`, (gltf) => {
-    personMesh = gltf.scene.children[0];
-  });
+export function isValidId(id) {
+  return !isNaN(parseInt(id));
 }
-getGLTFPerson();
-*/
 
 export function getRootNode(m) {
   if (isValidNode(m) && !m?.name.match(/^(person|partner)$/)) {
@@ -29,7 +21,7 @@ export function getRootNode(m) {
 }
 
 export function findNamedGroup(m, name) {
-  return m.children.find(c => c.name === name);
+  return m?.children?.find(c => c.name === name);
 }
 
 function getPersonBaseMesh(root) {
@@ -51,8 +43,14 @@ export function isPersonNode(o = {}) {
 }
 
 export function isMetaResourceNode(o = {}) {
-  const type = o?.userData?.type ||'';
+  const type = o?.userData?.type || '';
   return !!type.match(/^meta/);
+}
+
+export function isNavigationNode(o = {}) {
+  const parent = o?.parent || null;
+  const name = parent?.name || '';
+  return (name === 'navigation' && !isNaN(o.userData.refId));
 }
 
 export function createNamedGroup(m, name) {
@@ -72,17 +70,21 @@ export function createNamedGroup(m, name) {
 }
 
 export function getAssetsGroup(m) {
-  let g = findNamedGroup(m, 'assets');
-  if (!g) {
-    g = createNamedGroup(m, 'assets');
-  }
-  return g;
+  return getNamedGroup(m, 'assets');
 }
 
 export function getDataGroup(m) {
-  let g = findNamedGroup(m, 'data');
+  return getNamedGroup(m, 'data');
+}
+
+export function getNavigationGroup(m) {
+  return getNamedGroup(m, 'navigation');
+}
+
+function getNamedGroup(m, name) {
+  let g = findNamedGroup(m, name);
   if (!g) {
-    g = createNamedGroup(m, 'data');
+    g = createNamedGroup(m, name);
   }
   return g;
 }
@@ -104,6 +106,27 @@ export function getMesh(layout = {}) {
   g.computeBoundingSphere();
   return new Mesh(g, m);
 }
+
+export function getNaviArrowMesh(layout = {}) {
+  const { rot = 0, foreground = '#888888' } =  layout;
+
+  const color = new Color(foreground);
+  const options = { color };
+  const newArrowMesh = (ThreePreparedMeshes.getNavigationArrow()).clone();
+  if (typeof layout.opacity === 'number') {
+    options.opacity = layout.opacity;
+    options.transparent = true;
+  };
+
+  const m = new MeshBasicMaterial(options);
+
+  newArrowMesh.scale.set(0.75, 0.75, 0.75);
+  newArrowMesh.rotateX(rot);
+  newArrowMesh.rotateZ(Math.PI * 0.5);
+  newArrowMesh.name = 'naviArrow';
+  return newArrowMesh;
+}
+
 
 export function getPersonGroup(person = {}) {
   const p = new Group();
@@ -150,23 +173,10 @@ export function getSymbolGroup(person = {}, layout = {}) {
   return newPersonMesh;
 }
 
-export function addLabelText(p, label, color = null) {
-  const text = new ThreeText({
-    text: label,
-    position: new Vector3(0.75, -1, 0),
-    rotation: new Vector3(0, Math.PI * 0.5, 0),
-    scale: 0.4,
-    color,
-  });
-
-  text.attach(null, p);
-  return text;
-}
-
 export function addLabelText3D(p, label, color = null) {
   const text = new ThreeText3D({
     text: label,
-    position: new Vector3(0.75, -1, 0),
+    position: new Vector3(0.25, -1.25, 0),
     rotation: new Vector3(0, Math.PI * 0.5, 0),
     scale: 0.4,
     color,
@@ -179,10 +189,10 @@ export function addLabelText3D(p, label, color = null) {
 export function findLabelText(m) {
   const dg = findNamedGroup(m, 'data');
 
-  if(dg && dg.children.length) {
+  if (dg && dg.children.length) {
     return dg.children[0];
   }
-return null;
+  return null;
 }
 
 export function focusNode(m, config = {}) {
@@ -196,6 +206,8 @@ export function focusNode(m, config = {}) {
   if (m.type !== 'Mesh') {
     return;
   }
+
+  renderer.parent.style.cursor = 'pointer';
 
   if (scale !== 1) {
     const startScale = m.scale.clone();
@@ -216,6 +228,7 @@ export function focusNode(m, config = {}) {
     focusTransition.forward();
   } else if (isPersonNode(m)) {
     const root = getRootNode(m);
+
     const m2 = getPersonBaseMesh(root);
 
     if (m2 && renderer) {
@@ -252,8 +265,12 @@ export function defocusNode(m, config = {}) {
     const m2 = getPersonBaseMesh(root);
 
     if (m2 && renderer) {
+      renderer.parent.style.cursor = 'default';
+
       const startColor = m2.material.color.clone();
       let endColor = new Color(foreground);
+
+      hideNavigationGroup(m);
 
       if (root?.name !== 'person') {
         endColor = new Color(foreground).multiplyScalar(0.75);
@@ -278,6 +295,8 @@ export function defocusNode(m, config = {}) {
     const endScale = new Vector3(scale, scale, scale);
     const startOpacity = m.material.opacity;
 
+    renderer.parent.style.cursor = 'default';
+
     const focusTransition = new Transition({
       duration: 0.15,
       curve: 'easeOutQuad',
@@ -295,6 +314,22 @@ export function defocusNode(m, config = {}) {
   }
 }
 
+let currentTransition = null;
+
+function showNavigationGroup(m) {
+  const ng = findNamedGroup(m, 'navigation');
+  if (ng) {
+    ng.visible = true;
+  }
+}
+
+function hideNavigationGroup(m) {
+  const ng = findNamedGroup(m, 'navigation');
+  if (ng) {
+    ng.visible = false;
+  }
+}
+
 export function selectNode(m, config = {}) {
   const {
     color = '#ffffff',
@@ -302,7 +337,7 @@ export function selectNode(m, config = {}) {
     scale = 1,
   } = config;
 
-  if (m.type !== 'Mesh' && m.type !== 'Group') {
+  if (!m || m.type !== 'Mesh' && m.type !== 'Group') {
     return;
   }
 
@@ -311,10 +346,18 @@ export function selectNode(m, config = {}) {
   } else if (isPersonNode(m)) {
     const root = getRootNode(m);
     const m2 = getPersonBaseMesh(root);
-    
+
     if (m2 && renderer) {
       const startColor = m2.material.color.clone();
       const endColor = m2.material.map ? new Color('#ccffcc') : new Color(color);
+
+      showNavigationGroup(m);
+
+      if (currentTransition) {
+        currentTransition.teardown();
+        renderer.transitioning = false;
+      }
+
       const focusTransition = new Transition({
         duration: 0.25,
         callback: (current) => {
@@ -324,21 +367,18 @@ export function selectNode(m, config = {}) {
           renderer.unregisterEventCallback('render', focusTransition.update);
         },
       });
+      currentTransition = focusTransition;
       renderer.registerEventCallback('render', focusTransition.update);
       focusTransition.forward();
-
-      // m2.material.color = new Color(color);
-      // m2.material.needsUpdate = true;
     }
 
     if (renderer) {
       const targetPosition = new Vector3();
       root.getWorldPosition(targetPosition);
       const cameraPosition = targetPosition.clone();
-      cameraPosition.add(new Vector3(10, 0, 0));
+      cameraPosition.add(new Vector3(14, 0, 0));
       renderer.transition(targetPosition, 1, cameraPosition);
     }
-
   }
 }
 

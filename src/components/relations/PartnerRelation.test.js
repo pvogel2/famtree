@@ -1,6 +1,9 @@
 import React from 'react';
 import { cleanup } from '@testing-library/react';
-import { Vector3, Group } from 'three';
+import {
+  Vector3,
+  Group,
+  } from 'three';
 
 import U from '../../lib/tests/utils';
 import PartnerRelation from './PartnerRelation';

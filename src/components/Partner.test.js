@@ -2,70 +2,38 @@ import React from 'react';
 import {
   Color,
   Vector3,
-  Group as MockGroup,
-  Mesh as MockMesh,
-  MeshBasicMaterial as MockMaterial,
-  BoxGeometry as MockGeometry,
 } from 'three';
 import U from '../lib/tests/utils';
 import Partner from './Partner';
-
-jest.mock('../assets/images/avatar.png', () => {
-  return {};
-});
-
-jest.mock('../lib/three/Text', () => {
-  return {};
-});
-
-jest.mock('../lib/three/Text3D', () => {
-  return function() {
-    return {
-      attach: jest.fn(),
-      remove: jest.fn(),
-    };
-  };
-});
-
-jest.mock ('../lib/three/PreparedMeshes', () => {
-    const personMesh = new MockGroup();
-    const portraitMaterial = new MockMaterial({ name: 'personMeshPortrait' });
-    const portraitMesh = new MockMesh(new MockGeometry(), portraitMaterial);
-    const baseMaterial = new MockMaterial({ name: 'personMeshBase' });
-    const baseMesh = new MockMesh(new MockGeometry(), baseMaterial);
-    personMesh.add(portraitMesh);
-    personMesh.add(baseMesh);
-    personMesh.userData.refId = '1';
-    return {
-      getPerson: () => personMesh,
-    };
-  }
-);
 
 function getAddObjectNode(r, id) {
   const calls = r.addObject.mock.calls.filter((c) => c[0] === id)
   return calls[calls.length - 1][1];
 }
 
+function getControlNode(parent, id) {
+  return parent.children.find((c) => c.userData.refId === id);
+}
+
 const serializedPerson = U.getPerson().serialize();
 
-it.only('renders null for Partner', () => {
+it('renders null for Partner', () => {
   const { container } = U.renderWithContext(<Partner />);
   expect(container.firstChild).toBeNull();
 });
 
-it.only('adds no mesh without given person', () => {
+it('adds no mesh without given person', () => {
   const { renderer } = U.renderWithContext(<Partner />);
   expect(renderer.addObject).not.toHaveBeenCalled();
 });
 
-it.only('adds a mesh to the scene', () => {
+it('adds a mesh to the scene', () => {
   const { renderer } = U.renderWithContext(<Partner person={ serializedPerson }/>);
   expect(renderer.addObject).toHaveBeenCalledWith(expect.any(String), expect.any(Object), false, undefined);
 });
 
   
-it.only('adds foreground color to node', () => {
+it('adds foreground color to node', () => {
   const { renderer, store } = U.renderWithContext(<Partner person={ serializedPerson }/>);
   const symbols = renderer.addObject.mock.lastCall[1];
 
@@ -75,7 +43,7 @@ it.only('adds foreground color to node', () => {
   expect(base.material.color).toEqual(expected);
 });
 
-it.only('adds several properties to the mesh', () => {
+it('adds several properties to the mesh', () => {
   const { renderer } = U.renderWithContext(<Partner person={ serializedPerson }/>);
   const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
   const id = serializedPerson.id;
@@ -83,7 +51,7 @@ it.only('adds several properties to the mesh', () => {
   expect(node.userData.refId).toEqual(id);
 });
 
-it.only('adds an offset to the node', () => {
+it('adds an offset to the node', () => {
   const offset = new Vector3(0, 1, 1);
   const { renderer } = U.renderWithContext(<Partner person={ serializedPerson } offsetY={ offset.y } offsetZ={ offset.z }/>);
   const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
@@ -91,11 +59,87 @@ it.only('adds an offset to the node', () => {
 });
 
 describe('For the data', () => {
-  it.only('adds a data group to the node', () => {
+  it('adds a data group to the node', () => {
     const { renderer } = U.renderWithContext(<Partner person={ serializedPerson }/>);
     const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
-    const data = U.getDataThreeGroup(node);
+    const data = U.findDataGroup(node);
 
     expect(data.isGroup).toEqual(true);
+  });
+});
+
+describe('containing the navigation group', () => {
+  const arrOff = 0.2;
+  const naviOff = 0.9;
+
+  it('adds the nvaigation to the root node', () => {
+    const { renderer } = U.renderWithContext(<Partner person={ serializedPerson }/>);
+    const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
+    const naviGroup = U.findNavigationGroup(node);
+
+    expect(naviGroup).toBeDefined();
+    expect(naviGroup.type).toBe('Group');
+    expect(naviGroup.position).toEqual(expect.objectContaining({ x: arrOff, y: naviOff, z: -naviOff}));
+    expect(naviGroup.visible).toBe(false);
+  });
+
+  describe('for parent navigation control mesh', () => {
+    it('is rendered', () => {
+      const refId = 14;
+      const pos = [0, -arrOff, 0];
+
+      const { renderer } = U.renderWithContext(<Partner parentId={ refId } person={ serializedPerson }/>);
+      const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
+      const naviGroup = U.findNavigationGroup(node);
+      const toParent = getControlNode(naviGroup, refId);
+  
+      expect(toParent).toBeDefined();
+      expect(toParent.position.toArray()).toEqual(pos);
+    });
+  });
+
+  describe('for child navigation control mesh', () => {
+    it('is rendered', () => {
+      const refId = 14;
+      const pos = [0, arrOff, 0];
+
+      const { renderer } = U.renderWithContext(<Partner toChildId={ refId } person={ serializedPerson }/>);
+      const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
+      const naviGroup = U.findNavigationGroup(node);
+      const toParent = getControlNode(naviGroup, refId);
+  
+      expect(toParent).toBeDefined();
+      expect(toParent.position.toArray()).toEqual(pos);
+    });
+  });
+
+  describe('for left navigation control mesh', () => {
+    it('is rendered', () => {
+      const refId = 14;
+      const pos = [0, 0, arrOff];
+
+      const { renderer } = U.renderWithContext(<Partner toLeftId={ refId } person={ serializedPerson }/>);
+      const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
+      const naviGroup = U.findNavigationGroup(node);
+      const toLeft = getControlNode(naviGroup, refId);
+  
+      expect(toLeft).toBeDefined();
+      expect(toLeft.position.toArray()).toEqual(pos);
+    });
+  });
+
+  describe('for right navigation control mesh', () => {
+    it('is rendered', () => {
+      const refId = 14;
+      const pos = [0, 0, -arrOff];
+
+      const { renderer } = U.renderWithContext(<Partner toRightId={ refId } person={ serializedPerson }/>);
+      const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
+      const naviGroup = U.findNavigationGroup(node);
+      const toRight = getControlNode(naviGroup, refId);
+  
+      expect(toRight).toBeDefined();
+      expect(toRight.position.toArray()).toEqual(pos);
+    });
   });
 });

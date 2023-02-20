@@ -169,3 +169,20 @@ it('serialize returns serialiable person data', () => {
     relations: expect.any(Array),
   }));
 });
+
+describe('hasDetails', () => {
+  it.each([
+    { key: 'birthday', value: 1 },
+    { key: 'deathday', value: 2 },
+  ])('returns true for property $key', ({ key, value }) => {
+    const node = new Person({ [key]: value, id: 'p1' });
+
+    expect(node.hasDetails()).toBe(true);
+  });
+
+  it('returns false for no detail found', () => {
+    const node = new Person({ id: 'p1' });
+
+    expect(node.hasDetails()).toBe(false);
+  });
+});

@@ -1,22 +1,31 @@
-import { useEffect, useContext, useState, Fragment } from 'react';
+import { useEffect, useContext, useState, useMemo, Fragment } from 'react';
 import { Vector3 } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import { useSelector } from 'react-redux';
+import KNavigation from './KeyboardNavigation';
 
-import { getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, addLabelText3D, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
+import { isValidId, getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, getNavigationGroup, getNaviArrowMesh, addLabelText3D, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
 import Person from '../lib/Person';
 import Partner from './Partner';
 
 const nodeDist = 6;
-
 const nodeSize = 6;
-
 const genDist = 6;
 
 function getRelationsGroup(m) {
   return (findNamedGroup(m, 'relations') || createNamedGroup(m, 'relations'));
+}
+
+function getFirstChildOfRelations(rs) {
+  const fr = rs.find((rl) => rl.children.length);
+  return fr?.children[0];
+}
+
+function getLastRelation(rs) {
+  const lr = rs[rs.length - 1];
+  return isValidId(lr) ? lr : null;
 }
 
 const findMembers = (typedArr = [], persons = []) => {
@@ -41,7 +50,7 @@ const findPartner = (relation, person, persons = []) => {
 
   const pIds = relation.members.filter((id) => id !== person.id);
 
-  const found =  findMembers(pIds, persons);
+  const found = findMembers(pIds, persons);
 
   if (!found.length) {
     return null;
@@ -71,12 +80,30 @@ function getChildrenGroupSize(cs, szs) {
   return groupSize;
 }
 
+function getNextChild(cs, idx) {
+  return cs.length > idx ? cs[idx + 1]?.id : null;
+}
+
+function getParnterId(rl, pId) {
+  const id =  rl?.members.find((id) => id !== pId);
+  return isValidId(id) ? id : null;
+}
+
 const defaultSendSize = () => 0;
 
 const debugId = null;
 
 function Node(props) {
-  const { person, parent, sendSize = defaultSendSize, offsetY = 0, offsetZ = 0 } = props;
+  const {
+    person,
+    parent,
+    parentId = null,
+    sendSize = defaultSendSize,
+    offsetY = 0,
+    offsetZ = 0,
+    previousSiblingId = null,
+    nextSiblingId = null,
+  } = props;
 
   const [root, setRoot] = useState(null);
   const [totalSize, setTotalSize] = useState(0);
@@ -88,10 +115,57 @@ function Node(props) {
   const { text, foreground, highlight, selection } = useSelector(getLayout); 
   const focusedPerson = useSelector(getFocusedPerson);
   const selectedPerson = useSelector(getSelectedPerson);
-  const relations = useSelector(getRelations).filter((r) => r.members.includes(person?.id));;
+  const allRelations = useSelector(getRelations);
+  const relations = allRelations.filter((r) => r.members.includes(person?.id));
 
-  const isFocused = focusedPerson?.id === person?.id;
-  const isSelected = selectedPerson?.id === person?.id;
+  const isFocused = focusedPerson && focusedPerson?.id === person?.id;
+  const isSelected = selectedPerson && selectedPerson?.id === person?.id;
+
+  const personId = person?.id;
+  const rightNeighborId = relations.length ? getParnterId(relations[0], personId) : nextSiblingId;
+
+  const firstChildId = getFirstChildOfRelations(relations);
+
+  const arrOff = 0.2;
+  const naviOff = 0.9;
+  const navi = useMemo(() => ({
+    parent: { pos: [0, -arrOff, 0], refId: parentId, rot: Math.PI * -0.5 },
+    child: { pos: [0, arrOff, 0], refId: firstChildId, rot: Math.PI * 0.5 },
+    left: { pos: [0, 0, arrOff], refId: previousSiblingId, rot: Math.PI },
+    right: { pos: [0, 0, -arrOff], refId: rightNeighborId },
+  }), [parentId, firstChildId, previousSiblingId, rightNeighborId]);
+
+  useEffect(() => {
+    if (!renderer || !person?.id || !root) return;
+
+    const naviGroup = getNavigationGroup(root);
+    naviGroup.position.set(arrOff, naviOff, -naviOff);
+    naviGroup.visible = false;
+
+    Object.entries(navi).forEach(([target, props]) => {
+      const { refId, pos, rot } = props;
+
+      if (isValidId(refId)) {
+        const nodeId = `${target}Navi${person.id}`;
+        const naviMesh = getNaviArrowMesh({ rot });
+
+        renderer.addObject(nodeId, naviMesh, true, naviGroup);
+        naviMesh.position.set(pos[0], pos[1], pos[2]);
+        naviMesh.userData.refId = refId;
+      }
+    });
+
+    return () => {
+      Object.entries(navi).forEach(([target, props]) => {
+        const { refId } = props;
+  
+        if (isValidId(refId)) {
+          const nodeId = `${target}Navi${person.id}`;
+          renderer.removeObject(nodeId);
+        }
+      });
+    }
+  }, [renderer, person, root, navi]);
 
   useEffect(() => {
     if (!person) return;
@@ -141,7 +215,7 @@ function Node(props) {
       if (person.id === debugId) console.log('set newTotalSize', newTotalSize);
       setTotalSize(newTotalSize);
     }
-  }, [person, relations, sizes, sendSize]);
+  }, [person, relations, sizes, sendSize, root]);
 
   useEffect(() => {
     if (!renderer || !person?.id) return;
@@ -161,7 +235,9 @@ function Node(props) {
     renderer.addObject(symbolId, symbolGroup, true, newRoot);
 
     const dataGroup = getDataGroup(newRoot);
-    const labelText = addLabelText3D(dataGroup, usedPerson.name, text);
+    const labelText = addLabelText3D(dataGroup, `${usedPerson.name}`, text);
+
+    getAssetsGroup(newRoot);
 
     setRoot(newRoot);
 
@@ -187,13 +263,16 @@ function Node(props) {
 
     const relationTarget = new Vector3();
     let childMinZ = 0;
-
+    let leftPartnerId = person.id;
+    let rightPartnerId = null;
 
     return relations.map((r, idx) => {
       const partner = findPartner(r, person, persons);
       if (!partner) {
         return null;
       }
+
+      rightPartnerId = getParnterId(relations[idx + 1], person.id) || nextSiblingId;
 
       const children = findMembers(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
@@ -219,6 +298,10 @@ function Node(props) {
             parent={ relationsGroup }
             offsetY={ relationTarget.y }
             offsetZ={ relationTarget.z }
+            parentId={ parentId }
+            toChildId={ children[0]?.id }
+            toLeftId={ (isValidId(leftPartnerId) ? leftPartnerId : null) }
+            toRightId={ (isValidId(rightPartnerId) ? rightPartnerId : null) }
           />
           <PartnerRelation
             highstart={ isSelected ? selection : (isFocused ? highlight : undefined) }
@@ -238,7 +321,9 @@ function Node(props) {
       currentChildTarget.setY(genDist);
       currentChildTarget.add(new Vector3(0, 0, childrenSize * 0.5))
 
-      const childNode = children.map((c) => {
+      let previousNodeId = null;
+
+      const childNode = children.map((c, idx) => {
         const updateNodeSize = (s) => {
           sizes[c.id] = s;
         }
@@ -258,14 +343,18 @@ function Node(props) {
         if (person.id === debugId) {
           console.log('childTarget', c.id, childTarget.z);
         }
-        return (
+
+        const fragment = (
           <Fragment key={ `children${c.id}` }>
             <Node
               sendSize={ updateNodeSize }
               person={ c }
+              parentId={ person.id }
               parent={ relationsGroup }
               offsetY={ childTarget.y }
               offsetZ={ childTarget.z }
+              nextSiblingId={ getNextChild(children, idx) }
+              previousSiblingId={ previousNodeId }
             />
             <ChildRelation
               highlight={ childSelected ? selection : (childFocused ? highlight : undefined) }
@@ -279,7 +368,20 @@ function Node(props) {
             />
           </Fragment>
         );
+
+        previousNodeId = c.id;
+
+        const lastChildRelation = getLastRelation(c.relations);
+        if (isValidId(lastChildRelation)) {
+          const lcRl = allRelations.find((r) => r.id === lastChildRelation);
+          previousNodeId = getParnterId(lcRl, c.id);
+        }
+
+        return fragment;
       });
+
+      leftPartnerId = partner.id;
+
       return (
         <Fragment key={ `relation${r.id}` }>
           { partnerNode }
@@ -289,7 +391,12 @@ function Node(props) {
     });
   }
 
-  return getNodeRelations();
+  return (
+    <Fragment>
+      { getNodeRelations() }
+      { isSelected && <KNavigation upId={ navi.child.refId } downId={ navi.parent.refId } leftId={ navi.left.refId } rightId={ navi.right.refId }/> }
+    </Fragment>
+  );
 };
 
 export default Node;

@@ -65,4 +65,10 @@ export default class Transition {
       setTimeout(() => this.onFinish(this.current), 0);
     }
   }
+
+  teardown() {
+    this.finished = true;
+    this.start = -1;
+    this.onFinish(this.current);
+  }
 }

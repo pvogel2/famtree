@@ -1,13 +1,12 @@
 import { useState, useContext, useCallback, useEffect } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { focusNode, defocusNode, getRootNode, isValidNode, isPersonNode, isMetaResourceNode } from '../lib/nodes/utils';
+import { focusNode, defocusNode, getRootNode, isValidNode, isPersonNode, isMetaResourceNode, isNavigationNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
 import Person from '../lib/Person';
 import { setPerson as setFocusedPerson, clearPerson as clearFocusedPerson } from '../store/focusedPersonReducer';
-import { setSelectedMeta, setMetadata, setPerson as setSelectedPerson } from '../store/selectedPersonReducer';
+import { setSelectedMeta, setPerson as setSelectedPerson } from '../store/selectedPersonReducer';
 import { setPoint } from '../store/runtimeReducer';
-import { loadMetadata } from '../lib/Connect.js';
 
 const getForeground = (state) => state.layout.foreground;
 const getHighlight = (state) => state.layout.highlight;
@@ -39,13 +38,6 @@ function Intersector(props) {
         dispatch(setSelectedPerson(currentPerson.serialize()));
 
         isSelected = true;
-
-        async function loadCurrentMetadata() {
-          const metadata = await loadMetadata(currentPerson.id);
-          dispatch(setMetadata([...metadata]));
-        };
-        loadCurrentMetadata();
-
       }
     };
 
@@ -53,6 +45,15 @@ function Intersector(props) {
       renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       dispatch(setSelectedMeta(intersectedObj.userData.refId));
     };
+
+    const onNavigationClick = () => {
+      const targetPerson = findPerson(intersectedObj.userData?.refId);
+      dispatch(setSelectedPerson(targetPerson.serialize()));
+
+      renderer.parent.style.cursor = 'default';
+      renderer.unregisterEventCallback('click', onNavigationClick);
+    };
+
     if (isPersonNode(intersectedObj) && !isSelected) {
       renderer.registerEventCallback('click', selectFocusedPerson);
       focusNode(intersectedObj, { highlight, renderer });
@@ -71,6 +72,11 @@ function Intersector(props) {
       }
     }
 
+    if (isNavigationNode(intersectedObj)) {
+      renderer.parent.style.cursor = 'pointer';
+      renderer.registerEventCallback('click', onNavigationClick);
+    }
+
     return () => {
       if (isPersonNode(intersectedObj) && !isSelected) {
         defocusNode(intersectedObj, { foreground, renderer });
@@ -82,6 +88,11 @@ function Intersector(props) {
         defocusNode(intersectedObj, { renderer, opacity: defaultOpacity });
         renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       }
+
+      if (isNavigationNode(intersectedObj)) {
+        renderer.parent.style.cursor = 'default';
+        renderer.unregisterEventCallback('click', onNavigationClick);
+      }
     };
    }, [renderer, intersectedObj, dispatch, foreground, highlight, selectedPerson]);
 
@@ -89,7 +100,7 @@ function Intersector(props) {
     if (!renderer) return;
 
     const setIntersected = (event, intersected) => {
-      if (intersected.length) {
+      if (intersected?.length) {
         const maybeObj = intersected[0].object;
         if (intersectedObj?.uuid !== maybeObj.uuid && isValidNode(maybeObj)) {
           setIntersectedObj(maybeObj);
@@ -98,12 +109,12 @@ function Intersector(props) {
         const p = { x: event.clientX, y: event.clientY };
         dispatch(setPoint(p));
 
-      } else if (intersectedObj && !intersected.length) {
+      } else if (intersectedObj && !intersected?.length) {
         setIntersectedObj(null);
       }
     };
-
     renderer.registerEventCallback('move', setIntersected);
+    renderer.registerEventCallback('click', setIntersected);
 
     return () => {
       if (renderer) renderer.unregisterEventCallback('move', setIntersected);
