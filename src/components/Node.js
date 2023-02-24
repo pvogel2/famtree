@@ -10,9 +10,9 @@ import { isValidId, getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup
 import Person from '../lib/Person';
 import Partner from './Partner';
 
-const nodeDist = 6;
-const nodeSize = 6;
-const genDist = 6;
+const NODE_DIST = 6;
+const NODE_SIZE = 6;
+const GEN_DIST = 6;
 
 function getRelationsGroup(m) {
   return (findNamedGroup(m, 'relations') || createNamedGroup(m, 'relations'));
@@ -68,7 +68,7 @@ const getSelectedPerson = (state) => state.selectedPerson.person;
 function getChildSize(id, szs) {
   const s = szs[id];
   if (!s) {
-    return nodeSize;
+    return NODE_SIZE;
   }
   return s;
 }
@@ -89,16 +89,12 @@ function getParnterId(rl, pId) {
   return isValidId(id) ? id : null;
 }
 
-const defaultSendSize = () => 0;
-
-const debugId = null;
-
 function Node(props) {
   const {
     person,
     parent,
     parentId = null,
-    sendSize = defaultSendSize,
+    sendSize,
     offsetY = 0,
     offsetZ = 0,
     previousSiblingId = null,
@@ -107,7 +103,7 @@ function Node(props) {
 
   const [root, setRoot] = useState(null);
   const [totalSize, setTotalSize] = useState(0);
-  const [sizes] = useState({});
+  const [sizes, setSizes] = useState({});
 
   const { renderer } = useContext(RenderContext);
 
@@ -116,7 +112,8 @@ function Node(props) {
   const focusedPerson = useSelector(getFocusedPerson);
   const selectedPerson = useSelector(getSelectedPerson);
   const allRelations = useSelector(getRelations);
-  const relations = allRelations.filter((r) => r.members.includes(person?.id));
+
+  const relations = useMemo(() => allRelations.filter((r) => r.members.includes(person?.id)), [allRelations, person]);
 
   const isFocused = focusedPerson && focusedPerson?.id === person?.id;
   const isSelected = selectedPerson && selectedPerson?.id === person?.id;
@@ -135,6 +132,7 @@ function Node(props) {
     right: { pos: [0, 0, -arrOff], refId: rightNeighborId },
   }), [parentId, firstChildId, previousSiblingId, rightNeighborId]);
 
+  // render visual node navigation
   useEffect(() => {
     if (!renderer || !person?.id || !root) return;
 
@@ -167,9 +165,9 @@ function Node(props) {
     }
   }, [renderer, person, root, navi]);
 
+  // calculate overall node size
   useEffect(() => {
-    if (!person) return;
-    let newTotalSize = nodeSize;
+    let newTotalSize = NODE_SIZE;
     let childMinZ = 0;
     const relationTarget = new Vector3();
 
@@ -177,46 +175,39 @@ function Node(props) {
       const children = findMembers(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
 
-      if (person.id === debugId) console.log('Relation no ', idx, 'children length', children.length, 'childrenSize', childrenSize);
-
-      if (person.id === debugId) console.log('idx', idx);
-
       if (idx === 0) {
-        relationTarget.add(new Vector3(0, 0,  -nodeDist));
-        childMinZ = relationTarget.z;// - getNormalizedDistance(childrenSize);
-      } else {
-        if (children.length === 0) {
+        relationTarget.add(new Vector3(0, 0,  -NODE_DIST));
+        childMinZ = relationTarget.z;
+      } else if (children.length > 0) {
+        if (childMinZ > relationTarget.z) { // childMinZ is left side from relation target
+          relationTarget.add(new Vector3(0, 0, -NODE_DIST));
         } else {
-          if (childMinZ > relationTarget.z) { // childMinZ is left side from relation target
-            relationTarget.add(new Vector3(0, 0, -nodeDist));
-          } else {
-            relationTarget.setZ(childMinZ - childrenSize * 0.5); // - nodeDist);
-            childMinZ = relationTarget.z - childrenSize * 0.5;
-          }
+          relationTarget.setZ(childMinZ - childrenSize * 0.5);
+          childMinZ = relationTarget.z - childrenSize * 0.5;
         }
       }
+
       const oldTotalSize = newTotalSize;
       if (newTotalSize < childrenSize) {
         newTotalSize = childrenSize;
       }
 
-      const members = r.members;
-      if (person.id === debugId) console.log('members', members, 'idx', idx, 'newTotalSize', newTotalSize);
-
-      if (newTotalSize < (oldTotalSize + nodeSize)) { // minimum if relation existent
-        newTotalSize += nodeSize ;
+      if (newTotalSize < (oldTotalSize + NODE_SIZE)) { // minimum if relation existent
+        newTotalSize += NODE_SIZE;
       }
     });
 
-    if (person.id === debugId) console.log('newTotalSize', newTotalSize);
+    setTotalSize(newTotalSize);
+  }, [relations, sizes, totalSize]);
 
-    sendSize(newTotalSize);
-    if (totalSize !== newTotalSize) {
-      if (person.id === debugId) console.log('set newTotalSize', newTotalSize);
-      setTotalSize(newTotalSize);
-    }
-  }, [person, relations, sizes, sendSize, root]);
+  // send updated node size to parent
+  useEffect(() => {
+    if (!person || !sendSize) return;
 
+    sendSize(prevSizes => ({ ...prevSizes, [person.id]: totalSize }));
+  }, [person, sendSize, totalSize]);
+
+  // render visual node
   useEffect(() => {
     if (!renderer || !person?.id) return;
 
@@ -277,16 +268,16 @@ function Node(props) {
       const children = findMembers(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
 
-      relationTarget.add(new Vector3(0, 0,  -nodeDist));
+      relationTarget.add(new Vector3(0, 0,  -NODE_DIST));
 
       if (idx === 0) {
         childMinZ = relationTarget.z - childrenSize * 0.5; // getNormalizedDistance(childrenSize);
       } else if (children.length && childMinZ <= relationTarget.z) { // childMin is right side from relation target
-        relationTarget.setZ(childMinZ - (childrenSize + nodeDist) * 0.5);
+        relationTarget.setZ(childMinZ - (childrenSize + NODE_DIST) * 0.5);
         childMinZ = relationTarget.z - childrenSize * 0.5;
       }
       
-      const childSource = new Vector3(0, genDist / 3  - idx * 0.2, relationTarget.z + nodeDist * 0.5); // set start point for childSource
+      const childSource = new Vector3(0, GEN_DIST / 3  - idx * 0.2, relationTarget.z + NODE_DIST * 0.5); // set start point for childSource
 
       const partnerFocused = partner.id === focusedPerson?.id;
       const partnerSelected = partner.id === selectedPerson?.id;
@@ -318,18 +309,14 @@ function Node(props) {
       );
 
       const currentChildTarget = childSource.clone();
-      currentChildTarget.setY(genDist);
+      currentChildTarget.setY(GEN_DIST);
       currentChildTarget.add(new Vector3(0, 0, childrenSize * 0.5))
 
       let previousNodeId = null;
 
       const childNode = children.map((c, idx) => {
-        const updateNodeSize = (s) => {
-          sizes[c.id] = s;
-        }
-
         const childSize = getChildSize(c.id, sizes);
-        const relationDistance = c.relations.length ? c.relations.length * 0.5 * nodeSize : 0;
+        const relationDistance = c.relations.length ? c.relations.length * 0.5 * NODE_SIZE : 0;
 
         const childTarget = currentChildTarget.clone();
         childTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
@@ -340,14 +327,10 @@ function Node(props) {
 
         currentChildTarget.add(new Vector3(0, 0, -childSize)); // shift right to end of current childSize (prepare for next child)
 
-        if (person.id === debugId) {
-          console.log('childTarget', c.id, childTarget.z);
-        }
-
         const fragment = (
           <Fragment key={ `children${c.id}` }>
             <Node
-              sendSize={ updateNodeSize }
+              sendSize={ setSizes }
               person={ c }
               parentId={ person.id }
               parent={ relationsGroup }
