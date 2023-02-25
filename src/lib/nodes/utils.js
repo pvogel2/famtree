@@ -6,8 +6,12 @@ import ThreePreparedMeshes from '../../lib/three/PreparedMeshes';
 import Transition from '../../lib/Transition';
 import avatarImage from '../../assets/images/avatar.png';
 // import { getBaseUrl } from '../Connect';
+import Person from '../Person';
 
 const textureLoader = new TextureLoader();
+
+const ARROW_OFFSET = 0.2;
+const NAVI_OFFSET = 0.9;
 
 export function isValidId(id) {
   return !isNaN(parseInt(id));
@@ -56,15 +60,7 @@ export function isNavigationNode(o = {}) {
 export function createNamedGroup(m, name) {
   const g = new Group();
   g.name = name;
-  /* if (name === 'relations') {
-    const markerNode = getMesh({ foreground: '#ff0000'});
-    g.add(markerNode);
-  }
-  if (name === 'assets') {
-    const markerNode = getMesh({ foreground: '#0000ff'});
-    markerNode.position.x -= 0.5;
-    g.add(markerNode);
-  } */
+
   m.add(g);
   return g;
 }
@@ -77,8 +73,16 @@ export function getDataGroup(m) {
   return getNamedGroup(m, 'data');
 }
 
-export function getNavigationGroup(m) {
-  return getNamedGroup(m, 'navigation');
+export function getNavigationGroup(m, layout = { pos: [ARROW_OFFSET, NAVI_OFFSET, -NAVI_OFFSET], visible: false }) {
+  const ng = getNamedGroup(m, 'navigation');
+  ng.position.fromArray(layout.pos);
+  ng.visible = layout.visible;
+
+  return ng;
+}
+
+export function getRelationsGroup(m) {
+  return getNamedGroup(m, 'relations');
 }
 
 function getNamedGroup(m, name) {
@@ -385,3 +389,77 @@ export function selectNode(m, config = {}) {
 export function deselectNode(m, config = {}) {
   defocusNode(m, config);
 }
+
+export function createTreeNode(person, meta, layout) {
+  const { renderer, parent, type = 'person' } = meta;
+  const { offset, colors } = layout;
+
+  const p = new Person(person);
+
+  const rg = type === 'partner'
+    ? getPartnerGroup(p)
+    : getPersonGroup(p);
+
+  rg.position.add(offset);
+  const rId = `person${p.id}`;
+
+  const sg = getSymbolGroup(p, { foreground: colors.foreground });
+  const sId = `symbol${p.id}`;
+
+  renderer.addObject(rId, rg, false, parent);
+  renderer.addObject(sId, sg, true, rg);
+
+  const dg = getDataGroup(rg);
+  const lt = addLabelText3D(dg, `${p.name}`, colors.text);
+
+  getAssetsGroup(rg);
+
+  return {
+    root: rg,
+    clean: () => {
+      rg.clear();
+      renderer.removeObject(rId);
+      renderer.removeObject(sId);
+      lt.remove(null, dg);
+    },
+  };
+}
+
+export function createNavigationNode(person, meta) {
+  const { parent, renderer, navi } = meta;
+  const ng = getNavigationGroup(parent);
+
+  const arrowLayout = {
+    parent: { pos: [0, -ARROW_OFFSET, 0], rot: Math.PI * -0.5 },
+    child: { pos: [0, ARROW_OFFSET, 0], rot: Math.PI * 0.5 },
+    left: { pos: [0, 0, ARROW_OFFSET], rot: Math.PI },
+    right: { pos: [0, 0, -ARROW_OFFSET] },
+};
+
+  Object.entries(navi).forEach(([target, props]) => {
+    const { refId } = props;
+    const { pos, rot } = arrowLayout[target];
+
+    if (isValidId(refId)) {
+      const nId = `${target}Navi${person.id}`;
+      const a = getNaviArrowMesh({ rot });
+
+      renderer.addObject(nId, a, true, ng);
+      a.position.fromArray(pos);
+      a.userData.refId = refId;
+    }
+  });
+
+  const clean = () => {
+    Object.entries(navi).forEach(([target, props]) => {
+      const { refId } = props;
+
+      if (isValidId(refId)) {
+        const nId = `${target}Navi${person.id}`;
+        renderer.removeObject(nId);
+      }
+    });
+  };
+
+  return { naviGroup: ng, clean };
+};

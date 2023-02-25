@@ -6,17 +6,12 @@ import ChildRelation from './relations/ChildRelation';
 import { useSelector } from 'react-redux';
 import KNavigation from './KeyboardNavigation';
 
-import { isValidId, getPersonGroup, getSymbolGroup, getDataGroup, getAssetsGroup, getNavigationGroup, getNaviArrowMesh, addLabelText3D, findNamedGroup, createNamedGroup } from '../lib/nodes/utils';
-import Person from '../lib/Person';
+import { isValidId, createTreeNode, getRelationsGroup, getAssetsGroup, createNavigationNode } from '../lib/nodes/utils';
 import Partner from './Partner';
 
 const NODE_DIST = 6;
 const NODE_SIZE = 6;
 const GEN_DIST = 6;
-
-function getRelationsGroup(m) {
-  return (findNamedGroup(m, 'relations') || createNamedGroup(m, 'relations'));
-}
 
 function getFirstChildOfRelations(rs) {
   const fr = rs.find((rl) => rl.children.length);
@@ -28,7 +23,7 @@ function getLastRelation(rs) {
   return isValidId(lr) ? lr : null;
 }
 
-const findMembers = (typedArr = [], persons = []) => {
+const findIems = (typedArr = [], persons = []) => {
   const knownMembers = typedArr;
   const foundMembers = [];
 
@@ -50,7 +45,7 @@ const findPartner = (relation, person, persons = []) => {
 
   const pIds = relation.members.filter((id) => id !== person.id);
 
-  const found = findMembers(pIds, persons);
+  const found = findIems(pIds, persons);
 
   if (!found.length) {
     return null;
@@ -118,51 +113,25 @@ function Node(props) {
   const isFocused = focusedPerson && focusedPerson?.id === person?.id;
   const isSelected = selectedPerson && selectedPerson?.id === person?.id;
 
-  const personId = person?.id;
-  const rightNeighborId = relations.length ? getParnterId(relations[0], personId) : nextSiblingId;
-
-  const firstChildId = getFirstChildOfRelations(relations);
-
-  const arrOff = 0.2;
-  const naviOff = 0.9;
-  const navi = useMemo(() => ({
-    parent: { pos: [0, -arrOff, 0], refId: parentId, rot: Math.PI * -0.5 },
-    child: { pos: [0, arrOff, 0], refId: firstChildId, rot: Math.PI * 0.5 },
-    left: { pos: [0, 0, arrOff], refId: previousSiblingId, rot: Math.PI },
-    right: { pos: [0, 0, -arrOff], refId: rightNeighborId },
-  }), [parentId, firstChildId, previousSiblingId, rightNeighborId]);
+  const navi = useMemo(() => {
+    const rightNeighborId = relations.length ? getParnterId(relations[0], person?.id) : nextSiblingId;
+    const firstChildId = getFirstChildOfRelations(relations);
+  
+    return {
+      parent: { refId: parentId },
+      child: { refId: firstChildId },
+      left: { refId: previousSiblingId },
+      right: { refId: rightNeighborId },
+    };
+  }, [person, parentId, previousSiblingId, nextSiblingId, relations]);
 
   // render visual node navigation
   useEffect(() => {
     if (!renderer || !person?.id || !root) return;
 
-    const naviGroup = getNavigationGroup(root);
-    naviGroup.position.set(arrOff, naviOff, -naviOff);
-    naviGroup.visible = false;
+    const { clean } = createNavigationNode(person, { renderer, parent: root, navi });
 
-    Object.entries(navi).forEach(([target, props]) => {
-      const { refId, pos, rot } = props;
-
-      if (isValidId(refId)) {
-        const nodeId = `${target}Navi${person.id}`;
-        const naviMesh = getNaviArrowMesh({ rot });
-
-        renderer.addObject(nodeId, naviMesh, true, naviGroup);
-        naviMesh.position.set(pos[0], pos[1], pos[2]);
-        naviMesh.userData.refId = refId;
-      }
-    });
-
-    return () => {
-      Object.entries(navi).forEach(([target, props]) => {
-        const { refId } = props;
-  
-        if (isValidId(refId)) {
-          const nodeId = `${target}Navi${person.id}`;
-          renderer.removeObject(nodeId);
-        }
-      });
-    }
+    return clean;
   }, [renderer, person, root, navi]);
 
   // calculate overall node size
@@ -172,7 +141,7 @@ function Node(props) {
     const relationTarget = new Vector3();
 
     relations.forEach((r, idx) => {
-      const children = findMembers(r.children, persons);
+      const children = findIems(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
 
       if (idx === 0) {
@@ -211,33 +180,13 @@ function Node(props) {
   useEffect(() => {
     if (!renderer || !person?.id) return;
 
-    const usedPerson = new Person(person);
-
-    const rootOffset = new Vector3(0, offsetY, offsetZ);
-    const rootId = `person${usedPerson.id}`;
-
-    const newRoot = getPersonGroup(usedPerson);
-    newRoot.position.add(rootOffset);
-
-    const symbolGroup = getSymbolGroup(person, { foreground });
-    const symbolId = `symbol${usedPerson.id}`;
-  
-    renderer.addObject(rootId, newRoot, false, parent);
-    renderer.addObject(symbolId, symbolGroup, true, newRoot);
-
-    const dataGroup = getDataGroup(newRoot);
-    const labelText = addLabelText3D(dataGroup, `${usedPerson.name}`, text);
-
-    getAssetsGroup(newRoot);
+    const offset = new Vector3(0, offsetY, offsetZ);
+    const colors = { foreground, text };
+    const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors });
 
     setRoot(newRoot);
 
-    return () => {
-      newRoot.clear();
-      renderer.removeObject(rootId);
-      renderer.removeObject(symbolId);
-      labelText.remove(null, dataGroup);
-    };
+    return clean;
   }, [renderer, person, foreground, offsetY, offsetZ, parent, text]);
 
   if (!root) {
@@ -265,7 +214,7 @@ function Node(props) {
 
       rightPartnerId = getParnterId(relations[idx + 1], person.id) || nextSiblingId;
 
-      const children = findMembers(r.children, persons);
+      const children = findIems(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
 
       relationTarget.add(new Vector3(0, 0,  -NODE_DIST));

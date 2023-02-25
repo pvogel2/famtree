@@ -209,9 +209,6 @@ export class Renderer {
   }
 
   _setIntersection(event){
-    // const scrollLeft = window.scrollX;
-    // const scrollTop = window.scrollY;
-
     this._calcDimensions();
 
     this.mouse.x = ( (event.clientX - this.left) / this.width ) * 2 - 1;
@@ -361,7 +358,6 @@ export class Renderer {
       
     });
     this._updateObjects();
-    // this._updateIntersection();
     this._transitionUpdate();
     if (this.stats) this.stats.end();
   }

@@ -57,6 +57,9 @@ const renderer = {
   registerEventCallback: jest.fn(),
   unregisterEventCallback: jest.fn(),
   transition: jest.fn(),
+  parent: {
+    style: {},
+  },
 };
 
 function getPersonWithListing(add, n = 1) {
@@ -254,7 +257,6 @@ function createPersonMesh() {
   m.add(getSymbolGroup(getPerson().serialize()));
   const naviGroup = getNavigationGroup(m);
 
-  naviGroup.visible = false;
   return {
     personMesh: m,
     assetsGroup,

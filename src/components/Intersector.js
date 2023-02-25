@@ -1,5 +1,5 @@
 import { useState, useContext, useCallback, useEffect } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { focusNode, defocusNode, getRootNode, isValidNode, isPersonNode, isMetaResourceNode, isNavigationNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
@@ -11,19 +11,21 @@ import { setPoint } from '../store/runtimeReducer';
 const getForeground = (state) => state.layout.foreground;
 const getHighlight = (state) => state.layout.highlight;
 const getSelectedPerson = (state) => state.selectedPerson.person;
-  
-function Intersector(props) {
-  const { persons = [] } = props;
+const getPersons = (state) => state.persons;
+
+function Intersector(_props) {
   const { renderer } = useContext(RenderContext);
 
   const [intersectedObj, setIntersectedObj] = useState(null);
 
-  const findPerson  = useCallback((id) => persons.find((p) => p.id === id), [persons]);
-  const dispatch = useDispatch();
+  const persons = useSelector(getPersons);
   const foreground = useSelector(getForeground);
   const highlight = useSelector(getHighlight);
   const selectedPerson = useSelector(getSelectedPerson);
-  
+
+  const findPerson  = useCallback((id) => persons.find((p) => p.id === id), [persons]);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const rootNode = getRootNode(intersectedObj);
     const currentPerson = findPerson(rootNode?.userData?.refId);
@@ -35,7 +37,7 @@ function Intersector(props) {
 
       if (currentPerson) {
         dispatch(clearFocusedPerson());
-        dispatch(setSelectedPerson(currentPerson.serialize()));
+        dispatch(setSelectedPerson(new Person(currentPerson).serialize()));
 
         isSelected = true;
       }
@@ -48,7 +50,7 @@ function Intersector(props) {
 
     const onNavigationClick = () => {
       const targetPerson = findPerson(intersectedObj.userData?.refId);
-      dispatch(setSelectedPerson(targetPerson.serialize()));
+      dispatch(setSelectedPerson(new Person(targetPerson).serialize()));
 
       renderer.parent.style.cursor = 'default';
       renderer.unregisterEventCallback('click', onNavigationClick);
@@ -59,7 +61,7 @@ function Intersector(props) {
       focusNode(intersectedObj, { highlight, renderer });
 
       if (currentPerson) {
-        dispatch(setFocusedPerson(currentPerson.serialize()));
+        dispatch(setFocusedPerson(new Person(currentPerson).serialize()));
       }
     }
 
@@ -68,7 +70,7 @@ function Intersector(props) {
       focusNode(intersectedObj, { scale: 1.2, renderer });
 
       if (currentPerson) {
-        dispatch(setFocusedPerson(currentPerson.serialize()));
+        dispatch(setFocusedPerson(new Person(currentPerson).serialize()));
       }
     }
 
@@ -94,7 +96,7 @@ function Intersector(props) {
         renderer.unregisterEventCallback('click', onNavigationClick);
       }
     };
-   }, [renderer, intersectedObj, dispatch, foreground, highlight, selectedPerson]);
+   }, [renderer, intersectedObj, dispatch, foreground, highlight, selectedPerson, findPerson]);
 
   useEffect(() => {
     if (!renderer) return;
@@ -117,16 +119,12 @@ function Intersector(props) {
     renderer.registerEventCallback('click', setIntersected);
 
     return () => {
-      if (renderer) renderer.unregisterEventCallback('move', setIntersected);
+      renderer.unregisterEventCallback('move', setIntersected);
+      renderer.unregisterEventCallback('click', setIntersected);
     };
-  }, [renderer, intersectedObj]);
+  }, [renderer, setIntersectedObj, intersectedObj]);
 
   return null;
 };
 
-function mapStateToProps(state) {
-  const persons = state.persons.map((data) => new Person(data));
-  return { persons };
-}
-
-export default connect(mapStateToProps)(Intersector);
+export default Intersector;

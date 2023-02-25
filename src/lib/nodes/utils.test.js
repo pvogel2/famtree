@@ -38,6 +38,10 @@ jest.mock ('../../lib/three/PreparedMeshes', () => {
   };
 });
 
+function getMockMesh() {
+  return new MockMesh(new MockGeometry(), new MockMaterial());
+}
+
 afterEach(() => {
   jest.clearAllMocks()
 });
@@ -94,7 +98,7 @@ describe('isValidNode', () => {
   });
 
   it('returns true for refId defined', () => {
-    const m = new MockMesh(new MockGeometry(), new MockMaterial());
+    const m = getMockMesh();
     m.userData.refId = 1;
     expect(utils.isValidNode(m)).toBe(true);
   });
@@ -107,5 +111,29 @@ describe('isValidId', () => {
 
   it.each([0, 1, '3'])('returns true for number like value %o', (value) => {
     expect(utils.isValidId(value)).toBe(true);
+  });
+});
+
+describe.each([
+  { method: 'getRelationsGroup', name: 'relations' },
+  { method: 'getAssetsGroup', name: 'assets' },
+  { method: 'getDataGroup', name: 'data' },
+  { method: 'getNavigationGroup', name: 'navigation' },
+])('for Method $method', ({ method, name }) => {
+  it('returns a new group', () => {
+    const m = getMockMesh();
+
+    const g = utils[method](m);
+    expect(g.type).toBe('Group');
+    expect(g.name).toBe(name);
+  });
+
+  it('returns the existing group', () => {
+    const m = getMockMesh();
+    const ng = new MockGroup();
+    ng.name = name;
+    m.add(ng);
+    const g = utils[method](m);
+    expect(g).toEqual(ng);
   });
 });

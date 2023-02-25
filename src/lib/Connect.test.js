@@ -1,5 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
-import { loadFamily, savePerson, updatePerson, setFamilyContext } from "./Connect";
+import { loadFamily } from "./Connect";
 import U from './tests/utils';
 
 jest.mock('@wordpress/api-fetch');
