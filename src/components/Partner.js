@@ -11,7 +11,7 @@ const getLayout = (state) => state.layout;
 const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function Partner(props) {
-  const { person, parent, offsetY = 0, offsetZ = 0, parentId, toChildId, toLeftId, toRightId } = props;
+  const { person, parent, offsetX = 0, offsetY = 0, offsetZ = 0, parentId, toChildId, toLeftId, toRightId } = props;
 
   const { text, foreground } = useSelector(getLayout);
   const selectedPerson = useSelector(getSelectedPerson);
@@ -34,7 +34,7 @@ function Partner(props) {
 
     const type = 'partner';
 
-    const offset = new Vector3(0, offsetY, offsetZ);
+    const offset = new Vector3(offsetX, offsetY, offsetZ);
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
 
     const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors });
