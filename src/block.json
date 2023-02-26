@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
 	"name": "create-block/famtree",
-	"version": "0.12.0-beta",
+	"version": "0.12.1-beta",
 	"title": "FamTree",
 	"category": "widgets",
 	"icon": "famtree",
