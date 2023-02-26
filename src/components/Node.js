@@ -90,6 +90,7 @@ function Node(props) {
     parent,
     parentId = null,
     sendSize,
+    offsetX = 0,
     offsetY = 0,
     offsetZ = 0,
     previousSiblingId = null,
@@ -180,14 +181,14 @@ function Node(props) {
   useEffect(() => {
     if (!renderer || !person?.id) return;
 
-    const offset = new Vector3(0, offsetY, offsetZ);
+    const offset = new Vector3(offsetX, offsetY, offsetZ);
     const colors = { foreground, text };
     const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors });
 
     setRoot(newRoot);
 
     return clean;
-  }, [renderer, person, foreground, offsetY, offsetZ, parent, text]);
+  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, parent, text]);
 
   if (!root) {
     return null;
@@ -212,22 +213,37 @@ function Node(props) {
         const d = new Vector3(Math.sin(ang) * NODE_DIST, 0, -Math.cos(ang) * NODE_DIST);
         v.set(d.x, d.y, d.z);
       },
-      getChildSource: (idx, vTarget) => new Vector3(0, GEN_DIST / 3, vTarget.z + NODE_DIST * 0.5),
-      getChildTarget: (vSource, childrenSize) => {
+      getChildSource: (idx, vTarget) => {
+        const n = vTarget.clone().setY(0).normalize();
+        return new Vector3(vTarget.x - n.x * NODE_DIST * 0.5, GEN_DIST / 3, vTarget.z - n.z * NODE_DIST * 0.5);
+      },
+      getInitialChildTarget: (vSource, childrenSize) => {
+        const n = vSource.clone().setY(0).normalize();
         const target = vSource.clone();
         target.setY(GEN_DIST);
-        // target.add(new Vector3(0, 0, 0.5 * NODE_DIST));
+        // target.add(new Vector3(n.x * NODE_DIST * 0.5, 0, n.z * NODE_DIST * 0.5));
         return target;
+      },
+      getCurrentChildTarget: (vCurrent, childSize, relationDistance) => {
+        const n = vCurrent.clone().setY(0).normalize();
+        const offset = 0.5 * childSize + relationDistance;
+        return vCurrent.clone().add(new Vector3(n.x * offset, 0, n.z * offset));
       },
     };
 
     const module2D = {
       setRelationMinDist: (v) => v.add(new Vector3(0, 0, -NODE_DIST)),
       getChildSource: (idx, vTarget) => new Vector3(0, GEN_DIST / 3  - idx * 0.2, vTarget.z + NODE_DIST * 0.5),
-      getChildTarget: (vSource, childrenSize) => {
+      getInitialChildTarget: (vSource, childrenSize) => {
         const target = vSource.clone();
         target.setY(GEN_DIST);
         target.add(new Vector3(0, 0, childrenSize * 0.5));
+        return target;
+      },
+      getCurrentChildTarget: (vCurrent, childSize, relationDistance) => {
+        const target = vCurrent.clone();
+        target.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
+        target.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
         return target;
       },
     };
@@ -246,11 +262,14 @@ function Node(props) {
 
       module.setRelationMinDist(relationTarget, idx, relations.length);
 
-      if (idx === 0) {
-        childMinZ = relationTarget.z - childrenSize * 0.5; // getNormalizedDistance(childrenSize);
-      } else if (children.length && childMinZ <= relationTarget.z) { // childMin is right side from relation target
-        relationTarget.setZ(childMinZ - (childrenSize + NODE_DIST) * 0.5);
-        childMinZ = relationTarget.z - childrenSize * 0.5;
+      // TODO: care for module 2d and 3d
+      if (module === module2D) {
+        if (idx === 0) {
+          childMinZ = relationTarget.z - childrenSize * 0.5;
+        } else if (children.length && childMinZ <= relationTarget.z) { // childMin is right side from relation target
+          relationTarget.setZ(childMinZ - (childrenSize + NODE_DIST) * 0.5);
+          childMinZ = relationTarget.z - childrenSize * 0.5;
+        }
       }
       
       const childSource = module.getChildSource(idx, relationTarget); // set start point for childSource
@@ -285,7 +304,7 @@ function Node(props) {
         </>
       );
 
-      const currentChildTarget = module.getChildTarget(childSource, childrenSize);
+      const currentChildTarget = module.getInitialChildTarget(childSource, childrenSize);
 
       let previousNodeId = null;
 
@@ -293,9 +312,10 @@ function Node(props) {
         const childSize = getChildSize(c.id, sizes);
         const relationDistance = c.relations.length ? c.relations.length * 0.5 * NODE_SIZE : 0;
 
-        const childTarget = currentChildTarget.clone();
-        childTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
-        childTarget.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
+        const childTarget = module.getCurrentChildTarget(currentChildTarget, childSize, relationDistance);
+        // const childTarget = currentChildTarget.clone();
+        // childTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
+        // childTarget.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
         
         const childFocused = c.id === focusedPerson?.id;
         const childSelected = c.id === selectedPerson?.id;
@@ -309,6 +329,7 @@ function Node(props) {
               person={ c }
               parentId={ person.id }
               parent={ relationsGroup }
+              offsetX={ childTarget.x }
               offsetY={ childTarget.y }
               offsetZ={ childTarget.z }
               nextSiblingId={ getNextChild(children, idx) }
