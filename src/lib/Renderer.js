@@ -46,6 +46,7 @@ export class Renderer {
       "click": [],
       "mousemove": []
     };
+    this._lastEvent = null; // cache last mouse move event for transition end updates
     // stuff for resource handling
     this.res = "/obj/";
 
@@ -160,6 +161,7 @@ export class Renderer {
   }
 
   onContainerMousemove(event) {
+    this._lastEvent = event;
     event.preventDefault();
     this._setIntersection(event);
 
@@ -328,6 +330,7 @@ export class Renderer {
       this.transitioning = false;
       if (this.three.control) this.three.control.target.copy(this.transitionVector);
       if (this.transitionPosition) this.three.camera.position.copy(this.transitionPosition);
+      if (this._lastEvent) this.three.renderer.domElement.dispatchEvent(this._lastEvent);
     } else if (this.three.control) {
       if (this.transitionPosition) this.three.camera.position.lerp(this.transitionPosition,alpha);
       this.three.control.target.lerp(this.transitionVector, alpha);
