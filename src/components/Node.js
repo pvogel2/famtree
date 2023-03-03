@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState, useMemo, Fragment } from 'react';
-import { Vector3 } from 'three';
+import { Vector3, MathUtils, ArrowHelper } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
@@ -212,11 +212,16 @@ function Node(props) {
 
     const module3D = {
       setRelationMinDist: (vTarget, idx = 0, max = 1, vMain) => {
-        // const n = vTarget.clone().setY(0).normalize();
-        const initialAng = -Math.PI * 0.5; // initial layout in -z direction
-        const offAng = initialAng + vMain.angleTo(new Vector3(0, 0, -1));
+        const initialAng = Math.PI; // initial layout in -z direction
+        console.log(initialAng, (new Vector3(vMain.x, 0, vMain.z)).angleTo(new Vector3(0, 0, -1)), vMain);
+        const offAng = initialAng - Math.PI;
+
         const ang = offAng + idx * 2 * Math.PI / max;
         const d = new Vector3(Math.sin(ang) * NODE_DIST, 0, -Math.cos(ang) * NODE_DIST);
+
+        const arrowHelper = new ArrowHelper(vMain, new Vector3(), 3, 0xff0000 );
+        renderer.three.scene.add(arrowHelper);
+
         vTarget.set(d.x, d.y, d.z);
       },
       getChildSource: (idx, vTarget) => {
@@ -232,13 +237,18 @@ function Node(props) {
       },
       getCurrentChildTarget: (vCurrent, childSize, relationDistance, idx, max, vSource) => {
         const vMain = vSource.clone().setY(0).normalize();
-        const ang = Math.PI + idx * 2 * Math.PI / max;
-        const n = new Vector3(Math.sin(ang), 0, Math.cos(ang));
+        const offAng = new Vector3(vMain.x, 0, vMain.z).angleTo(new Vector3(0, 0, -1));
+
+        const ang = offAng + idx * 2 * Math.PI / max;
+
+        const n = (new Vector3(Math.sin(ang), 0, -Math.cos(ang))).normalize();
         let offset = 0.5 * childSize;
+
         if (max === 1) {
           offset -= NODE_SIZE;
         }
         return vCurrent.clone().add(new Vector3(0.5 * NODE_SIZE * vMain.x, 0, 0.5 * NODE_SIZE * vMain.z)).add(new Vector3(n.x * offset, 0, n.z * offset));
+        // return new Vector3(0, vCurrent.y, 0).add(new Vector3(0.5 * NODE_SIZE * vMain.x, 0, 0.5 * NODE_SIZE * vMain.z)).add(new Vector3(n.x * offset, 0, n.z * offset));
       },
       updateCurrentChildTarget(vCurrent, childSize) {},
     };
