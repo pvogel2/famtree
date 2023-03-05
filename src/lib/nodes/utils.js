@@ -1,4 +1,4 @@
-import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
+import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Euler, Color, MathUtils } from 'three';
 
 // import ThreeText from '../../lib/three/Text';
 import ThreeText3D from '../../lib/three/Text3D';
@@ -392,7 +392,7 @@ export function deselectNode(m, config = {}) {
 
 export function createTreeNode(person, meta, layout) {
   const { renderer, parent, type = 'person' } = meta;
-  const { offset, colors } = layout;
+  const { offset, colors, rotation = new Euler() } = layout;
 
   const p = new Person(person);
 
@@ -401,6 +401,7 @@ export function createTreeNode(person, meta, layout) {
     : getPersonGroup(p);
 
   rg.position.add(offset);
+  rg.rotation.set(rotation.x, rotation.y, rotation.z);
   const rId = `person${p.id}`;
 
   const sg = getSymbolGroup(p, { foreground: colors.foreground });

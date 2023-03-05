@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState, useMemo, Fragment } from 'react';
-import { Vector3, MathUtils, ArrowHelper } from 'three';
+import { Vector3, Euler } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import KNavigation from './KeyboardNavigation';
 
 import { isValidId, createTreeNode, getRelationsGroup, getAssetsGroup, createNavigationNode } from '../lib/nodes/utils';
+import getModule from '../lib/nodes/layout3D';
 import Partner from './Partner';
 
 const NODE_DIST = 6;
@@ -69,10 +70,15 @@ function getChildSize(id, szs) {
 }
 
 function getChildrenGroupSize(cs, szs) {
-  let groupSize = cs.reduce((total, c) => {
-    return total += getChildSize(c.id, szs);
+  let maxChildSize = 0;
+  let childrenSize = cs.reduce((total, c) => {
+    const childSize = getChildSize(c.id, szs);
+    if (childSize > maxChildSize) {
+      maxChildSize = childSize;
+    }
+    return total += childSize;
   }, 0); //  + Math.max((cs.length - 1), 0) * cldDist;
-  return groupSize;
+  return { childrenSize, maxChildSize };
 }
 
 function getNextChild(cs, idx) {
@@ -96,6 +102,9 @@ function Node(props) {
     cSourceX = 0,
     cSourceY = 0,
     cSourceZ = 0, 
+    rotX = 0,
+    rotY = 0,
+    rotZ = 0,
     previousSiblingId = null,
     nextSiblingId = null,
   } = props;
@@ -146,7 +155,7 @@ function Node(props) {
 
     relations.forEach((r, idx) => {
       const children = findIems(r.children, persons);
-      const childrenSize = getChildrenGroupSize(children, sizes);
+      const { childrenSize } = getChildrenGroupSize(children, sizes);
 
       if (idx === 0) {
         relationTarget.add(new Vector3(0, 0,  -NODE_DIST));
@@ -185,13 +194,14 @@ function Node(props) {
     if (!renderer || !person?.id) return;
 
     const offset = new Vector3(offsetX, offsetY, offsetZ);
+    const rotation = new Euler(rotX, rotY, rotZ);
     const colors = { foreground, text };
-    const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors });
+    const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors, rotation });
 
     setRoot(newRoot);
 
     return clean;
-  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, parent, text]);
+  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, parent, text]);
 
   if (!root) {
     return null;
@@ -202,6 +212,8 @@ function Node(props) {
       return null;
     }
 
+    const module = getModule(renderer);
+
     const relationsGroup = getRelationsGroup(root);
     const assetsGroup = getAssetsGroup(root);
 
@@ -210,87 +222,23 @@ function Node(props) {
     let leftPartnerId = person.id;
     let rightPartnerId = null;
 
-    const module3D = {
-      setRelationMinDist: (vTarget, idx = 0, max = 1, vMain) => {
-        const initialAng = Math.PI; // initial layout in -z direction
-        console.log(initialAng, (new Vector3(vMain.x, 0, vMain.z)).angleTo(new Vector3(0, 0, -1)), vMain);
-        const offAng = initialAng - Math.PI;
-
-        const ang = offAng + idx * 2 * Math.PI / max;
-        const d = new Vector3(Math.sin(ang) * NODE_DIST, 0, -Math.cos(ang) * NODE_DIST);
-
-        const arrowHelper = new ArrowHelper(vMain, new Vector3(), 3, 0xff0000 );
-        renderer.three.scene.add(arrowHelper);
-
-        vTarget.set(d.x, d.y, d.z);
-      },
-      getChildSource: (idx, vTarget) => {
-        const n = vTarget.clone().setY(0).normalize();
-        return new Vector3(vTarget.x - n.x * NODE_DIST * 0.5, GEN_DIST / 3, vTarget.z - n.z * NODE_DIST * 0.5);
-      },
-      getInitialChildTarget: (vSource, childrenSize) => {
-        // const n = vSource.clone().setY(0).normalize();
-        const target = vSource.clone();
-        target.setY(GEN_DIST);
-        // target.add(new Vector3(n.x * NODE_DIST * 0.5, 0, n.z * NODE_DIST * 0.5));
-        return target;
-      },
-      getCurrentChildTarget: (vCurrent, childSize, relationDistance, idx, max, vSource) => {
-        const vMain = vSource.clone().setY(0).normalize();
-        const offAng = new Vector3(vMain.x, 0, vMain.z).angleTo(new Vector3(0, 0, -1));
-
-        const ang = offAng + idx * 2 * Math.PI / max;
-
-        const n = (new Vector3(Math.sin(ang), 0, -Math.cos(ang))).normalize();
-        let offset = 0.5 * childSize;
-
-        if (max === 1) {
-          offset -= NODE_SIZE;
-        }
-        return vCurrent.clone().add(new Vector3(0.5 * NODE_SIZE * vMain.x, 0, 0.5 * NODE_SIZE * vMain.z)).add(new Vector3(n.x * offset, 0, n.z * offset));
-        // return new Vector3(0, vCurrent.y, 0).add(new Vector3(0.5 * NODE_SIZE * vMain.x, 0, 0.5 * NODE_SIZE * vMain.z)).add(new Vector3(n.x * offset, 0, n.z * offset));
-      },
-      updateCurrentChildTarget(vCurrent, childSize) {},
-    };
-
-    const module2D = {
-      setRelationMinDist: (v) => v.add(new Vector3(0, 0, -NODE_DIST)),
-      getChildSource: (idx, vTarget) => new Vector3(0, GEN_DIST / 3  - idx * 0.2, vTarget.z + NODE_DIST * 0.5),
-      getInitialChildTarget: (vSource, childrenSize) => {
-        const target = vSource.clone();
-        target.setY(GEN_DIST);
-        target.add(new Vector3(0, 0, childrenSize * 0.5));
-        return target;
-      },
-      getCurrentChildTarget: (vCurrent, childSize, relationDistance) => {
-        const target = vCurrent.clone();
-        target.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
-        target.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
-        return target;
-      },
-      updateCurrentChildTarget(vCurrent, childSize) {
-        vCurrent.add(new Vector3(0, 0, -childSize)); // shift right to end of current childSize (prepare for next child)
-      },
-    };
-
     const mainDirection = (new Vector3(offsetX, 0, offsetZ)).sub(new Vector3(cSourceX, 0, cSourceZ)).normalize();
 
     return relations.map((r, idx) => {
-      const module = module3D;
       const partner = findPartner(r, person, persons);
       if (!partner) {
         return null;
       }
 
       rightPartnerId = getParnterId(relations[idx + 1], person.id) || nextSiblingId;
-
       const children = findIems(r.children, persons);
-      const childrenSize = getChildrenGroupSize(children, sizes);
+      const { childrenSize, maxChildSize } = getChildrenGroupSize(children, sizes);
 
-      module.setRelationMinDist(relationTarget, idx, relations.length, mainDirection);
+      module.setRelationMinDist(relationTarget, idx, relations.length, partner, mainDirection, root.position);
+      const relationRotation = module.setRelationRotation(relationTarget, idx, relations.length, partner, mainDirection, root.position);
 
       // TODO: care for module 2d and 3d
-      if (module === module2D) {
+      if (module.name === '2D') {
         if (idx === 0) {
           childMinZ = relationTarget.z - childrenSize * 0.5;
         } else if (children.length && childMinZ <= relationTarget.z) { // childMin is right side from relation target
@@ -312,6 +260,9 @@ function Node(props) {
             offsetX={ relationTarget.x }
             offsetY={ relationTarget.y }
             offsetZ={ relationTarget.z }
+            rotX={ relationRotation.x }
+            rotY={ relationRotation.y }
+            rotZ={ relationRotation.z }
             parentId={ parentId }
             toChildId={ children[0]?.id }
             toLeftId={ (isValidId(leftPartnerId) ? leftPartnerId : null) }
@@ -339,14 +290,14 @@ function Node(props) {
         const childSize = getChildSize(c.id, sizes);
         const relationDistance = c.relations.length ? c.relations.length * 0.5 * NODE_SIZE : 0;
 
-        const childTarget = module.getCurrentChildTarget(currentChildTarget, childSize, relationDistance, idx, children.length, childSource);
+        const childTarget = module.getCurrentChildTarget(currentChildTarget, childSize, relationDistance, idx, children.length, childSource, c, maxChildSize);
         // const childTarget = currentChildTarget.clone();
         // childTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
         // childTarget.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
         
         const childFocused = c.id === focusedPerson?.id;
         const childSelected = c.id === selectedPerson?.id;
-
+        const childRotation = module.getChildRotation(currentChildTarget, childSize, relationDistance, idx, children.length, childSource, c, maxChildSize);
         module.updateCurrentChildTarget(currentChildTarget, childSize);
 
         const fragment = (
@@ -362,6 +313,9 @@ function Node(props) {
               offsetX={ childTarget.x }
               offsetY={ childTarget.y }
               offsetZ={ childTarget.z }
+              rotX={ childRotation.x }
+              rotY={ childRotation.y }
+              rotZ={ childRotation.z }
               nextSiblingId={ getNextChild(children, idx) }
               previousSiblingId={ previousNodeId }
             />

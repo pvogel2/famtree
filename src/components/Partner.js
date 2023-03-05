@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Color, Vector3 } from 'three';
+import { Color, Vector3, Euler } from 'three';
 
 import RenderContext from './RenderContext.js';
 import KNavigation from './KeyboardNavigation';
@@ -11,7 +11,7 @@ const getLayout = (state) => state.layout;
 const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function Partner(props) {
-  const { person, parent, offsetX = 0, offsetY = 0, offsetZ = 0, parentId, toChildId, toLeftId, toRightId } = props;
+  const { person, parent, offsetX = 0, offsetY = 0, offsetZ = 0, rotX = 0, rotY = 0, rotZ = 0, parentId, toChildId, toLeftId, toRightId } = props;
 
   const { text, foreground } = useSelector(getLayout);
   const selectedPerson = useSelector(getSelectedPerson);
@@ -35,9 +35,10 @@ function Partner(props) {
     const type = 'partner';
 
     const offset = new Vector3(offsetX, offsetY, offsetZ);
+    const rotation = new Euler(rotX, rotY, rotZ);
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
 
-    const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors });
+    const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors, rotation });
 
     const { clean: naviClean } = createNavigationNode(person, { renderer, parent: root, navi });
 
@@ -45,7 +46,7 @@ function Partner(props) {
       partnerClean();
       naviClean();
     };
-  }, [renderer, person, parent, foreground, text, offsetY, offsetZ, navi]);
+  }, [renderer, person, parent, foreground, text, offsetY, offsetZ, rotX, rotY, rotZ, navi]);
 
   return ( 
     isSelected

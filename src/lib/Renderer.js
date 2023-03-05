@@ -256,7 +256,7 @@ export class Renderer {
 
   addObject(id, obj, intersect, parent) {
     if (this.geometry.objects[id]) {
-      console.warn("Found object id '" + id +"' , not adding data.");
+      // console.warn("Found object id '" + id +"' , not adding data.");
       return false;
     }
 
