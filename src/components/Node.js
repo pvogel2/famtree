@@ -12,7 +12,6 @@ import Partner from './Partner';
 
 const NODE_DIST = 6;
 const NODE_SIZE = 6;
-const GEN_DIST = 6;
 
 function getFirstChildOfRelations(rs) {
   const fr = rs.find((rl) => rl.children.length);
@@ -247,7 +246,7 @@ function Node(props) {
         }
       }
       
-      const childSource = module.getChildSource(idx, relationTarget); // set start point for childSource
+      const childSource = module.getChildSource(idx, relationTarget, maxChildSize); // set start point for childSource
 
       const partnerFocused = partner.id === focusedPerson?.id;
       const partnerSelected = partner.id === selectedPerson?.id;
@@ -288,16 +287,17 @@ function Node(props) {
 
       const childNode = children.map((c, idx) => {
         const childSize = getChildSize(c.id, sizes);
-        const relationDistance = c.relations.length ? c.relations.length * 0.5 * NODE_SIZE : 0;
 
-        const childTarget = module.getCurrentChildTarget(currentChildTarget, childSize, relationDistance, idx, children.length, childSource, c, maxChildSize);
+        // if (children.length) console.log('current', currentChildTarget, relationDistance, maxChildSize);
+        const childTarget = module.getCurrentChildTarget(currentChildTarget, childSize, relations.length, idx, children.length, childSource, c, maxChildSize);
+        // if (children.length) console.log('target ', childTarget);
         // const childTarget = currentChildTarget.clone();
         // childTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
         // childTarget.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
         
         const childFocused = c.id === focusedPerson?.id;
         const childSelected = c.id === selectedPerson?.id;
-        const childRotation = module.getChildRotation(currentChildTarget, childSize, relationDistance, idx, children.length, childSource, c, maxChildSize);
+        const childRotation = module.getChildRotation(currentChildTarget, childSize, c.relations.length, idx, children.length, childSource, c, maxChildSize);
         module.updateCurrentChildTarget(currentChildTarget, childSize);
 
         const fragment = (
@@ -328,6 +328,8 @@ function Node(props) {
               targetX={ childTarget.x }
               targetY={ childTarget.y }
               targetZ={ childTarget.z }
+              maxSize={ maxChildSize }
+              nRelations={ relations.length }
             />
           </Fragment>
         );

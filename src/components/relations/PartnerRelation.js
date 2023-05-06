@@ -2,6 +2,9 @@ import { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { Vector3, Line, BufferGeometry, BufferAttribute, LineBasicMaterial, Color } from 'three';
 import RenderContext from './../RenderContext.js';
+import getModule from './../../lib/nodes/layout3D';
+
+const renderModule = getModule();
 
 function getRelationLines(s, t, config = { foreground, highstart, highend, offset: new Vector3() }) {
   const foreColor = new Color(config.foreground);
@@ -12,18 +15,7 @@ function getRelationLines(s, t, config = { foreground, highstart, highend, offse
     vertexColors: true,
   });
 
-  const points = [];
-  const colors = [];
-
-  points.push(s.clone().add(new Vector3(0, 1.2, 0)));
-  points.push(s.clone().add(config.offset));
-  points.push(t.clone().add(config.offset));
-  points.push(t.clone().add(new Vector3(0, 1.2, 0)));
-
-  colors.push(...startColor.toArray());
-  colors.push(...foreColor.toArray());
-  colors.push(...foreColor.toArray());
-  colors.push(...endColor.toArray());
+  const { points, colors } = renderModule.getRelationLines(s, t, config.offset, { startColor, foreColor, endColor});
 
   const geometry = new BufferGeometry().setFromPoints( points );
   geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );

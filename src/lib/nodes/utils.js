@@ -103,7 +103,7 @@ export function getMesh(layout = {}) {
     options.transparent = true;
   };
 
-  const r = 0.25;
+  const r = layout.radius ? layout.radius : 0.25;
   const g = new SphereGeometry(r);
   const m = new MeshBasicMaterial(options);
 
