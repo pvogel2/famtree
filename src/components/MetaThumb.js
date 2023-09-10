@@ -1,5 +1,5 @@
 import { Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, TextureLoader, Vector3 } from 'three';
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext } from '@wordpress/element';
 
 import RenderContext from './RenderContext.js';
 import pdfImage from './../assets/images/pdf.jpg';

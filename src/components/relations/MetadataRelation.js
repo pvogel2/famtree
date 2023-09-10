@@ -1,5 +1,5 @@
-import { useEffect, useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useContext } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { Vector3, Color, PlaneGeometry, Mesh, MeshBasicMaterial, DoubleSide } from 'three';
 import RenderContext from '../RenderContext.js';
 
@@ -19,8 +19,6 @@ function getRelationPlane(config = { highlight, width, height }) {
   return new Mesh(geometry, material);
 }
 
-const getLayout = (state) => state.layout;
-
 function MetaRelation(props) {
   const {
     parent,
@@ -28,7 +26,15 @@ function MetaRelation(props) {
     height = 0,
   } = props;
 
-  const { selection } = useSelector(getLayout);
+  const { selection } = useSelect(
+    (select) => {
+      const state = select( 'famtree/runtime' );
+      return {
+        selection: state.getSelection(),
+      };
+    }, [],
+  );
+
   const { renderer } = useContext(RenderContext);
 
   useEffect(() => {

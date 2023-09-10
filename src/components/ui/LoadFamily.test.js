@@ -1,5 +1,4 @@
-import React from 'react';
-import { cleanup, fireEvent, act } from '@testing-library/react';
+import { cleanup } from '@testing-library/react';
 
 import U from '../../lib/tests/utils';
 

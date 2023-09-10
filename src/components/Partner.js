@@ -1,5 +1,5 @@
-import { useContext, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useContext, useEffect, useMemo } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { Color, Vector3 } from 'three';
 
 import RenderContext from './RenderContext.js';
@@ -7,14 +7,19 @@ import KNavigation from './KeyboardNavigation';
 
 import { createTreeNode, createNavigationNode } from '../lib/nodes/utils';
 
-const getLayout = (state) => state.layout;
-const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function Partner(props) {
   const { person, parent, offsetY = 0, offsetZ = 0, parentId, toChildId, toLeftId, toRightId } = props;
 
-  const { text, foreground } = useSelector(getLayout);
-  const selectedPerson = useSelector(getSelectedPerson);
+  const { text, foreground } = useSelect((select) => {
+    const store = select('famtree/runtime');
+    return {
+      text: store.getText(),
+      foreground: store.getForeground(),
+    };
+  });
+
+  const selectedPerson = useSelect((select) => select('famtree/families').getSelected());
 
   const isSelected = selectedPerson && selectedPerson?.id === person?.id;
  

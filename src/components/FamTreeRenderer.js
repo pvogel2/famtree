@@ -1,37 +1,48 @@
-import React, { useEffect, useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useContext } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Color, Vector3 } from 'three';
 
 import RenderContext from './RenderContext.js';
 import Node from './Node';
 import Metadata from './Metadata';
-import { clearPerson } from '../store/selectedPersonReducer';
 
-
-const getBackground = (state) => state.layout.background;
-const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function FamTreeRenderer() {
   const { renderer } = useContext(RenderContext);
 
-  const dispatch = useDispatch();
+  const { setSelected } = useDispatch('famtree/families');
 
-  const root = useSelector((state) => {
-    const fId = state.founder;
-
-    return state.persons.find((p) => p.id === fId);
+  const { founderId, selected } = useSelect((select) => {
+    const store = select( 'famtree/families' );
+    return {
+      founderId: store.getFounder(),
+      selected: store.getSelected(),
+    };
   });
 
-  const selectedPerson = useSelector(getSelectedPerson);
-  const background = useSelector(getBackground);
+  const root = useSelect(
+    (select) => {
+      return select( 'famtree/families' ).getPersons().find((p) => p.id === founderId);
+    },
+    [founderId]
+  );
+
+  const { background } = useSelect(
+    (select) => {
+      const state = select( 'famtree/runtime' );
+      return {
+        background: state.getBackground(),
+      };
+    }, [],
+  );
 
   useEffect(() => {
-    dispatch(clearPerson());
+    setSelected();
 
     if (root && renderer) {
       renderer.transition(new Vector3(), 1, new Vector3(30, 30, 30));
     }
-  }, [renderer, root]);
+  }, [renderer, root, setSelected]);
 
   useEffect(() => {
     if (renderer) {
@@ -42,18 +53,17 @@ function FamTreeRenderer() {
   if (!renderer) {
     return null;
   }
-  
+
   if (!renderer.running ) {
     // const grid = renderer.addGrid(20, 20);
     // grid.material.opacity = 0.1;
     // grid.rotation.z = Math.PI * 0.5;
     renderer.start();
   }
-
   return (
     <>
-    <Node person={ root }/>
-    { (selectedPerson ) &&  <Metadata selectedPerson={ selectedPerson } /> }
+    <Node person={ root } />
+    { (selected ) &&  <Metadata selectedPerson={ selected } /> }
     </>
   );
 };

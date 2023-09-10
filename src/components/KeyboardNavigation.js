@@ -1,16 +1,12 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
+import { useEffect } from '@wordpress/element';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { isValidId } from '../lib/nodes/utils';
-import { setPerson as setSelected } from '../store/selectedPersonReducer';
-
-const getPersons = (state) => state.persons;
 
 function KeyboardNavigation(props) {
   const { upId, downId, leftId, rightId } = props;
 
-  const persons = useSelector(getPersons);
-  const dispatch = useDispatch();
+  const persons = useSelect((select) => select( 'famtree/families' ).getPersons(), []);
+  const { setSelected } = useDispatch('famtree/families');
 
   useEffect(() => {
     if (!isValidId(upId) && !isValidId(downId) && !isValidId(leftId) && !isValidId(rightId)) return;
@@ -20,7 +16,7 @@ function KeyboardNavigation(props) {
         return p.id === id;
       });
       if (target) {
-        dispatch(setSelected(target));
+        setSelected(target);
       }
     }
 
@@ -41,7 +37,7 @@ function KeyboardNavigation(props) {
     return () => {
       document.removeEventListener('keydown', callback);
     };
-  }, [upId, downId, leftId, rightId, persons, dispatch]);
+  }, [upId, downId, leftId, rightId, persons]);
 
   return null;
 }

@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { getByRole, getAllByRole, fireEvent } from '@testing-library/react';
 import {
@@ -16,7 +15,7 @@ import RenderContext from '../../components/RenderContext';
 import personsReducer, { setPersons } from '../../store/personsReducer';
 import selectedPersonReducer, { setPerson as setSelected } from '../../store/selectedPersonReducer';
 import focusedPersonReducer, { setPerson } from '../../store/focusedPersonReducer';
-import dialogsReducer, { showPersonDialog } from '../../store/dialogsReducer';
+import dialogsReducer, { showPersonDialog } from '../../store/_dialogsReducer';
 import runtimeReducer from '../../store/runtimeReducer';
 import layoutReducer from '../../store/layoutReducer';
 import relationsReducer, { setRelations } from '../../store/relationsReducer';
@@ -221,11 +220,9 @@ function renderWithContext(node, config = {}) {
 
   const result = render(
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
-      <Provider store={ store }>
-        <RenderContext.Provider value={ { renderer } }>
-          { node }
-        </RenderContext.Provider>
-      </Provider>
+      <RenderContext.Provider value={ { renderer } }>
+        { node }
+      </RenderContext.Provider>
     </LocalizationProvider>
   );
 

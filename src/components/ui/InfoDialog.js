@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { connect } from 'react-redux';
+import { useRef } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { Card, CardContent } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
@@ -7,21 +7,24 @@ import ExtendedDialogTitle from './ExtendedDialogTitle';
 import PersonDetails from './PersonDetails';
 import Person from '../../lib/Person';
 
-function InfoDialog(props) {
-  const {
-    focusedPerson = null,
-    selectedPerson = null,
-    readonly = false,
-    position,
-  } = props;
+function InfoDialog() {
+  const position = useSelect((select) => select('famtree/runtime').getPoint());
+
+  const { focusedPerson, selectedPerson } = useSelect((select) => {
+    const store = select('famtree/families');
+    return {
+      focusedPerson: store.getFocused(),
+      selectedPerson: store.getSelected(),
+    };
+  }, []);
 
   const elementRef = useRef(null);
 
-  if (selectedPerson || !focusedPerson || readonly || !elementRef) {
+  if (selectedPerson || !focusedPerson || !elementRef) {
     return null;
   }
 
-  const currentPerson = new Person(focusedPerson);
+   const currentPerson = new Person(focusedPerson);
 
   const pointOffset = 30;
   const currentWidth = elementRef.current?.clientWidth;
@@ -64,12 +67,4 @@ function InfoDialog(props) {
   </Card>
 }
 
-function mapStateToProps(state) {
-  return {
-    position: state.runtime.move,
-    focusedPerson: state.focusedPerson,
-    selectedPerson: state.selectedPerson.person,
-  };
-}
-
-export default connect(mapStateToProps)(InfoDialog);
+export default InfoDialog;

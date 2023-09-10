@@ -1,6 +1,6 @@
-import React from 'react';
+import { createContext } from '@wordpress/element';
 
-const RenderContext = React.createContext(null);
+const RenderContext = createContext(null);
 
 export default RenderContext;
 

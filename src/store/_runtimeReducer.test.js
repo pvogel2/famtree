@@ -1,4 +1,4 @@
-import runtimeReducer, { setPoint } from './runtimeReducer';
+import runtimeReducer, { setPoint } from './_runtimeReducer';
 
 const defaultConfig = { move: null };
 

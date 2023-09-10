@@ -1,46 +1,39 @@
-import { useContext, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
+import { useContext, useEffect } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { Vector3 } from 'three';
 import RenderContext from './RenderContext.js';
 import MetaThumb from './MetaThumb.js';
 import MetadataRelation from './relations/MetadataRelation';
 import {getAssetsGroup } from './../lib/nodes/utils.js';
 import { loadMetadata } from '../lib/Connect.js';
-import { setMetadata } from '../store/selectedPersonReducer';
 
-
-
-import { Vector3 } from 'three';
-
-
-const getCurrentMetadata = (state) => state.selectedPerson.metadata;
 
 function Metadata(props) {
   const {
     selectedPerson,
-//    currentMeta,
   } = props;
 
   const { renderer } = useContext(RenderContext);
-  const dispatch = useDispatch();
-  const currentMeta = useSelector(getCurrentMetadata);
+  const currentMeta = useSelect((select) => select('famtree/families').getMetadata());
+
   const currentId = selectedPerson?.id;
+  const { setMetadata } = useDispatch('famtree/families');
 
   useEffect(() => {
     if (!currentId) return;
 
     async function loadCurrentMetadata() {
       const metadata = await loadMetadata(currentId);
-      dispatch(setMetadata([...metadata]));
+      setMetadata(metadata);
     };
     loadCurrentMetadata();
 
     return () => {
-      dispatch(setMetadata([]));
+      setMetadata();
     };
-  },[currentId]);
+  },[currentId, setMetadata]);
 
-  if (!currentId || !currentMeta.length) {
+  if (!currentId || !currentMeta?.length) {
     return null;
   }
 

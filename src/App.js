@@ -1,26 +1,15 @@
-import React from 'react';
-import { useMemo, useEffect } from 'react';
-import { configureStore } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
+import { useEffect, useMemo } from '@wordpress/element';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { RegistryProvider, createRegistry } from '@wordpress/data';
 
-import personsReducer from './store/personsReducer';
-import focusedPersonReducer from './store/focusedPersonReducer';
-import selectedPersonReducer from './store/selectedPersonReducer';
-import familyReducer from './store/familyReducer';
-import familiesReducer from './store/familiesReducer';
-import runtimeReducer from './store/runtimeReducer';
-import relationsReducer from './store/relationsReducer';
 import RenderProvider from './components/RenderProvider';
 import FamTreeRenderer from './components/FamTreeRenderer';
-import { loadFamily } from './lib/Connect';
 
-import { setPersons } from './store/personsReducer';
-import { setFounder } from './store/familyReducer';
-import { setFamilies } from './store/familiesReducer';
-import { setForeground, setBackground, setText, setHighlight, setSelection } from './store/layoutReducer';
-import { setRelations } from './store/relationsReducer';
+import registerFamiliesStore from './store/families';
+import registerRuntimeStore from './store/runtime';
+
+import { loadFamily } from './lib/Connect';
 
 import LoadFamily from './components/ui/LoadFamily';
 import InfoDialog from './components/ui/InfoDialog';
@@ -30,22 +19,8 @@ import PersonSelector from './components/PersonSelector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import layoutReducer from './store/layoutReducer';
 
 function App(props) {
-  const store = useMemo(() => configureStore({
-    reducer: {
-      persons: personsReducer,
-      founder: familyReducer,
-      families: familiesReducer,
-      focusedPerson: focusedPersonReducer,
-      selectedPerson: selectedPersonReducer,
-      runtime: runtimeReducer,
-      layout: layoutReducer,
-      relations: relationsReducer,
-    }
-  }), []);
-
   const {
     founder = -1,
     persons = null,
@@ -58,8 +33,18 @@ function App(props) {
     foreground,
     highlight,
     selection,
-    idx = 0,
+    instanceId ='famtree0',
   } = props;
+
+  const registry = useMemo(() => {
+    const r = createRegistry( {} );
+    r.register(registerFamiliesStore());
+    r.register(registerRuntimeStore());
+    return r;
+  }, []);
+
+  const { setPersons, setFamilies, setFounder, setRelations } = registry.dispatch('famtree/families');
+  const { setForeground, setBackground, setText, setHighlight, setSelection } = registry.dispatch('famtree/runtime');
 
   const theme = createTheme({
     palette: {
@@ -70,75 +55,75 @@ function App(props) {
     },
   });
 
-  useEffect(async () => {
-    if (founder) {
-      await store.dispatch(setFounder(founder));
+  useEffect(() => {
+    async function switchFounder() {
+      if (founder) {
+        await setFounder(founder);
 
-      async function updateData(data) {
-        await store.dispatch(setPersons(data.persons));
-        await store.dispatch(setRelations(data.relations));
+        async function updateData(data) {
+          const founders = data.persons.filter((p) => p.root).map((p) => p.id);
+          registry.batch(async () => {
+            await setPersons(data.persons);
+            await setRelations(data.relations);
+            await setFamilies(founders);
+          });
+        }
 
-        const founders = data.persons.filter((p) => p.root).map((p) => p.id);
-
-        await store.dispatch(setFamilies(founders));
-
+        if (!persons || !relations) {
+          const loadedData = await loadFamily();
+          await updateData(loadedData);
+        } else {
+          await updateData({ persons, relations });
+        }
       }
-
-      if (!persons || !relations) {
-        const loadedData = await loadFamily();
-        await updateData(loadedData);
-      } else {
-        await updateData({ persons, relations });
-      }
-    }
+    };
+    switchFounder();
   }, [founder, persons, families, relations]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (foreground) {
-      await store.dispatch(setForeground(foreground));
+      setForeground(foreground);
     }
   }, [foreground]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (background) {
-      await store.dispatch(setBackground(background));
+      setBackground(background);
     }
   }, [background]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (text) {
-      await store.dispatch(setText(text));
+      setText(text);
     }
   }, [text]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (highlight) {
-      await store.dispatch(setHighlight(highlight));
+      setHighlight(highlight);
     }
   }, [highlight]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (selection) {
-      await store.dispatch(setSelection(selection));
+      setSelection(selection);
     }
   }, [selection]);
-
-  const instanceId = `famtree_instance${idx}`;
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
       <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
-        <Provider store={ store }>
+        <RegistryProvider value={ registry}>
           <RenderProvider instanceId={ instanceId }>
             <FamTreeRenderer />
             <Intersector />
             <PersonSelector />
             { founderFAB && <LoadFamily readonly={ readonly } instanceId={ instanceId } /> }
-            <InfoDialog readonly={ readonly } />
-            <DetailsDialog />
+            { !readonly && <InfoDialog /> }
+            { !readonly && <DetailsDialog /> }
           </RenderProvider>
-        </Provider>
+        </RegistryProvider>
       </StyledEngineProvider>
       </ThemeProvider>
     </LocalizationProvider>

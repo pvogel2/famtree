@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Retrieves the translation of text.
@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 
 /**
- * React hook that is used to mark the block wrapper element.
+ * hook that is used to mark the block wrapper element.
  * It provides all the necessary props like the class name.
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
@@ -101,27 +101,37 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 					colorSettings={[
 						{
 							value: backgroundColor,
-							onChange: (c) => setAttributes({ backgroundColor: c }),
+							onChange: (c) => {
+								setAttributes({ backgroundColor: c })
+							},
 							label: __("Background Color"),
 						},
 						{
 							value: textColor,
-							onChange: (c) => setAttributes({ textColor: c }),
+							onChange: (c) => {
+								setAttributes({ textColor: c });
+							},
 							label: __('Text color')
 						},
 						{
 							value: foregroundColor,
-							onChange: (c) => setAttributes({ foregroundColor: c }),
+							onChange: (c) => {
+								setAttributes({ foregroundColor: c })
+							},
 							label: __("Foreground Color"),
 						},
 						{
 							value: highlightColor,
-							onChange: (c) => setAttributes({ highlightColor: c }),
+							onChange: (c) => {
+								setAttributes({ highlightColor: c });
+							},
 							label: __("Highlight Color"),
 						},
 						{
 							value: selectionColor,
-							onChange: (c) => setAttributes({ selectionColor: c }),
+							onChange: (c) => {
+								setAttributes({ selectionColor: c });
+							},
 							label: __("Selection Color"),
 						},
 					]}
@@ -139,12 +149,12 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 				  relations={ relations }
 				  founderFAB={ founderFAB }	
 				  readonly={ true }
-                  text={ textColor }
+          text={ textColor }
 				  background={ backgroundColor }
 				  foreground={ foregroundColor }
 				  highlight={ highlightColor }
 				  selection={ selectionColor }
-				  idx={ `test${ clientId }` }
+				  instanceId={ `famtree${ clientId }` }
 				/>
 		  </div>
 		</div>

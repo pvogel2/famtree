@@ -1,20 +1,26 @@
-import { useContext, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useContext, useEffect } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { selectNode, deselectNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
 
-const getLayout = (state) => state.layout;
-const getSelectedPerson = (state) => state.selectedPerson.person;
-
 function PersonSelector() {
   const { renderer } = useContext(RenderContext);
 
-  const selectedPerson = useSelector(getSelectedPerson);
-  const { foreground, selection } = useSelector(getLayout);
-  
+  const selectedPerson = useSelect((select) => select('famtree/families').getSelected(), []);
+
+  const { foreground, selection } = useSelect(
+    (select) => {
+      const state = select( 'famtree/runtime' );
+      return {
+        foreground: state.getForeground(),
+        selection: state.getSelection(),
+      };
+    }, []);
+    
   useEffect(() => {
     const rootGroup = selectedPerson && renderer.getObject(`person${selectedPerson.id}`);
+
     if (rootGroup) {
       selectNode(rootGroup.obj, { color: selection, renderer });
     }
@@ -23,7 +29,8 @@ function PersonSelector() {
         deselectNode(rootGroup.obj, { foreground, renderer });
       }
     }
-  }, [renderer, selectedPerson, foreground]);
+  }, [renderer, selectedPerson, foreground, selection]);
+
   return null;
 }
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Group as MockGroup,
   Mesh as MockMesh,

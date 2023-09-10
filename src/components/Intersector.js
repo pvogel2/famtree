@@ -1,56 +1,66 @@
-import { useState, useContext, useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState, useContext, useCallback, useEffect } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { focusNode, defocusNode, getRootNode, isValidNode, isPersonNode, isMetaResourceNode, isNavigationNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
 import Person from '../lib/Person';
-import { setPerson as setFocusedPerson, clearPerson as clearFocusedPerson } from '../store/focusedPersonReducer';
-import { setSelectedMeta, setPerson as setSelectedPerson } from '../store/selectedPersonReducer';
-import { setPoint } from '../store/runtimeReducer';
 
-const getForeground = (state) => state.layout.foreground;
-const getHighlight = (state) => state.layout.highlight;
-const getSelectedPerson = (state) => state.selectedPerson.person;
-const getPersons = (state) => state.persons;
 
-function Intersector(_props) {
+function Intersector() {
   const { renderer } = useContext(RenderContext);
 
   const [intersectedObj, setIntersectedObj] = useState(null);
 
-  const persons = useSelector(getPersons);
-  const foreground = useSelector(getForeground);
-  const highlight = useSelector(getHighlight);
-  const selectedPerson = useSelector(getSelectedPerson);
+  const { persons, selected } = useSelect(
+    (select) => {
+      const store = select( 'famtree/families' );
+      return {
+        persons: store.getPersons(),
+        selected: store.getSelected(),
+      };
+    },
+  );
+
+  const { foreground, highlight } = useSelect(
+    (select) => {
+      const store = select( 'famtree/runtime' );
+      return {
+        foreground: store.getForeground(),
+        highlight: store.getHighlight(),
+      };
+    },
+  );
 
   const findPerson  = useCallback((id) => persons.find((p) => p.id === id), [persons]);
-  const dispatch = useDispatch();
+
+  const { setPoint } = useDispatch('famtree/runtime');
+  const { setFocused, setSelected, setSelectedMeta } = useDispatch('famtree/families');
 
   useEffect(() => {
     const rootNode = getRootNode(intersectedObj);
     const currentPerson = findPerson(rootNode?.userData?.refId);
     const defaultOpacity = intersectedObj?.material?.opacity;
 
-    let isSelected = currentPerson?.id === selectedPerson?.id;
+    let isSelected = currentPerson?.id === selected?.id;
     const selectFocusedPerson = () => {
       renderer.unregisterEventCallback('click', selectFocusedPerson);
 
       if (currentPerson) {
-        dispatch(clearFocusedPerson());
-        dispatch(setSelectedPerson(new Person(currentPerson).serialize()));
-
+        setFocused();
+        setSelected(new Person(currentPerson).serialize());
+    
         isSelected = true;
       }
     };
 
     const selectFocusedMetaResource = () => {
       renderer.unregisterEventCallback('click', selectFocusedMetaResource);
-      dispatch(setSelectedMeta(intersectedObj.userData.refId));
+      setSelectedMeta(intersectedObj.userData.refId);
     };
 
     const onNavigationClick = () => {
       const targetPerson = findPerson(intersectedObj.userData?.refId);
-      dispatch(setSelectedPerson(new Person(targetPerson).serialize()));
+      setSelected(new Person(targetPerson).serialize());
 
       renderer.parent.style.cursor = 'default';
       renderer.unregisterEventCallback('click', onNavigationClick);
@@ -61,7 +71,7 @@ function Intersector(_props) {
       focusNode(intersectedObj, { highlight, renderer });
 
       if (currentPerson) {
-        dispatch(setFocusedPerson(new Person(currentPerson).serialize()));
+        setFocused(new Person(currentPerson).serialize());
       }
     }
 
@@ -70,7 +80,7 @@ function Intersector(_props) {
       focusNode(intersectedObj, { scale: 1.2, renderer });
 
       if (currentPerson) {
-        dispatch(setFocusedPerson(new Person(currentPerson).serialize()));
+        setFocused(new Person(currentPerson).serialize());
       }
     }
 
@@ -82,7 +92,7 @@ function Intersector(_props) {
     return () => {
       if (isPersonNode(intersectedObj) && !isSelected) {
         defocusNode(intersectedObj, { foreground, renderer });
-        dispatch(clearFocusedPerson());
+        setFocused();
         renderer.unregisterEventCallback('click', selectFocusedPerson);
       }
 
@@ -96,7 +106,7 @@ function Intersector(_props) {
         renderer.unregisterEventCallback('click', onNavigationClick);
       }
     };
-   }, [renderer, intersectedObj, dispatch, foreground, highlight, selectedPerson, findPerson]);
+   }, [renderer, intersectedObj, foreground, highlight, selected, findPerson, setFocused, setSelected]);
 
   useEffect(() => {
     if (!renderer) return;
@@ -109,7 +119,7 @@ function Intersector(_props) {
         }
 
         const p = { x: event.clientX, y: event.clientY };
-        dispatch(setPoint(p));
+        setPoint(p);
 
       } else if (intersectedObj && !intersected?.length) {
         setIntersectedObj(null);

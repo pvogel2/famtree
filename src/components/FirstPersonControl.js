@@ -1,12 +1,10 @@
-import React from 'react';
+import { Component } from '@wordpress/element';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { Vector3 } from 'three';
-
-// import { interactor as interactorActions } from './interactor/actions';
-
 import RenderContext from './RenderContext.js';
 
-class FirstPersonControl extends React.Component {
+
+class FirstPersonControl extends Component {
   static interactionLayer = 1;
   static contextType = RenderContext; // assign the correct context 
 

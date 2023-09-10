@@ -1,5 +1,5 @@
-import { useEffect, useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useContext } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { Vector3, Line, BufferGeometry, BufferAttribute, LineBasicMaterial, Color } from 'three';
 import RenderContext from './../RenderContext.js';
 
@@ -30,10 +30,9 @@ function getRelationLines(s, t, config = { foreground, highstart, highend, offse
   return new Line( geometry, material );
 }
 
-const getForeground = (state) => state.layout.foreground;
-
 function PartnerRelation(props) {
-  const foreground = useSelector(getForeground);
+  const foreground = useSelect((select) => select('famtree/runtime').getForeground());
+
   const { highstart = foreground, highend = foreground, targetX = 0, targetY = 0, targetZ = 0, parent, offsetX = 0, offsetY = 0, offsetZ = 0 } = props;
   const { renderer } = useContext(RenderContext);
 

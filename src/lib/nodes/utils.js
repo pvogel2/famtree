@@ -238,6 +238,7 @@ export function focusNode(m, config = {}) {
     if (m2 && renderer) {
       const startColor = m2.material.color.clone();
       const endColor = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
+
       const focusTransition = new Transition({
         duration: 0.25,
         callback: (current) => {
@@ -279,6 +280,7 @@ export function defocusNode(m, config = {}) {
       if (root?.name !== 'person') {
         endColor = new Color(foreground).multiplyScalar(0.75);
       }
+
       const focusTransition = new Transition({
         duration: 0.25,
         callback: (current) => {
@@ -434,7 +436,7 @@ export function createNavigationNode(person, meta) {
     child: { pos: [0, ARROW_OFFSET, 0], rot: Math.PI * 0.5 },
     left: { pos: [0, 0, ARROW_OFFSET], rot: Math.PI },
     right: { pos: [0, 0, -ARROW_OFFSET] },
-};
+  };
 
   Object.entries(navi).forEach(([target, props]) => {
     const { refId } = props;

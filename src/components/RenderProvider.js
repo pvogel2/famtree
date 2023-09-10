@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from '@wordpress/element';
 import { AmbientLight } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Renderer } from '../lib/Renderer.js';
@@ -7,7 +7,7 @@ import RenderContext from './RenderContext.js';
 const gltfLoader = new GLTFLoader();
 
 function RenderProvider(props) {
-  const { instanceId = 'famtree_instance0' } = props;
+  const { instanceId = 'famtree0' } = props;
   const [renderer, setRenderer] = useState(null);
   const renderTarget = useRef(null);
   const rendererId = `${instanceId}renderer`;

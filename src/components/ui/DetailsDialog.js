@@ -1,5 +1,5 @@
-import { useContext } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { useContext } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Button, Popover, Grid, Typography, CardActionArea, CardContent, CardActions } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
@@ -8,34 +8,35 @@ import PersonDetails from './PersonDetails';
 import RenderContext from '../RenderContext.js';
 
 import Person from '../../lib/Person';
-import { clearPerson, setSelectedMeta } from '../../store/selectedPersonReducer';
 import { getMetaContainer } from '../../lib/ui/utils';
 
 
-function DetailsDialog(props) {
-  const { selectedPerson = null, selectedMeta = null, metadata = [] } = props;
-
-  if (!selectedPerson) {
-    return null;
-  }
+function DetailsDialog() {
+  const { selectedPerson, selectedMeta, metadata } = useSelect((select) => {
+    const store = select('famtree/families');
+    return {
+      selectedPerson: store.getSelected(),
+      metadata: store.getMetadata(),
+      selectedMeta: store.getSelectedMeta(),
+    };
+  }, []);
 
   const { renderTarget } = useContext(RenderContext);
-  const dispatch = useDispatch();
-
+  const { setSelectedMeta, setSelected } = useDispatch('famtree/families');
   const index = metadata.findIndex((md) => md.id === selectedMeta?.id);
 
   const previousMeta = () => {
     const md = metadata[index - 1];
-    dispatch(setSelectedMeta(md.id));
+    setSelectedMeta(md.id);
   }
 
   const nextMeta = () => {
     const md = metadata[index + 1];
-    dispatch(setSelectedMeta(md.id));
+    setSelectedMeta(md.id);
   }
 
   const handleClose = () => {
-    dispatch(clearPerson());
+    setSelected();
   };
 
   const getLayoutedInfo = (headine, content) => {
@@ -51,7 +52,7 @@ function DetailsDialog(props) {
     );
   }
 
-  const currentPerson = selectedPerson ? new Person(selectedPerson) : new Person({ id: -1 });
+  const currentPerson = selectedPerson && selectedPerson.id ? new Person(selectedPerson) : new Person({ id: -1 });
 
   const popoverProps = {
     aRef: selectedMeta ? 'anchorPosition' : 'anchorEl',
@@ -82,6 +83,10 @@ function DetailsDialog(props) {
 
     paperProps.sx.width = `calc(100vw - ${offset * 2}px)`;
     paperProps.sx.height = `calc(100vh - ${offset * 2}px)`;
+  }
+
+  if (!selectedPerson || !selectedPerson.id) {
+    return null;
   }
 
   const showContent = currentPerson.hasDetails() || selectedMeta;
@@ -134,11 +139,4 @@ function DetailsDialog(props) {
   );
 }
 
-function mapStateToProps(state) {
-  const selectedPerson = state.selectedPerson.person;
-  const selectedMeta = state.selectedPerson.selectedMeta;
-  const metadata = state.selectedPerson.metadata;
-  return { selectedPerson, selectedMeta, metadata };
-}
-
-export default connect(mapStateToProps)(DetailsDialog);
+export default DetailsDialog;

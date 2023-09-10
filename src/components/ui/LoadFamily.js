@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { Fab, Menu, MenuItem } from '@mui/material';
 import { FamilyRestroom } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { setFounder } from '../../store/familyReducer';
 
 function LoadFamily(props) {
   const {
@@ -11,13 +10,20 @@ function LoadFamily(props) {
     instanceId,
   } = props;
 
+  const { persons, families} = useSelect((select) => {
+    const store = select('famtree/families');
+    return {
+      persons: store.getPersons(),
+      families: store.getFamilies(),
+    };
+  });
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
 
-  const dispatch = useDispatch();
+  const { setFounder } = useDispatch('famtree/families');
  
-  const { families, persons } = useSelector((state) => state);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -32,7 +38,7 @@ function LoadFamily(props) {
       const value = parseInt(event.currentTarget.dataset.value);
 
       if (families.find((f) => f === value)) {
-        await dispatch(setFounder(value));
+        await setFounder(value);
       }
     }
     handleMenuClose();

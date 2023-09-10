@@ -1,9 +1,9 @@
-import { useEffect, useContext, useState, useMemo, Fragment } from 'react';
+import { useEffect, useContext, useState, useMemo, Fragment } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { Vector3 } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
-import { useSelector } from 'react-redux';
 import KNavigation from './KeyboardNavigation';
 
 import { isValidId, createTreeNode, getRelationsGroup, getAssetsGroup, createNavigationNode } from '../lib/nodes/utils';
@@ -23,7 +23,7 @@ function getLastRelation(rs) {
   return isValidId(lr) ? lr : null;
 }
 
-const findIems = (typedArr = [], persons = []) => {
+const findItems = (typedArr = [], persons = []) => {
   const knownMembers = typedArr;
   const foundMembers = [];
 
@@ -45,7 +45,7 @@ const findPartner = (relation, person, persons = []) => {
 
   const pIds = relation.members.filter((id) => id !== person.id);
 
-  const found = findIems(pIds, persons);
+  const found = findItems(pIds, persons);
 
   if (!found.length) {
     return null;
@@ -53,12 +53,6 @@ const findPartner = (relation, person, persons = []) => {
 
   return found[0];
 }
-
-const getPersons = (state) => state.persons;
-const getRelations = (state) => state.relations;
-const getLayout = (state) => state.layout; 
-const getFocusedPerson = (state) => state.focusedPerson;
-const getSelectedPerson = (state) => state.selectedPerson.person;
 
 function getChildSize(id, szs) {
   const s = szs[id];
@@ -102,28 +96,53 @@ function Node(props) {
 
   const { renderer } = useContext(RenderContext);
 
-  const persons = useSelector(getPersons);
-  const { text, foreground, highlight, selection } = useSelector(getLayout); 
-  const focusedPerson = useSelector(getFocusedPerson);
-  const selectedPerson = useSelector(getSelectedPerson);
-  const allRelations = useSelector(getRelations);
+  const personId = person?.id;
 
-  const relations = useMemo(() => allRelations.filter((r) => r.members.includes(person?.id)), [allRelations, person]);
+  const { focusedPerson, selectedPerson, founderId } = useSelect((select) => {
+    const store = select('famtree/families');
+    return {
+      founderId: store.getFounder(),
+      selectedPerson: store.getSelected(),
+      focusedPerson: store.getFocused(),
+    };
+  }, []);
+
+  const { persons, allRelations } = useSelect((select) => {
+    const store = select('famtree/families');
+    return {
+      persons: store.getPersons(),
+      allRelations: store.getRelations(),
+    };
+  }, [founderId]);
+
+  const { text, foreground, highlight, selection } = useSelect((select) => {
+    const store = select('famtree/runtime');
+    return {
+      text: store.getText(),
+      foreground: store.getForeground(),
+      highlight: store.getHighlight(),
+      selection: store.getSelection(),
+    };
+  });
+
+  const relations = useMemo(() => {
+    return allRelations.filter((r) => r.members.includes(personId));
+  }, [allRelations, person]);
 
   const isFocused = focusedPerson && focusedPerson?.id === person?.id;
   const isSelected = selectedPerson && selectedPerson?.id === person?.id;
 
   const navi = useMemo(() => {
-    const rightNeighborId = relations.length ? getParnterId(relations[0], person?.id) : nextSiblingId;
+    const rightNeighborId = relations.length ? getParnterId(relations[0], personId) : nextSiblingId;
     const firstChildId = getFirstChildOfRelations(relations);
   
     return {
-      parent: { refId: parentId },
+      parent: { refId: parentId, id: Math.random() },
       child: { refId: firstChildId },
       left: { refId: previousSiblingId },
       right: { refId: rightNeighborId },
     };
-  }, [person, parentId, previousSiblingId, nextSiblingId, relations]);
+  }, [personId, parentId, previousSiblingId, nextSiblingId, relations]);
 
   // render visual node navigation
   useEffect(() => {
@@ -141,7 +160,7 @@ function Node(props) {
     const relationTarget = new Vector3();
 
     relations.forEach((r, idx) => {
-      const children = findIems(r.children, persons);
+      const children = findItems(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
 
       if (idx === 0) {
@@ -166,8 +185,10 @@ function Node(props) {
       }
     });
 
-    setTotalSize(newTotalSize);
-  }, [relations, sizes, totalSize]);
+    if (totalSize !== newTotalSize) {
+      setTotalSize(newTotalSize);
+    }
+  }, [relations, sizes, totalSize, setTotalSize]);
 
   // send updated node size to parent
   useEffect(() => {
@@ -214,7 +235,7 @@ function Node(props) {
 
       rightPartnerId = getParnterId(relations[idx + 1], person.id) || nextSiblingId;
 
-      const children = findIems(r.children, persons);
+      const children = findItems(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
 
       relationTarget.add(new Vector3(0, 0,  -NODE_DIST));
@@ -242,7 +263,7 @@ function Node(props) {
             toChildId={ children[0]?.id }
             toLeftId={ (isValidId(leftPartnerId) ? leftPartnerId : null) }
             toRightId={ (isValidId(rightPartnerId) ? rightPartnerId : null) }
-          />
+            />
           <PartnerRelation
             highstart={ isSelected ? selection : (isFocused ? highlight : undefined) }
             highend={ partnerSelected ? selection : (partnerFocused ? highlight : undefined) }
@@ -253,7 +274,7 @@ function Node(props) {
             offsetX={ 0 }
             offsetY={ childSource.y }
             offsetZ={ 0 }
-          />
+            />
         </>
       );
 
@@ -275,7 +296,7 @@ function Node(props) {
         const childSelected = c.id === selectedPerson?.id;
 
         currentChildTarget.add(new Vector3(0, 0, -childSize)); // shift right to end of current childSize (prepare for next child)
-
+        
         const fragment = (
           <Fragment key={ `children${c.id}` }>
             <Node

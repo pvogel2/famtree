@@ -1,8 +1,7 @@
-import { useEffect, useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useContext } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { Vector3, Line, BufferGeometry, BufferAttribute, LineBasicMaterial, Color } from 'three';
 import RenderContext from '../RenderContext.js';
-// import { getMesh } from '../../lib/nodes/utils';
 
 function getRelationLines(s, t, config = { foreground, highlight }) {
   const foreColor = new Color(config.foreground);
@@ -36,10 +35,9 @@ function getRelationLines(s, t, config = { foreground, highlight }) {
   return new Line( geometry, material );
 }
 
-const getForeground = (state) => state.layout.foreground;
-
 function ChildRelation(props) {
-  const foreground = useSelector(getForeground);
+  const foreground = useSelect((select) => select('famtree/runtime').getForeground());
+
   const { highlight = foreground, sourceX = 0, sourceY = 0, sourceZ = 0, targetX = 0, targetY = 0, targetZ = 0, parent } = props;
   const { renderer } = useContext(RenderContext);
 
