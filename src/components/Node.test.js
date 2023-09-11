@@ -14,21 +14,6 @@ afterEach(() => {
   jest.clearAllMocks()
 });
 
-function getPersonWithRelations(persons = [], relations = [], n = 1) {
-  const ps = U.getPerson();
-  persons.push(ps);
-
-  for (let i = 0; i < n; i++) {
-    const pr = U.getPerson();
-    const rl = U.getRelation([ps.id, pr.id]);
-    ps.addRelation(rl.id);
-    persons.push(pr);
-    relations.push(rl);
-    }
-
-  return ps;
-}
-
 function getPersonWithChilds(persons = [], relations = [], n = 1) {
   const ps = U.getPerson();
   const pr = U.getPerson();
@@ -234,7 +219,6 @@ describe('For the assets', () => {
     expect(assetsGroup.isGroup).toEqual(true);
   });
 
-  // TODO: find out what is wrong here....
   it('adds a relation visualization to the assets group', () => {
     const persons = [];
     const relations = [];
@@ -253,6 +237,11 @@ describe('For the assets', () => {
       return parent.children.find((c) => c.userData.refId === id);
     }
 
+    function getNaviGroup(renderer) {
+      const node = renderer.addObject.mock.calls[0][1];
+      return U.findNavigationGroup(node);
+    };
+
     const arrOff = 0.2;
     const naviOff = 0.9;
 
@@ -265,11 +254,6 @@ describe('For the assets', () => {
       expect(naviGroup.type).toBe('Group');
       expect(naviGroup.position).toEqual(expect.objectContaining({ x: arrOff, y: naviOff, z: -naviOff}));
     });
-
-    function getNaviGroup(renderer) {
-      const node = renderer.addObject.mock.calls[0][1];
-      return U.findNavigationGroup(node);
-    };
 
     describe('for parent navigation control mesh', () => {
       const person = U.getPerson();
@@ -333,7 +317,7 @@ describe('For the assets', () => {
       it('is rendered', () => {
         const persons = [];
         const relations = [];
-        const person = getPersonWithRelations(persons, relations);
+        const person = U.getPersonWithRelations(persons, relations);
         const pos = [0, 0, -arrOff];
         const refId = relations[0].members[1];
 
@@ -350,7 +334,7 @@ describe('For the assets', () => {
       it('correct property set on partner node', () => {
         const persons = [];
         const relations = [];
-        const person = getPersonWithRelations(persons, relations);
+        const person = U.getPersonWithRelations(persons, relations);
 
         const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>, { persons, relations });
         const node = renderer.addObject.mock.calls[0][1];
@@ -364,7 +348,7 @@ describe('For the assets', () => {
       it('correct property set on multiple partner nodes', () => {
         const persons = [];
         const relations = [];
-        const person = getPersonWithRelations(persons, relations, 2);
+        const person = U.getPersonWithRelations(persons, relations, 2);
 
         const personId = person.id;
         const partnerIds = relations.map((r) => r.members[1]);
@@ -416,7 +400,7 @@ describe('For the assets', () => {
       it('property not set on partner node', () => {
         const persons = [];
         const relations = [];
-        const person = getPersonWithRelations(persons, relations);
+        const person = U.getPersonWithRelations(persons, relations);
 
         const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>, { persons, relations });
         const node = renderer.addObject.mock.calls[0][1];
@@ -431,7 +415,7 @@ describe('For the assets', () => {
       it('correct property set on multiple partner nodes', () => {
         const persons = [];
         const relations = [];
-        const person = getPersonWithRelations(persons, relations, 2);
+        const person = U.getPersonWithRelations(persons, relations, 2);
 
         const partnerIds = relations.map((r) => r.members[1]);
 

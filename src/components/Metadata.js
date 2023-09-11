@@ -8,17 +8,20 @@ import {getAssetsGroup } from './../lib/nodes/utils.js';
 import { loadMetadata } from '../lib/Connect.js';
 
 
-function Metadata(props) {
-  const {
-    selectedPerson,
-  } = props;
-
+function Metadata() {
   const { renderer } = useContext(RenderContext);
-  const currentMeta = useSelect((select) => select('famtree/families').getMetadata());
+
+  const { selectedPerson, currentMeta } = useSelect((select) => {
+    const store = select( 'famtree/families' );
+    return {
+      selectedPerson: store.getSelected(),
+      currentMeta: store.getMetadata(),
+    };
+  });
 
   const currentId = selectedPerson?.id;
   const { setMetadata } = useDispatch('famtree/families');
-
+     
   useEffect(() => {
     if (!currentId) return;
 
@@ -42,6 +45,7 @@ function Metadata(props) {
   const rowsOffset = 0.5 * (rows - 1);
 
   const node = renderer.getObject(`person${currentId}`);
+
   const assetsGroup = getAssetsGroup(node.obj);
 
   const thumbSize = 1;

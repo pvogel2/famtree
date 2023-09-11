@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+
 import { RegistryProvider, createRegistry } from '@wordpress/data';
 import registerFamiliesStore from '../../store/families';
 import registerRuntimeStore from '../../store/runtime';
@@ -28,6 +29,16 @@ if (!global.structuredClone) {
 jest.mock('../../assets/images/avatar.png', () => {
   return {};
 });
+[
+  '../../assets/images/pdf.jpg',
+  '../../assets/images/video.jpg',
+  '../../assets/images/txt.jpg',
+  '../../assets/images/file.jpg',
+].forEach((path) => {
+  jest.mock(path, () => {
+    return {};
+  });
+});
 
 jest.mock('../../lib/three/Text3D');
 jest.mock ('../../lib/three/PreparedMeshes', () => {
@@ -53,6 +64,7 @@ const renderer = {
   addObject: jest.fn((id, obj, intersect, parent) => {
     parent.add(obj);
   }),
+  getObject: jest.fn(),
   removeObject: jest.fn(),
   registerEventCallback: jest.fn(),
   unregisterEventCallback: jest.fn(),
@@ -105,6 +117,20 @@ export function getDefaultPerson() {
 
 function clonePerson(original) {
   return new DataPerson(original.serialize());
+}
+
+function getPersonWithRelations(persons = [], relations = [], n = 1) {
+  const ps = getPerson();
+  persons.push(ps);
+
+  for (let i = 0; i < n; i++) {
+    const pr = getPerson();
+    const rl = getRelation([ps.id, pr.id]);
+    ps.addRelation(rl.id);
+    persons.push(pr);
+    relations.push(rl);
+    }
+  return ps;
 }
 
 function getPersonWithChilds(persons = [], relations = [], n = 1) {
@@ -219,7 +245,7 @@ function renderWithContext(node, config = {}) {
         </RegistryProvider>
       </RenderContext.Provider>
     </LocalizationProvider>
-  );
+  )
 
   return {
     container: result.container,
@@ -275,6 +301,7 @@ export default {
   getRelation,
   clonePerson,
   getPersonWithChilds,
+  getPersonWithRelations,
   getPersonWithPartner,
   findDataGroup,
   findRelationsGroup,

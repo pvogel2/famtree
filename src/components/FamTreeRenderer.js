@@ -63,7 +63,7 @@ function FamTreeRenderer() {
   return (
     <>
     <Node person={ root } />
-    { (selected ) &&  <Metadata selectedPerson={ selected } /> }
+    <Metadata />
     </>
   );
 };

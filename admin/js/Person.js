@@ -21,12 +21,14 @@ export default class Person {
     delete Person.all[id];
   }
 
-  constructor(p) {
-    this._id = parseInt(p.id) || null;
-    this._firstName = p.firstName || '';
-    this._lastName = p.lastName || '';
-    this._surNames = p.surNames || '';
-    this._birthName = p.birthName || '';
+  constructor(p = {}) {
+    const id = parseInt(p.id);
+    this._id = isNaN(id) ? null : id;
+
+    this._firstName = typeof p.firstName === 'string' ? p.firstName.trim() : '';
+    this._lastName = typeof p.lastName === 'string' ? p.lastName.trim() : '';
+    this._surNames = typeof p.surNames === 'string' ? p.surNames.trim() : '';
+    this._birthName = typeof p.birthName === 'string' ? p.birthName.trim() : '';
 
     this._birthday = p.birthday || null;
     this._deathday = p.deathday || null;
@@ -35,6 +37,7 @@ export default class Person {
     this._portraitUrl = p.portraitUrl || '';
     this._relations = p.relations || [];
     this._root = !!p.root;
+
     this._modified = false;
   }
 
@@ -59,8 +62,8 @@ export default class Person {
   }
 
   get name() {
-    return `${this._firstName} ${this._lastName}`;
-  }
+    return [this._firstName, this._surNames, this._lastName].filter((n => !!n)).join(' ');
+  } 
 
   
   get birthday() {

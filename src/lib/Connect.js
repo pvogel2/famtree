@@ -3,7 +3,6 @@ import apiFetch from '@wordpress/api-fetch';
 export async function loadFamily() {
   const data = await apiFetch({ path: 'famtree/v1/family/' });
   const { persons = [], relations = [] } = { ...data };
-
   persons.forEach(p => {
     p.id = Number(p.id);
     p.root = p.root === '1';

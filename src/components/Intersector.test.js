@@ -7,7 +7,7 @@ import {
 
 import U from '../lib/tests/utils';
 import Intersector from './Intersector';
-import { getMesh, getDataGroup, addLabelText3D, focusNode, isNavigationNode } from '../lib/nodes/utils';
+import { getMesh, getDataGroup, addLabelText3D, focusNode } from '../lib/nodes/utils';
 import { act } from 'react-dom/test-utils';
 
 jest.mock('../lib/Connect.js', () => {
@@ -96,7 +96,7 @@ it('renders null for Intersector', () => {
   expect(container.firstChild).toBeNull();
 });
 
-describe('intersector', () => {
+describe('Intersector', () => {
   it.each(['move', 'click'])('sets callback on $s event', (event) => {
     const { renderer } = U.renderWithContext(<Intersector />, { persons: [defaultPerson] });
     const callbacks = renderer.registerEventCallback.mock.calls.filter((c) => c[0] === event);
