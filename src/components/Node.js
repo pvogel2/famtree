@@ -98,22 +98,15 @@ function Node(props) {
 
   const personId = person?.id;
 
-  const { focusedPerson, selectedPerson, founderId } = useSelect((select) => {
+  const { focusedPerson, selectedPerson, persons, allRelations } = useSelect((select) => {
     const store = select('famtree/families');
     return {
-      founderId: store.getFounder(),
       selectedPerson: store.getSelected(),
       focusedPerson: store.getFocused(),
-    };
-  }, []);
-
-  const { persons, allRelations } = useSelect((select) => {
-    const store = select('famtree/families');
-    return {
       persons: store.getPersons(),
       allRelations: store.getRelations(),
     };
-  }, [founderId]);
+  }, []);
 
   const { text, foreground, highlight, selection } = useSelect((select) => {
     const store = select('famtree/runtime');

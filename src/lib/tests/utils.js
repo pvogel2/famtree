@@ -1,5 +1,8 @@
 import { render } from '@testing-library/react';
-import { configureStore } from '@reduxjs/toolkit';
+import { RegistryProvider, createRegistry } from '@wordpress/data';
+import registerFamiliesStore from '../../store/families';
+import registerRuntimeStore from '../../store/runtime';
+
 import { getByRole, getAllByRole, fireEvent } from '@testing-library/react';
 import {
   Group as MockGroup,
@@ -12,17 +15,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import RenderContext from '../../components/RenderContext';
-import personsReducer, { setPersons } from '../../store/personsReducer';
-import selectedPersonReducer, { setPerson as setSelected } from '../../store/selectedPersonReducer';
-import focusedPersonReducer, { setPerson } from '../../store/focusedPersonReducer';
-import dialogsReducer, { showPersonDialog } from '../../store/_dialogsReducer';
-import runtimeReducer from '../../store/runtimeReducer';
-import layoutReducer from '../../store/layoutReducer';
-import relationsReducer, { setRelations } from '../../store/relationsReducer';
-import familiesReducer from '../../store/familiesReducer';
 import { getAssetsGroup, getSymbolGroup, getNavigationGroup } from '../../lib/nodes/utils';
 
 import DataPerson from './../Person';
+
+
+if (!global.structuredClone) {
+  global.structuredClone = (o) => JSON.parse(JSON.stringify(o));
+
+}
 
 jest.mock('../../assets/images/avatar.png', () => {
   return {};
@@ -175,39 +176,31 @@ function renderWithContext(node, config = {}) {
     relations = [],
   } = config;
 
-  const store = configureStore({ reducer: {
-    runtime: runtimeReducer,
-    focusedPerson: focusedPersonReducer,
-    persons: personsReducer,
-    config: dialogsReducer,
-    layout: layoutReducer,
-    selectedPerson: selectedPersonReducer,
-    relations: relationsReducer,
-    families: familiesReducer,
-  }});
+  const registry =  createRegistry({});
+  registry.register(registerFamiliesStore());
+  registry.register(registerRuntimeStore());
+
+  const { setPersons, setFocused, setSelected, setRelations } = registry.dispatch('famtree/families');
+  // const { setForeground, setBackground, setText, setHighlight, setSelection } = registry.dispatch('famtree/runtime');
 
   if (persons.length) {
-    store.dispatch(setPersons(persons.map((p) => p.serialize())));
+    setPersons(persons.map((p) => p.serialize()));
   }
 
   if (relations.length) {
-    store.dispatch(setRelations(relations));
+    setRelations(relations);
   }
 
   const {
     edit = null,
   } = config;
 
-  if (edit !== null) {
-    store.dispatch(showPersonDialog(config));
-  }
-
   if (focusedPerson) {
-    store.dispatch(setPerson(focusedPerson));
+    setFocused(focusedPerson);
   }
 
   if (selectedPerson) {
-    store.dispatch(setSelected(selectedPerson));
+    setSelected(selectedPerson);
   }
 
   renderer._objects = {};
@@ -221,7 +214,9 @@ function renderWithContext(node, config = {}) {
   const result = render(
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
       <RenderContext.Provider value={ { renderer } }>
+        <RegistryProvider value={ registry }>
         { node }
+        </RegistryProvider>
       </RenderContext.Provider>
     </LocalizationProvider>
   );
@@ -232,7 +227,7 @@ function renderWithContext(node, config = {}) {
     baseElement: result.baseElement,
     getByRole: result.getByRole,
     renderer,
-    store,
+    registry,
   };
 }
 

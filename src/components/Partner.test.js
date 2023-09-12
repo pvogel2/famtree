@@ -33,13 +33,13 @@ it('adds a mesh to the scene', () => {
 
   
 it('adds foreground color to node', () => {
-  const { renderer, store } = U.renderWithContext(<Partner person={ serializedPerson }/>);
+  const { renderer, registry } = U.renderWithContext(<Partner person={ serializedPerson }/>);
   const symbols = renderer.addObject.mock.lastCall[1];
 
   const base = symbols.children.find((m) => m.material.name ==='personMeshBase');
-  const state = store.getState();
-  const expected = new Color(state.layout.foreground).multiplyScalar(0.75);
-  expect(base.material.color).toEqual(expected);
+  const runtime = registry.select('famtree/runtime');
+  const expectedColor = new Color(runtime.getForeground()).multiplyScalar(0.75);
+  expect(base.material.color).toEqual(expectedColor);
 });
 
 it('adds several properties to the mesh', () => {

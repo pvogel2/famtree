@@ -21,10 +21,12 @@
 		"@mui/icons-material": "^5.8.4",
 		"@mui/material": "^5.9.2",
 		"@mui/x-date-pickers": "^5.0.0-beta.2",
-		"@testing-library/jest-dom": "^5.16.5",
-		"@testing-library/react": "^12.1.5",
-		"@wordpress/scripts": "^23.5.0",
+		"@testing-library/jest-dom": "^6.1.3",
+		"@testing-library/react": "^14.0.0",
+		"@wordpress/data": "^9.11.0",
+		"@wordpress/scripts": "^26.12.0",
 		"date-fns": "^2.29.1",
+		"npm": "^10.1.0",
 		"three": "^0.142.0"
 	},
 	"dependencies": {}

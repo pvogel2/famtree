@@ -37,13 +37,13 @@ describe.each([
       [prop]: person.id,
     };
 
-    const { store, container } = U.renderWithContext(<KNavigation { ...props } />, { persons: [person] });
+    const { registry, container } = U.renderWithContext(<KNavigation { ...props } />, { persons: [person] });
 
     fireEvent.keyDown(container, { key, code, ctrlKey: true });
 
-    const state = store.getState();
-    const currentSelectionId = state.selectedPerson.person.id;
+    const families = registry.select('famtree/families');
+    const currentSelection = families.getSelected();
 
-    expect(person.id).toBe(currentSelectionId);
+    expect(person.id).toBe(currentSelection.id);
   });
 });

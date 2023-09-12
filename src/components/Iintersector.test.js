@@ -65,11 +65,6 @@ afterEach(() => {
   jest.clearAllMocks()
 });
 
-it('renders null for Intersector', () => {
-  const { container } = U.renderWithContext(<Intersector />);
-  expect(container.firstChild).toBeNull();
-});
-
 function createPersonMesh() {
   const dummyMesh = getMesh();
   const parent1 = new MockGroup();
@@ -96,6 +91,11 @@ function triggerIntersection(renderer, mesh = createPersonMesh()) {
   return { mesh, point };
 }
 
+it('renders null for Intersector', () => {
+  const { container } = U.renderWithContext(<Intersector />);
+  expect(container.firstChild).toBeNull();
+});
+
 describe('intersector', () => {
   it.each(['move', 'click'])('sets callback on $s event', (event) => {
     const { renderer } = U.renderWithContext(<Intersector />, { persons: [defaultPerson] });
@@ -114,13 +114,13 @@ describe('on intersection', () => {
   });
 
   it('dispatches mouse move client position', () => {
-    const { store, renderer } = U.renderWithContext(<Intersector />, { persons: [defaultPerson] });
+    const { registry, renderer } = U.renderWithContext(<Intersector />, { persons: [defaultPerson] });
 
     const { point } = triggerIntersection(renderer);
 
-    const state = store.getState();
+    const runtime = registry.select('famtree/runtime');
 
-    expect(state.runtime).toEqual(expect.objectContaining({ move: point }));
+    expect(runtime.getPoint()).toEqual(point);
   });
 
   it('adds click handler on hover', () => {
@@ -142,14 +142,17 @@ describe('on intersection', () => {
 describe('on parent navi click', () => {
   it('selects the parent node', () => {
     const parentPerson = U.getPerson();
-    const { renderer, store } = U.renderWithContext(<Intersector />, { persons: [defaultPerson, parentPerson] });
+    const { renderer, registry } = U.renderWithContext(<Intersector />, { persons: [defaultPerson, parentPerson] });
     triggerIntersection(renderer, U.createNaviMesh({ refId: parentPerson.id }));
 
     const naviClickCallback = renderer.registerEventCallback.mock.calls.filter((c) => c[0] === 'click')[1];
-    naviClickCallback[1]();
 
-    const state = store.getState();
-    const currentSelectionId = state.selectedPerson.person.id;
-    expect(currentSelectionId).toBe(parentPerson.id);
+    act(() => {
+      naviClickCallback[1]();
+    });
+
+    const families = registry.select('famtree/families');
+    const currentSelection = families.getSelected();
+    expect(currentSelection.id).toBe(parentPerson.id);
   });
 });
