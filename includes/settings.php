@@ -16,7 +16,8 @@ function famtree_admin_init() {
   wp_register_script( 'famtree-admin-script-s', plugins_url('/../admin/js/script.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-r', plugins_url('/../admin/js/Relation.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-ms', plugins_url('/../admin/js/ManagedSelect.js', __FILE__) );
-  wp_register_script( 'famtree-admin-script-p', plugins_url('/../admin/js/Person.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-p', plugins_url('/../lib/js/Person.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-pl', plugins_url('/../lib/js/PersonList.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-e', plugins_url('/../admin/js/PersonEditor.js', __FILE__) );
   wp_register_style( 'famtree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
 }
@@ -27,6 +28,7 @@ function add_type_attribute($tag, $handle, $src) {
     && 'famtree-admin-script-s' !== $handle
     && 'famtree-admin-script-e' !== $handle
     && 'famtree-admin-script-r' !== $handle
+    && 'famtree-admin-script-pl' !== $handle
     && 'famtree-admin-script-p' !== $handle ) {
       return $tag;
   }
@@ -44,6 +46,7 @@ function famtree_admin_scripts() {
   wp_enqueue_script( 'famtree-admin-script-r' );
   wp_enqueue_script( 'famtree-admin-script-ms' );
   wp_enqueue_script( 'famtree-admin-script-p' );
+  wp_enqueue_script( 'famtree-admin-script-pl' );
   wp_enqueue_script( 'famtree-admin-script-e' );
   wp_enqueue_script( 'famtree-admin-script-s' );
   wp_enqueue_script( 'wp-api-request' ); // include backbone wp api

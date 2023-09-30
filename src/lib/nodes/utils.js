@@ -5,8 +5,7 @@ import ThreeText3D from '../../lib/three/Text3D';
 import ThreePreparedMeshes from '../../lib/three/PreparedMeshes';
 import Transition from '../../lib/Transition';
 import avatarImage from '../../assets/images/avatar.png';
-// import { getBaseUrl } from '../Connect';
-import Person from '../Person';
+import Person from '../../../lib/js/Person';
 
 const textureLoader = new TextureLoader();
 

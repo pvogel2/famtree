@@ -5,7 +5,7 @@ import { Person as PersonIcon } from '@mui/icons-material';
 
 import ExtendedDialogTitle from './ExtendedDialogTitle';
 import PersonDetails from './PersonDetails';
-import Person from '../../lib/Person';
+import Person from '../../../lib/js/Person';
 
 function InfoDialog() {
   const position = useSelect((select) => select('famtree/runtime').getPoint());

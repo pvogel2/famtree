@@ -1,6 +1,7 @@
 import PersonEditor from './PersonEditor.js';
-import Person from './Person.js';
+import PersonList from '../../lib/js/PersonList.js';
 import Relation from './Relation.js';
+
 
 window.famtree = window.famtree || {};
 
@@ -104,13 +105,18 @@ window.addEventListener('DOMContentLoaded', async () => {
   const relatedPersons = [];
 
   persons.forEach((p) => {
+    if (!p.id) {
+      console.warn('Found person without id, skip usage.', p);
+      return;
+    }
+
     const rls = relations
       .filter((r) => !!r.members.filter((mId) => mId === parseInt(p.id)).length)
       .map((r) => r.id)
     ;
 
     p.relations = rls;
-    Person.add(p);
+    PersonList.add(p);
   
     if (p.relations.length) {
       relatedPersons.push(p.id);
@@ -118,7 +124,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   relatedPersons.forEach((pId) => {
-    const person = Person.find(pId);
+    const person = PersonList.find(pId);
     const select = document.querySelector(`.wp-list-table tbody tr[data-id="${pId}"] .relations select`);
 
     if (!person || !select) {
@@ -132,7 +138,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       // find member
       const mId = pId != rl.members[0] ? rl.members[0] : rl.members[1];
-      const ps = Person.find(mId);
+      const ps = PersonList.find(mId);
 
       if (!ps) {
         console.warn('Relation Error: Could not find partner relation with id', mId, ', skipping relation.');
@@ -146,7 +152,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       select.disabled = false;
 
       rl.children.forEach((cId) => {
-        const ps = Person.find(cId);
+        const ps = PersonList.find(cId);
 
         if (!ps) {
           console.warn('Relation Error: Could not find child with id', cId, ', skipping relation.');
@@ -257,7 +263,7 @@ window.famtree.getMediaType = (mimetype) => {
 };
 
 window.famtree.editPerson = (id) => {
-  const person = Person.find(id);
+  const person = PersonList.find(id);
   if (person) {
     window.scrollTo(0, 0);
     personEditor.edit.setPerson(person);
@@ -292,7 +298,7 @@ window.famtree.deletePerson = async () => {
 
   wp.apiRequest(options).then(() => {
     // remove from global list
-    Person.remove(pId);
+    PersonList.remove(pId);
 
     // remove from person editor
     personEditor.edit.removePerson(pId);
@@ -377,7 +383,7 @@ window.famtree.updateRoot = async (elem, pId) => {
     data: { root },
   };
 
-  const ps = Person.find(pId);
+  const ps = PersonList.find(pId);
 
   wp.apiRequest(options).then(() => {
     window.famtree.showMessage(`${ root ? 'Added' : 'Removed'} ${ ps.name } as available family founder.`);

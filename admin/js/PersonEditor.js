@@ -1,5 +1,5 @@
 import ManagedSelect from './ManagedSelect.js';
-import Person from './Person.js';
+import PersonList from '../../lib/js/PersonList.js';
 import Relation from './Relation.js';
 
 export default class PersonEditor {
@@ -81,7 +81,7 @@ export default class PersonEditor {
 
       this.relations.forEach((r) => {
         const ps = r.members.filter((id) => id !== pId);
-        const person = Person.find(ps[0]);
+        const person = PersonList.find(ps[0]);
   
         this.rSelect.addOption(person.name, r.id);
       });
@@ -140,7 +140,7 @@ export default class PersonEditor {
     setCandidatesSelect() {
       const f = this.getForm();
       const id = parseInt(f.id.value);
-      const cs = Person.filter((p) => (id !== p.id));
+      const cs = PersonList.filter((p) => (id !== p.id));
       cs.forEach((p) => {
         this.caSelect.addOption(p.name, p.id);
       });
@@ -231,7 +231,7 @@ export default class PersonEditor {
       }
 
       const pId = rl.members[1];
-      const newPartner = Person.find(pId);
+      const newPartner = PersonList.find(pId);
 
       // defined partner can not be found
       if (!newPartner) {
@@ -268,7 +268,7 @@ export default class PersonEditor {
 
     setChildrenSelect(cnIds) {
       cnIds.forEach((cId)=>{
-        const person = Person.find(cId);
+        const person = PersonList.find(cId);
         if (!person) {
           return;
         }
@@ -312,7 +312,7 @@ export default class PersonEditor {
       }
 
       // add to form child options
-      const person = Person.find(id);
+      const person = PersonList.find(id);
 
       this.cSelect.addOption(person.name, person.id);
       this.cSelect.setLast();

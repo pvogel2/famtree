@@ -1,5 +1,5 @@
 import PersonEditor from './PersonEditor.js';
-import Person from './Person.js';
+import PersonList from './PersonList.js';
 import Relation from './Relation.js';
 import { getEditFormElements, getMetadataFormElements } from '../../tests/utils.js';
 
@@ -23,8 +23,8 @@ function unmountForm() {
   });
 }
 
-const spyPersonFilter = jest.spyOn(Person, 'filter');
-const spyPersonFind = jest.spyOn(Person, 'find');
+const spyPersonistFilter = jest.spyOn(PersonList, 'filter');
+const spyPersonListFind = jest.spyOn(PersonList, 'find');
 
 const spyRelationFilter = jest.spyOn(Relation, 'filter');
 
@@ -94,7 +94,7 @@ describe('The person editor', () => {
     it('activates the entire form for firstname and lastname set', () => {
       const { form, firstName, lastName, partners, children, candidates } = render().eElems;
  
-      spyPersonFilter.mockReturnValueOnce([person]);
+      spyPersonistFilter.mockReturnValueOnce([person]);
 
       setName(firstName, lastName);
 
@@ -125,7 +125,7 @@ describe('The person editor', () => {
         const { pe, eElems } = render();
 
         spyRelationFilter.mockReturnValueOnce([relation]);
-        spyPersonFind.mockReturnValueOnce([person]);
+        spyPersonListFind.mockReturnValueOnce([person]);
 
         pe.edit.setPerson(person);
 
@@ -138,11 +138,11 @@ describe('The person editor', () => {
         const { pe, eElems } = render();
         const { firstName, lastName, partners, partnersBtn, children, childrenBtn, addChildBtn } = eElems;
 
-        spyPersonFilter.mockReturnValueOnce([person]);
+        spyPersonistFilter.mockReturnValueOnce([person]);
 
         setName(firstName, lastName);
 
-        spyPersonFind.mockReturnValueOnce(partner);
+        spyPersonListFind.mockReturnValueOnce(partner);
 
         pe.edit.addRelation(relation);
 
@@ -157,10 +157,10 @@ describe('The person editor', () => {
         const { pe, eElems } = render();
         const { firstName, lastName, partners, partnersBtn, children, childrenBtn, addChildBtn } = eElems;
 
-        spyPersonFilter.mockReturnValueOnce([person]);
+        spyPersonistFilter.mockReturnValueOnce([person]);
         setName(firstName, lastName);
 
-        spyPersonFind.mockReturnValueOnce(partner);
+        spyPersonListFind.mockReturnValueOnce(partner);
         const addedId = pe.edit.addRelation(relation);
 
         const rId = pe.edit.removeRelation();
@@ -183,7 +183,7 @@ describe('The person editor', () => {
       it.each(params)('returns the relation if id $id of one members matches', ({ id, found }) => {
         const { pe } = render();
 
-        spyPersonFind.mockReturnValueOnce({ ...person, id });
+        spyPersonListFind.mockReturnValueOnce({ ...person, id });
         pe.edit.addRelation(relation);
 
         const result = !!pe.edit.findInvolvedRelation(id);
@@ -194,7 +194,7 @@ describe('The person editor', () => {
         const { pe } = render();
         const pId = relation.members[0];
 
-        spyPersonFind.mockReturnValueOnce({ ...person, id: pId });
+        spyPersonListFind.mockReturnValueOnce({ ...person, id: pId });
 
         pe.edit.addRelation({ ...relation });
         pe.edit.removeRelation();
@@ -209,15 +209,15 @@ describe('The person editor', () => {
       const { pe, eElems } = render();
       const { firstName, lastName, children, childrenBtn } = eElems;
 
-      spyPersonFilter.mockReturnValueOnce([person]);
+      spyPersonistFilter.mockReturnValueOnce([person]);
 
       setName(firstName, lastName);
 
-      spyPersonFind.mockReturnValueOnce(partner);
+      spyPersonListFind.mockReturnValueOnce(partner);
 
       pe.edit.addRelation(relation);
 
-      spyPersonFind.mockReturnValueOnce(child);
+      spyPersonListFind.mockReturnValueOnce(child);
 
       pe.edit.addChild(child.id);
 
@@ -229,17 +229,17 @@ describe('The person editor', () => {
       const { pe, eElems } = render();
       const { firstName, lastName, children } = eElems;
 
-      spyPersonFilter.mockReturnValueOnce([person]);
+      spyPersonistFilter.mockReturnValueOnce([person]);
 
       setName(firstName, lastName);
 
-      spyPersonFind.mockReturnValueOnce(partner);
+      spyPersonListFind.mockReturnValueOnce(partner);
 
       pe.edit.addRelation(relation);
       const rl = pe.edit.relations[0];
 
-      spyPersonFind.mockReturnValueOnce(child);
-      spyPersonFind.mockReturnValueOnce(child);
+      spyPersonListFind.mockReturnValueOnce(child);
+      spyPersonListFind.mockReturnValueOnce(child);
 
       pe.edit.addChild(child.id);
       pe.edit.addChild(child.id);
@@ -252,13 +252,13 @@ describe('The person editor', () => {
       const { pe, eElems } = render();
       const { firstName, lastName, children, childrenBtn, addChildBtn } = eElems;
 
-      spyPersonFilter.mockReturnValueOnce([person]);
+      spyPersonistFilter.mockReturnValueOnce([person]);
       setName(firstName, lastName);
 
-      spyPersonFind.mockReturnValueOnce(partner);
+      spyPersonListFind.mockReturnValueOnce(partner);
       pe.edit.addRelation(relation);
 
-      spyPersonFind.mockReturnValueOnce(child);
+      spyPersonListFind.mockReturnValueOnce(child);
       pe.edit.addChild(child.id);
 
       pe.edit.removeChild(child.id);

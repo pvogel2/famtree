@@ -1,4 +1,4 @@
-import Person from '../../lib/Person';
+import Person from '../../../lib/js/Person';
 
 
 const dummyPerson = new Person({

@@ -3,7 +3,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { focusNode, defocusNode, getRootNode, isValidNode, isPersonNode, isMetaResourceNode, isNavigationNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
-import Person from '../lib/Person';
+import Person from '../../lib/js/Person';
 
 
 function Intersector() {
