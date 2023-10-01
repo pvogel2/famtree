@@ -242,26 +242,6 @@ window.famtree.addChild = (id) => {
   personEditor.edit.addChild(cId);
 };
 
-window.famtree.getMediaType = (mimetype) => {
-  if (mimetype.startsWith('image')) {
-    return 'image';
-  }
-
-  if (mimetype.startsWith('video')) {
-    return 'video';
-  }
-
-  if (mimetype.endsWith('pdf') || mimetype.endsWith('msword')) {
-    return 'document';
-  }
-
-  if (mimetype.startsWith('text')) {
-    return 'text';
-  }
-
-  return 'unknown';
-};
-
 window.famtree.editPerson = (id) => {
   const person = PersonList.find(id);
   if (person) {

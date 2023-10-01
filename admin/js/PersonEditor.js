@@ -2,6 +2,30 @@ import ManagedSelect from './ManagedSelect.js';
 import PersonList from '../../lib/js/PersonList.js';
 import Relation from './Relation.js';
 
+function getMediaType(mimetype) {
+  if (!(typeof mimetype === 'string')) {
+    return 'unknown';
+  }
+
+  if (mimetype.startsWith('image')) {
+    return 'image';
+  }
+
+  if (mimetype.startsWith('video')) {
+    return 'video';
+  }
+
+  if (mimetype.endsWith('pdf') || mimetype.endsWith('msword')) {
+    return 'document';
+  }
+
+  if (mimetype.startsWith('text')) {
+    return 'text';
+  }
+
+  return 'unknown';
+};
+
 export default class PersonEditor {
   constructor() {
     const f = this.edit.getForm();
@@ -226,7 +250,7 @@ export default class PersonEditor {
       const rId = rl.id; 
 
       // no partner is defined
-      if (!rl.members.length > 1) {
+      if (rl.members.length <= 1) {
         return null;
       }
 
@@ -272,9 +296,10 @@ export default class PersonEditor {
         if (!person) {
           return;
         }
-
+        
         this.cSelect.addOption(person.name, person.id);
       });
+      
       this.cSelect.setIndex();
     },
 
@@ -322,7 +347,6 @@ export default class PersonEditor {
   metadata = {
     mediaTable: '#existingMetadata',
     uploadButton: '#upload-metadata-button',
-    // idInput: 'metadata-id',
     default: '',
     form: '#uploadMetadataForm',
 
@@ -370,10 +394,7 @@ export default class PersonEditor {
     },
 
     reset() {
-      const form = this.getForm();
-      // const btn = form.querySelector(this.uploadButton);
       const table = document.querySelector(this.mediaTable);
-      // btn.disabled = true;
       table.innerHTML = '';
       this.tableAddPlaceholder();
     },
@@ -403,13 +424,13 @@ export default class PersonEditor {
       removeTd.classList.add('column-remove');
 
       if (!item.thumbnail) {
-        const type = window.famtree.getMediaType(item.mimetype);
+        const type = getMediaType(item.mimetype);
         thumbTd.innerHTML = `<span title='${item.title}' class="famtree-dashicons-thumb dashicons dashicons-media-${type}"></span>`;
       } else {
         thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
       }
       nameTd.innerText = item.title;
-
+      
       excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
       editTd.innerHTML = `<button type="button" title="edit" class="button icon" onclick="window.famtree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
       removeTd.innerHTML = `<button type="button" title="remove" class="button icon" onclick="window.famtree.removeMeta(${item.id})"><span class="dashicons dashicons-trash"></span></button>`;
@@ -418,6 +439,7 @@ export default class PersonEditor {
       tr.appendChild(excerptTd);
       tr.appendChild(editTd);
       tr.appendChild(removeTd);
+
       table.appendChild(tr);
     }
   }

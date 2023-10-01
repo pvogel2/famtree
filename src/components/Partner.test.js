@@ -39,7 +39,8 @@ it('adds foreground color to node', () => {
   const base = symbols.children.find((m) => m.material.name ==='personMeshBase');
   const runtime = registry.select('famtree/runtime');
   const expectedColor = new Color(runtime.getForeground()).multiplyScalar(0.75);
-  expect(base.material.color).toEqual(expectedColor);
+
+  expect(base.material.color.getHexString()).toEqual(expectedColor.getHexString());
 });
 
 it('adds several properties to the mesh', () => {

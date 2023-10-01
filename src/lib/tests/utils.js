@@ -18,7 +18,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import RenderContext from '../../components/RenderContext';
 import { getAssetsGroup, getSymbolGroup, getNavigationGroup } from '../../lib/nodes/utils';
 
-import DataPerson from './../Person';
+import Person from '../../../lib/js/Person';
 
 
 if (!global.structuredClone) {
@@ -99,7 +99,7 @@ function getRelation(members = [],  children = []) {
 }
 
 function getPerson(config = { relations: [] }) {
-  return new DataPerson({
+  return new Person({
     id: globalPersonCounter++,
     firstName: `First${Math.random()}`,
     lastName: 'Book',
@@ -108,7 +108,7 @@ function getPerson(config = { relations: [] }) {
 }
 
 export function getDefaultPerson() {
-  return new DataPerson({
+  return new Person({
     id: 'p0',
     firstName: 'Dummy',
     lastName: 'Person',
@@ -116,7 +116,7 @@ export function getDefaultPerson() {
 }
 
 function clonePerson(original) {
-  return new DataPerson(original.serialize());
+  return new Person(original.serialize());
 }
 
 function getPersonWithRelations(persons = [], relations = [], n = 1) {

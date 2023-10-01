@@ -55,18 +55,23 @@ export function getEditFormElements() {
   eElems.relationsFs = addFieldset(fE, { name: 'fs_relations', disabled: 'disabled' });
   eElems.addChildBtn = addButton(eElems.relationsFs, { name: 'btn_addChild', disabled: 'disabled' });
 
-  eElems.form = fE;
+  eElems.personForm = fE;
 
   return eElems;
 };
 
 export function getMetadataFormElements() {
-  const f = document.createElement('form');
-  f.id = 'uploadMetadataForm';
+  const metadataForm = document.createElement('form');
+  metadataForm.id = 'uploadMetadataForm';
 
-  addFieldset(f, { name: 'fs_add' });
+  const mediaTable = document.createElement('table');
+  mediaTable.id = 'existingMetadata'
+
+  addFieldset(metadataForm, { name: 'fs_add' });
 
   return {
-    form: f,
+    metadataForm,
+    mediaTable,
+    uploadButton: addButton(metadataForm, { id: 'upload-metadata-button', disabled: 'disabled' }),
   };
 };

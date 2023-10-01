@@ -34,9 +34,8 @@ function Partner(props) {
 
   useEffect(() => {
     if (!renderer || !person?.id) return;
-
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
-
+ 
     const type = 'partner';
 
     const offset = new Vector3(0, offsetY, offsetZ);
