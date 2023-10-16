@@ -62,6 +62,7 @@ function App(props) {
 
         async function updateData(data) {
           const founders = data.persons.filter((p) => p.root).map((p) => p.id);
+
           registry.batch(async () => {
             await setPersons(data.persons);
             await setRelations(data.relations);

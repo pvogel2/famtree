@@ -65,12 +65,18 @@ const renderer = {
     parent.add(obj);
   }),
   getObject: jest.fn(),
+  start: jest.fn(),
   removeObject: jest.fn(),
   registerEventCallback: jest.fn(),
   unregisterEventCallback: jest.fn(),
   transition: jest.fn(),
   parent: {
     style: {},
+  },
+  three: {
+    renderer: {
+      setClearColor: jest.fn(),
+    },
   },
 };
 
@@ -200,14 +206,15 @@ function renderWithContext(node, config = {}) {
     selectedPerson = null,
     persons = [],
     relations = [],
+    families = [],
+    founder = null,
   } = config;
 
   const registry =  createRegistry({});
   registry.register(registerFamiliesStore());
   registry.register(registerRuntimeStore());
 
-  const { setPersons, setFocused, setSelected, setRelations } = registry.dispatch('famtree/families');
-  // const { setForeground, setBackground, setText, setHighlight, setSelection } = registry.dispatch('famtree/runtime');
+  const { setPersons, setFocused, setSelected, setRelations, setFamilies, setFounder } = registry.dispatch('famtree/families');
 
   if (persons.length) {
     setPersons(persons.map((p) => p.serialize()));
@@ -217,9 +224,13 @@ function renderWithContext(node, config = {}) {
     setRelations(relations);
   }
 
-  const {
-    edit = null,
-  } = config;
+  if (families.length) {
+    setFamilies(families);
+  }
+
+  if (typeof founder === 'number') {
+    setFounder(founder);
+  }
 
   if (focusedPerson) {
     setFocused(focusedPerson);
@@ -268,11 +279,12 @@ function getRenderer() {
   return renderer;
 }
 
-function createPersonMesh() {
+async function createPersonMesh() {
   const m = new MockMesh(new MockGeometry(), new MockMaterial());
   m.name = 'person';
   const assetsGroup = getAssetsGroup(m);
-  m.add(getSymbolGroup(getPerson().serialize()));
+  const sg = await getSymbolGroup(getPerson().serialize());
+  m.add(sg);
   const naviGroup = getNavigationGroup(m);
 
   return {

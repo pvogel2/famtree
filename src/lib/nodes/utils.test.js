@@ -3,6 +3,8 @@ import {
   Mesh as MockMesh,
   MeshBasicMaterial as MockMaterial,
   BoxGeometry as MockGeometry,
+  Vector3,
+  Color,
 } from 'three';
 
 import U from '../tests/utils';
@@ -51,8 +53,8 @@ describe('selectNode', () => {
     expect(utils.selectNode).not.toThrow();
   });
 
-  it('set navigation visible', () => {
-    const { personMesh, naviGroup } = U.createPersonMesh();
+  it('set navigation visible', async () => {
+    const { personMesh, naviGroup } = await U.createPersonMesh();
 
     utils.selectNode(personMesh, { renderer: U.getRenderer() });
     expect(naviGroup.visible).toBe(true);
@@ -64,8 +66,8 @@ describe('defocusNode', () => {
     expect(utils.defocusNode).not.toThrow();
   });
 
-  it('set navigation invisible', () => {
-    const { personMesh, naviGroup } = U.createPersonMesh();
+  it('set navigation invisible', async () => {
+    const { personMesh, naviGroup } = await U.createPersonMesh();
 
     utils.selectNode(personMesh, { renderer: U.getRenderer() });
     utils.defocusNode(personMesh, { renderer: U.getRenderer() });
@@ -136,4 +138,42 @@ describe.each([
     const g = utils[method](m);
     expect(g).toEqual(ng);
   });
+});
+
+describe('createTreeNode', () => {
+  const person = U.getPerson();
+
+  const meta = {
+    renderer: U.getRenderer(),
+    parent: {
+      add: jest.fn(),
+    },
+  };
+  const layout = {
+    offset: new Vector3(),
+    colors: {
+      foreground: new Color(),
+      text: new Color(),
+    },
+  };
+  it('creates person node', () => {
+    const { root } = utils.createTreeNode(person, meta, layout);
+
+    expect(root.name).toBe('person');
+    expect(root.userData.refId).toBe(person.id);
+  })
+
+  it('creates partner node', () => {
+    const { root } = utils.createTreeNode(person, { ...meta, type: 'partner' }, layout);
+
+    expect(root.name).toBe('partner');
+    expect(root.userData.refId).toBe(person.id);
+  })
+
+  it('creates placeholder node node', () => {
+    const { root } = utils.createTreeNode(person, { ...meta, type: 'placeholder' }, layout);
+
+    expect(root.name).toBe('placeholder');
+    expect(root.userData.refId).toBe(-1);
+  })
 });

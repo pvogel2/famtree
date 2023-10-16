@@ -3,6 +3,7 @@ import Metadata from './Metadata';
 import { loadMetadata } from '../lib/Connect.js';
 import { act } from 'react-dom/test-utils';
 
+
 async function renderWithActContext(conpoment, options) {
   let container;
 
@@ -38,8 +39,10 @@ it('renders node for existing Metadata and existing metadata for person selected
     id: 1,
     mimetype: '',
   }]);
+  const mesh = await U.createPersonMesh();
+
   const renderer = U.getRenderer();
-  renderer.getObject.mockReturnValue({ obj: U.createPersonMesh().personMesh });
+  renderer.getObject.mockReturnValue({ obj: mesh.personMesh });
 
   const container = await renderWithActContext(<Metadata />, { selectedPerson: selectedPerson.serialize() });
 

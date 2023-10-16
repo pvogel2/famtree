@@ -4,6 +4,7 @@ import { Color, Vector3 } from 'three';
 
 import RenderContext from './RenderContext.js';
 import Node from './Node';
+import Placeholder from './Placeholder';
 import Metadata from './Metadata';
 
 
@@ -12,17 +13,12 @@ function FamTreeRenderer() {
 
   const { setSelected } = useDispatch('famtree/families');
 
-  const { founderId, selected } = useSelect((select) => {
-    const store = select( 'famtree/families' );
-    return {
-      founderId: store.getFounder(),
-      selected: store.getSelected(),
-    };
-  });
+  const founderId = useSelect((select) => select( 'famtree/families' ).getFounder());
 
   const root = useSelect(
     (select) => {
-      return select( 'famtree/families' ).getPersons().find((p) => p.id === founderId);
+      const persons = select( 'famtree/families' ).getPersons();
+      return persons.find((p) => p.id === founderId);
     },
     [founderId]
   );
@@ -60,10 +56,12 @@ function FamTreeRenderer() {
     // grid.rotation.z = Math.PI * 0.5;
     renderer.start();
   }
+
   return (
     <>
-    <Node person={ root } />
-    <Metadata />
+      { !!root && <Node person={ root } /> }
+      { !root && <Placeholder /> }
+      <Metadata />
     </>
   );
 };

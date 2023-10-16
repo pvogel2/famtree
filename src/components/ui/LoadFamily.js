@@ -5,6 +5,7 @@ import { FamilyRestroom } from '@mui/icons-material';
 
 
 function LoadFamily(props) {
+
   const {
     readonly,
     instanceId,
@@ -18,6 +19,7 @@ function LoadFamily(props) {
     };
   });
 
+  const disabled = families.length < 2;
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -72,6 +74,7 @@ function LoadFamily(props) {
       <Fab
         color="primary"
         sx={{ position: 'absolute', bottom: 16, right: 16 }}
+        disabled={ disabled }
         onClick={ handleMenuClick }
       >
         <FamilyRestroom />

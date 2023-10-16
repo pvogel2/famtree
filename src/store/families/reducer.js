@@ -1,21 +1,15 @@
 import Person from '../../../lib/js/Person';
 
 
-const dummyPerson = new Person({
-  id: 0.1,
-  firstName: 'Dummy',
-  lastName: 'Person',
-});
-
 const DEFAULT_STATE = {
-  families: ['default'],
-  founder: null,
+  families: [],
+  founder: -1,
   relations: [],
   focused: null,
   selected: null,
   metadata: [],
   selectedMeta: null,
-  persons: [dummyPerson],
+  persons: [],
 
 };
 

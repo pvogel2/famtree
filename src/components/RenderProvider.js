@@ -25,7 +25,7 @@ function RenderProvider(props) {
 
     newRenderer.setupLightsDone = true;
 
-    const ambientLight = new AmbientLight( 0xFFFFFF, 2 );
+    const ambientLight = new AmbientLight( 0xFFFFFF, 3 );
     newRenderer.three.scene.add( ambientLight );
 
     newRenderer.three.gammaOutput = true;

@@ -1,6 +1,6 @@
 export function getFamilies( state ) {
   if (!state.families) {
-    return ['default'];
+    return [];
   }  
   return state.families;
 }

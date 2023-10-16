@@ -3,6 +3,7 @@ import {
   Vector3,
   Group,
 } from 'three';
+import { waitFor } from '@testing-library/react';
 import U from '../lib/tests/utils';
 import Node from './Node';
 
@@ -53,10 +54,11 @@ it('adds a mesh to the scene', () => {
   expect(renderer.addObject).toHaveBeenCalledWith(expect.any(String), expect.any(Object), false, undefined);
 });
 
-it('adds several groups to the mesh', () => {
+it('adds several groups to the mesh', async () => {
   const { renderer } = U.renderWithContext(<Node person={ U.getPerson().serialize() } parent={ new Group() }/>);
-  expect(renderer.addObject).toHaveBeenCalledWith(expect.stringMatching(/^symbol/), expect.anything(), expect.anything(), expect.anything());
-  expect(renderer.addObject).toHaveBeenCalledWith(expect.stringMatching(/^person/), expect.anything(), expect.anything(), expect.anything());
+
+  await waitFor(() => expect(renderer.addObject).toHaveBeenCalledWith(expect.stringMatching(/^symbol/), expect.anything(), expect.anything(), expect.anything()));
+  await waitFor(() => expect(renderer.addObject).toHaveBeenCalledWith(expect.stringMatching(/^person/), expect.anything(), expect.anything(), expect.anything()));
 });
 
 it('adds an offset to the node', () => {
@@ -207,34 +209,44 @@ describe('For the data', () => {
 });
 
 describe('For the assets', () => {
-  it('adds an assets group to the node', () => {
+  it('adds an assets group to the node', async () => {
     const persons = [];
     const relations = [];
     const person = getPersonWithChilds(persons, relations, 0);
 
     const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>, { persons, relations });
-    const node = renderer.addObject.mock.calls[0][1];
-    const assetsGroup = U.findAssetsGroup(node);
 
-    expect(assetsGroup.isGroup).toEqual(true);
+    const node = renderer.addObject.mock.calls[0][1];
+    await waitFor(() => {
+      const assetsGroup = U.findAssetsGroup(node);
+
+      return expect(assetsGroup.isGroup).toEqual(true);
+    });
   });
 
-  it('adds a relation visualization to the assets group', () => {
+  it('adds a relation visualization to the assets group', async () => {
     const persons = [];
     const relations = [];
     const person = getPersonWithChilds(persons, relations, 0);
 
     const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>, { persons, relations });
     const node = renderer.addObject.mock.calls[0][1];
-    const symbolsGroup = U.findSymbolsGroup(node);
-    const relationNode = symbolsGroup.children[0];
 
-    expect(relationNode?.material?.color).toEqual(new Color(1, 1, 1));
+    await waitFor(() => {
+      const symbolsGroup = U.findSymbolsGroup(node);
+      const relationNode = symbolsGroup.children[0];
+      return expect(relationNode?.material?.color).toEqual(new Color(1, 1, 1));
+    });
   });
 
   describe('containing the navigation group', () => {
-    function getControlNode(parent, id) {
-      return parent.children.find((c) => c.userData.refId === id);
+    async function getControlNode(parent, id) {
+      let control;
+      await waitFor(() => {
+        control = parent.children.find((c) => c.userData.refId === id);
+        return expect(control).toBeDefined();
+      });
+      return control;
     }
 
     function getNaviGroup(renderer) {
@@ -259,30 +271,30 @@ describe('For the assets', () => {
       const person = U.getPerson();
       const refId = 14;
 
-      it('is rendered', () => {
+      it('is rendered', async () => {
         const pos = [0, -arrOff, 0];
 
         const { renderer } = U.renderWithContext(<Node parentId={ refId } person={ person.serialize() }/>);
+
         const naviGroup = getNaviGroup(renderer);
-        const toParent = getControlNode(naviGroup, refId);
+        const toParent = await getControlNode(naviGroup, refId);
 
         expect(naviGroup.visible).toEqual(false);
-        expect(toParent).toBeDefined();
         expect(toParent.type).toBe('Mesh');
         expect(toParent.position.toArray()).toEqual(pos);
       });
 
-      it('is configured for intersection', () => {
+      it('is configured for intersection', async () => {
         const { renderer } = U.renderWithContext(<Node parentId={ refId } person={ person.serialize() }/>);
         const naviGroup = getNaviGroup(renderer);
-        const toParent = getControlNode(naviGroup, refId);
+        const toParent = await getControlNode(naviGroup, refId);
 
         expect(renderer.addObject).toHaveBeenCalledWith(`parentNavi${person.id}`, toParent, true, naviGroup);
       });
     });
 
     describe('for child navigation control mesh', () => {
-      it('is rendered', () => {
+      it('is rendered', async () => {
         const persons = [];
         const relations = [];
         const person = getPersonWithChilds(persons, relations);
@@ -291,7 +303,7 @@ describe('For the assets', () => {
 
         const { renderer } = U.renderWithContext(<Node person={ person.serialize() } />, { persons, relations });
         const naviGroup = getNaviGroup(renderer);
-        const toChild = getControlNode(naviGroup, refId);
+        const toChild = await getControlNode(naviGroup, refId);
 
         expect(naviGroup.visible).toEqual(false);
         expect(toChild).toBeDefined();
@@ -299,7 +311,7 @@ describe('For the assets', () => {
         expect(toChild.position.toArray()).toEqual(pos);
       });
 
-      it('is configured for intersection', () => {
+      it('is configured for intersection', async () => {
         const persons = [];
         const relations = [];
         const person = getPersonWithChilds(persons, relations);
@@ -307,14 +319,14 @@ describe('For the assets', () => {
 
         const { renderer } = U.renderWithContext(<Node person={ person.serialize() } />, { persons, relations });
         const naviGroup = getNaviGroup(renderer);
-        const toChild = getControlNode(naviGroup, refId);
+        const toChild = await getControlNode(naviGroup, refId);
 
         expect(renderer.addObject).toHaveBeenCalledWith(`childNavi${person.id}`, toChild, true, naviGroup);
       });
     });
 
     describe('for right navigation control mesh', () => {
-      it('is rendered', () => {
+      it('is rendered', async () => {
         const persons = [];
         const relations = [];
         const person = U.getPersonWithRelations(persons, relations);
@@ -323,7 +335,7 @@ describe('For the assets', () => {
 
         const { renderer } = U.renderWithContext(<Node person={ person.serialize() }/>, { persons, relations });
         const naviGroup = getNaviGroup(renderer);
-        const toPartner = getControlNode(naviGroup, refId);
+        const toPartner = await getControlNode(naviGroup, refId);
 
         expect(naviGroup.visible).toEqual(false);
         expect(toPartner).toBeDefined();
@@ -331,7 +343,7 @@ describe('For the assets', () => {
         expect(toPartner.position.toArray()).toEqual(pos);
       });
 
-      it('correct property set on partner node', () => {
+      it('correct property set on partner node', async () => {
         const persons = [];
         const relations = [];
         const person = U.getPersonWithRelations(persons, relations);
@@ -340,12 +352,12 @@ describe('For the assets', () => {
         const node = renderer.addObject.mock.calls[0][1];
         const relationsGroup = node.children.find((c) => c.name === 'relations');
         const subNaviGroup = relationsGroup.children[0].children.find((c) => c.name === 'navigation');
-        const toPerson = getControlNode(subNaviGroup, person.id);
+        const toPerson = await getControlNode(subNaviGroup, person.id);
 
         expect(toPerson).toBeDefined();
       });
  
-      it('correct property set on multiple partner nodes', () => {
+      it('correct property set on multiple partner nodes', async () => {
         const persons = [];
         const relations = [];
         const person = U.getPersonWithRelations(persons, relations, 2);
@@ -358,37 +370,37 @@ describe('For the assets', () => {
         const relationsGroup = node.children.find((c) => c.name === 'relations');
         const partnerNodes = relationsGroup.children;
         const subNaviGroup0 = partnerNodes[0].children.find((c) => c.name === 'navigation');
-        const toPerson0 = getControlNode(subNaviGroup0, personId);
+        const toPerson0 = await getControlNode(subNaviGroup0, personId);
 
         const subNaviGroup1 = partnerNodes[1].children.find((c) => c.name === 'navigation');
-        const toPerson1 = getControlNode(subNaviGroup1, partnerIds[0]);
+        const toPerson1 = await getControlNode(subNaviGroup1, partnerIds[0]);
 
         expect(toPerson0).toBeDefined();
         expect(toPerson1).toBeDefined();
       });
 
-      it('renders navigation for next sibling', () => {
+      it('renders navigation for next sibling', async () => {
         const person = U.getPerson();
         const pos = [0, 0, -arrOff];
         const refId = 14;
 
         const { renderer } = U.renderWithContext(<Node nextSiblingId={ refId } person={ person.serialize() }/>);
         const naviGroup = getNaviGroup(renderer);
-        const toNextSibling = getControlNode(naviGroup, refId);
+        const toNextSibling = await getControlNode(naviGroup, refId);
 
         expect(toNextSibling).toBeDefined();
         expect(toNextSibling.type).toBe('Mesh');
         expect(toNextSibling.position.toArray()).toEqual(pos);
       });
 
-      it('renders navigation for previous sibling', () => {
+      it('renders navigation for previous sibling', async () => {
         const person = U.getPerson();
         const pos = [0, 0, arrOff];
         const refId = 14;
 
         const { renderer } = U.renderWithContext(<Node previousSiblingId={ refId } person={ person.serialize() }/>);
         const naviGroup = getNaviGroup(renderer);
-        const toPreviousSibling = getControlNode(naviGroup, refId);
+        const toPreviousSibling = await getControlNode(naviGroup, refId);
 
         expect(toPreviousSibling).toBeDefined();
         expect(toPreviousSibling.type).toBe('Mesh');
@@ -397,7 +409,7 @@ describe('For the assets', () => {
     });
 
     describe('for left navigation of partner nodes', () => {
-      it('property not set on partner node', () => {
+      it('property not set on partner node', async () => {
         const persons = [];
         const relations = [];
         const person = U.getPersonWithRelations(persons, relations);
@@ -406,13 +418,13 @@ describe('For the assets', () => {
         const node = renderer.addObject.mock.calls[0][1];
         const relationsGroup = node.children.find((c) => c.name === 'relations');
         const subNaviGroup = relationsGroup.children[0].children.find((c) => c.name === 'navigation');
-        const toPerson = getControlNode(subNaviGroup, person.id);
+        const toPerson = await getControlNode(subNaviGroup, person.id);
 
         expect(toPerson).toBeDefined();
         expect(subNaviGroup.children).toHaveLength(1);
       });
 
-      it('correct property set on multiple partner nodes', () => {
+      it('correct property set on multiple partner nodes', async () => {
         const persons = [];
         const relations = [];
         const person = U.getPersonWithRelations(persons, relations, 2);
@@ -424,7 +436,7 @@ describe('For the assets', () => {
         const relationsGroup = node.children.find((c) => c.name === 'relations');
         const partnerNodes = relationsGroup.children;
         const subNaviGroup0 = partnerNodes[0].children.find((c) => c.name === 'navigation');
-        const toPerson = getControlNode(subNaviGroup0, partnerIds[1]);
+        const toPerson = await getControlNode(subNaviGroup0, partnerIds[1]);
 
         expect(toPerson).toBeDefined();
       });

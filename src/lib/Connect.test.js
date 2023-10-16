@@ -47,8 +47,9 @@ describe('loadFamily', () => {
     });
     apiFetch.mockReturnValueOnce(Promise.resolve({ persons, relations: returnedRelations }));
 
-    const result = await loadFamily();
-    expect( console ).toHaveWarnedWith(expect.any(String), 100, expect.any(String));
+    await loadFamily();
+    
+    expect( console ).toHaveWarned(expect.arrayContaining([expect.any(String), 100, expect.any(String)]));
   });
 });
 

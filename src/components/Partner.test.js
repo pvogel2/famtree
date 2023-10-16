@@ -2,6 +2,7 @@ import {
   Color,
   Vector3,
 } from 'three';
+import { waitFor } from '@testing-library/react';
 import U from '../lib/tests/utils';
 import Partner from './Partner';
 
@@ -10,8 +11,13 @@ function getAddObjectNode(r, id) {
   return calls[calls.length - 1][1];
 }
 
-function getControlNode(parent, id) {
-  return parent.children.find((c) => c.userData.refId === id);
+async function getControlNode(parent, id) {
+  let control;
+  await waitFor(() => {
+    control = parent.children.find((c) => c.userData.refId === id);
+    return expect(control).toBeDefined();
+  });
+  return control;
 }
 
 const serializedPerson = U.getPerson().serialize();
@@ -32,15 +38,17 @@ it('adds a mesh to the scene', () => {
 });
 
   
-it('adds foreground color to node', () => {
+it('adds foreground color to node', async () => {
   const { renderer, registry } = U.renderWithContext(<Partner person={ serializedPerson }/>);
-  const symbols = renderer.addObject.mock.lastCall[1];
-
-  const base = symbols.children.find((m) => m.material.name ==='personMeshBase');
   const runtime = registry.select('famtree/runtime');
   const expectedColor = new Color(runtime.getForeground()).multiplyScalar(0.75);
 
-  expect(base.material.color.getHexString()).toEqual(expectedColor.getHexString());
+  await waitFor(() => {
+    const symbols = renderer.addObject.mock.lastCall[1];
+    const base = symbols.children?.find((m) => m.material?.name ==='personMeshBase');
+
+    return expect(base?.material.color.getHexString()).toEqual(expectedColor.getHexString());
+  });
 });
 
 it('adds several properties to the mesh', () => {
@@ -72,7 +80,7 @@ describe('containing the navigation group', () => {
   const arrOff = 0.2;
   const naviOff = 0.9;
 
-  it('adds the nvaigation to the root node', () => {
+  it('adds the navigation to the root node', () => {
     const { renderer } = U.renderWithContext(<Partner person={ serializedPerson }/>);
     const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
     const naviGroup = U.findNavigationGroup(node);
@@ -84,14 +92,14 @@ describe('containing the navigation group', () => {
   });
 
   describe('for parent navigation control mesh', () => {
-    it('is rendered', () => {
+    it('is rendered', async () => {
       const refId = 14;
       const pos = [0, -arrOff, 0];
 
       const { renderer } = U.renderWithContext(<Partner parentId={ refId } person={ serializedPerson }/>);
       const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
       const naviGroup = U.findNavigationGroup(node);
-      const toParent = getControlNode(naviGroup, refId);
+      const toParent = await getControlNode(naviGroup, refId);
   
       expect(toParent).toBeDefined();
       expect(toParent.position.toArray()).toEqual(pos);
@@ -99,14 +107,14 @@ describe('containing the navigation group', () => {
   });
 
   describe('for child navigation control mesh', () => {
-    it('is rendered', () => {
+    it('is rendered', async () => {
       const refId = 14;
       const pos = [0, arrOff, 0];
 
       const { renderer } = U.renderWithContext(<Partner toChildId={ refId } person={ serializedPerson }/>);
       const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
       const naviGroup = U.findNavigationGroup(node);
-      const toParent = getControlNode(naviGroup, refId);
+      const toParent = await getControlNode(naviGroup, refId);
   
       expect(toParent).toBeDefined();
       expect(toParent.position.toArray()).toEqual(pos);
@@ -114,14 +122,14 @@ describe('containing the navigation group', () => {
   });
 
   describe('for left navigation control mesh', () => {
-    it('is rendered', () => {
+    it('is rendered', async () => {
       const refId = 14;
       const pos = [0, 0, arrOff];
 
       const { renderer } = U.renderWithContext(<Partner toLeftId={ refId } person={ serializedPerson }/>);
       const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
       const naviGroup = U.findNavigationGroup(node);
-      const toLeft = getControlNode(naviGroup, refId);
+      const toLeft = await getControlNode(naviGroup, refId);
   
       expect(toLeft).toBeDefined();
       expect(toLeft.position.toArray()).toEqual(pos);
@@ -129,14 +137,14 @@ describe('containing the navigation group', () => {
   });
 
   describe('for right navigation control mesh', () => {
-    it('is rendered', () => {
+    it('is rendered', async () => {
       const refId = 14;
       const pos = [0, 0, -arrOff];
 
       const { renderer } = U.renderWithContext(<Partner toRightId={ refId } person={ serializedPerson }/>);
       const node = getAddObjectNode(renderer, `person${serializedPerson.id}`);
       const naviGroup = U.findNavigationGroup(node);
-      const toRight = getControlNode(naviGroup, refId);
+      const toRight = await getControlNode(naviGroup, refId);
   
       expect(toRight).toBeDefined();
       expect(toRight.position.toArray()).toEqual(pos);

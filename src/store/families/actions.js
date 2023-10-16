@@ -2,7 +2,7 @@ import Person from '../../../lib/js/Person';
 
 
 const dummyPerson = new Person({
-  id: 0.1,
+  id: -1,
   firstName: 'Dummy',
   lastName: 'Person',
 });

@@ -110,12 +110,12 @@ export function getMesh(layout = {}) {
   return new Mesh(g, m);
 }
 
-export function getNaviArrowMesh(layout = {}) {
+async function getNaviArrowMesh(layout = {}) {
   const { rot = 0, foreground = '#888888' } =  layout;
 
   const color = new Color(foreground);
   const options = { color };
-  const newArrowMesh = (ThreePreparedMeshes.getNavigationArrow()).clone();
+  const newArrowMesh = (await ThreePreparedMeshes.getNavigationArrow()).clone();
   if (typeof layout.opacity === 'number') {
     options.opacity = layout.opacity;
     options.transparent = true;
@@ -138,6 +138,13 @@ export function getPersonGroup(person = {}) {
   return p;
 }
 
+export function getPlaceholderGroup() {
+  const p = new Group();
+  p.name = 'placeholder';
+  p.userData.refId = -1;
+  return p;
+}
+
 export function getPartnerGroup(person = {}) {
   const p = new Group();
   p.name = 'partner';
@@ -145,14 +152,15 @@ export function getPartnerGroup(person = {}) {
   return p;
 }
 
-export function getSymbolGroup(person = {}, layout = {}) {
-  const newPersonMesh = (ThreePreparedMeshes.getPerson()).clone();
+export async function getSymbolGroup(person, layout = {}) {
+  const id = person ? person.id : 'Generic';
+  const newPersonMesh = (await ThreePreparedMeshes.getPerson()).clone();
 
   const portraitMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshPortrait');
-  portraitMesh.userData.refId = person.id;
+  portraitMesh.userData.refId = id;
 
   const baseMesh = newPersonMesh.children.find((m) => m.material.name === 'personMeshBase');
-  baseMesh.userData.refId = person.id;
+  baseMesh.userData.refId = id;
 
   baseMesh.material = baseMesh.material.clone();
   if (layout.foreground) {
@@ -160,7 +168,7 @@ export function getSymbolGroup(person = {}, layout = {}) {
   }
 
   let texture;
-  if (person.portraitUrl) {
+  if (person?.portraitUrl) {
     texture = textureLoader.load(person.portraitUrl);
   } else {
     texture = textureLoader.load(avatarImage);
@@ -395,23 +403,37 @@ export function createTreeNode(person, meta, layout) {
   const { renderer, parent, type = 'person' } = meta;
   const { offset, colors } = layout;
 
-  const p = new Person(person);
+  const p = person ? new Person(person) : null;
+  const id = person ? p.id : 'Generic';
 
-  const rg = type === 'partner'
-    ? getPartnerGroup(p)
-    : getPersonGroup(p);
+  let rg;
+
+  switch(type) {
+    case 'partner': {
+      rg = getPartnerGroup(p);
+      break;
+    }
+    case 'person': {
+      rg = getPersonGroup(p);
+      break;
+    }
+    default:
+      rg = getPlaceholderGroup();
+  }
 
   rg.position.add(offset);
-  const rId = `person${p.id}`;
 
-  const sg = getSymbolGroup(p, { foreground: colors.foreground });
-  const sId = `symbol${p.id}`;
+  const rId = `person${id}`;
+  const sId = `symbol${id}`;
+
+  getSymbolGroup(p, { foreground: colors.foreground }).then((sg) => {
+    renderer.addObject(sId, sg, true, rg);
+  });
 
   renderer.addObject(rId, rg, false, parent);
-  renderer.addObject(sId, sg, true, rg);
 
   const dg = getDataGroup(rg);
-  const lt = addLabelText3D(dg, `${p.name}`, colors.text);
+  const lt = addLabelText3D(dg, `${p ? p.name : 'no information'}`, colors.text);
 
   getAssetsGroup(rg);
 
@@ -443,11 +465,11 @@ export function createNavigationNode(person, meta) {
 
     if (isValidId(refId)) {
       const nId = `${target}Navi${person.id}`;
-      const a = getNaviArrowMesh({ rot });
-
-      renderer.addObject(nId, a, true, ng);
-      a.position.fromArray(pos);
-      a.userData.refId = refId;
+      getNaviArrowMesh({ rot }).then((m) => {
+        renderer.addObject(nId, m, true, ng);
+        m.position.fromArray(pos);
+        m.userData.refId = refId;
+      });
     }
   });
 
