@@ -1,5 +1,7 @@
 import { useContext } from '@wordpress/element';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
+
 import { Button, Popover, Grid, Typography, CardActionArea, CardContent, CardActions } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
@@ -132,8 +134,8 @@ function DetailsDialog() {
       ) }
       { selectedMeta && (
       <CardActions sx={{ flex: '0 0 auto', justifyContent: 'flex-end' }}>
-        <Button disabled={ index <= 0 } onClick={ previousMeta } variant="text">previous</Button>
-        <Button disabled={ index >= metadata.length - 1 } onClick={ nextMeta } variant="text">next</Button>
+        <Button disabled={ index <= 0 } onClick={ previousMeta } variant="text">{ __('previous', 'famtree') }</Button>
+        <Button disabled={ index >= metadata.length - 1 } onClick={ nextMeta } variant="text">{ __('next', 'famtree') }</Button>
       </CardActions>) }
     </Popover>
   );

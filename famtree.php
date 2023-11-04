@@ -11,7 +11,7 @@
  * Text Domain:       famtree
  * Domain Path:       /languages
  *
- * @package           create-block
+ * @package           famtree
  */
 
 /**
@@ -65,7 +65,9 @@ function create_block_famtree_block_init() {
    * Custom pathes for translations are yet not available for translations handled via block.json auto loading mechanims.
    * @see https://core.trac.wordpress.org/ticket/54797 
   */
-  wp_set_script_translations('create-block-famtree-editor-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
+  wp_set_script_translations('famtree-visualize-editor-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
+  wp_set_script_translations('famtree-visualize-view-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
+
 }
 
 add_action( 'init', 'create_block_famtree_block_init' );
