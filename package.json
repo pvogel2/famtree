@@ -1,10 +1,14 @@
 {
 	"name": "famtree",
-	"version": "0.12.2-beta",
-	"description": "Still experimental block to manage and visualize family trees (Scaffolded with Create Block tool).",
+	"version": "1.0.0",
+	"description": "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool).",
 	"author": "Peter Vogel",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pvogel2/famtree"
+	},	
 	"scripts": {
 		"build": "wp-scripts build",
 		"format": "wp-scripts format",

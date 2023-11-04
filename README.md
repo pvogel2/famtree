@@ -1,6 +1,6 @@
 # FamTree WordPress Plugin
 
-Still experimental WP block plugin to manage and visualize family trees (Scaffolded with Create Block tool).
+This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool).
 
 ## Description
 

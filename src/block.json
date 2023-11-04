@@ -2,11 +2,11 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
 	"name": "create-block/famtree",
-	"version": "0.12.2-beta",
+	"version": "1.0.0",
 	"title": "FamTree",
 	"category": "widgets",
 	"icon": "famtree",
-	"description": "Example static block scaffolded with Create Block tool.",
+	"description": "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool).",
 	"supports": {
 		"html": false,
 		"color": {
