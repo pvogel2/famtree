@@ -28,3 +28,7 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# i18n generated resources
+languages/*.json
+languages/*.mo

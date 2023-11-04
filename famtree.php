@@ -9,6 +9,7 @@
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       famtree
+ * Domain Path:       /languages
  *
  * @package           create-block
  */
@@ -28,6 +29,8 @@ define( 'FAMTREE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 require_once(FAMTREE_PLUGIN_DIR . 'includes/activation.php');
 require_once(FAMTREE_PLUGIN_DIR . 'includes/rest.php');
 require_once(FAMTREE_PLUGIN_DIR . 'includes/settings.php');
+
+load_plugin_textdomain('famtree', false, 'famtree/languages');
 
 function famtree_render_block($attributes) {
   return sprintf('<div
@@ -51,12 +54,18 @@ function famtree_render_block($attributes) {
 }
 
 function create_block_famtree_block_init() {
-	register_block_type(
-		__DIR__ . '/build',
-		array(
-			'render_callback' => 'famtree_render_block',
-	  )
-	);
+  register_block_type(
+	__DIR__ . '/build',
+	  array(
+	    'render_callback' => 'famtree_render_block',
+	)
+  );
+  /**
+   * Be aware of currently not supported autoloaded custom pathes:
+   * Custom pathes for translations are yet not available for translations handled via block.json auto loading mechanims.
+   * @see https://core.trac.wordpress.org/ticket/54797 
+  */
+  wp_set_script_translations('create-block-famtree-editor-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
 }
 
 add_action( 'init', 'create_block_famtree_block_init' );

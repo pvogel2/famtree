@@ -15,15 +15,15 @@ class Persons_List_Table extends WP_List_Table {
 
   function get_columns() {
         $columns = array(
-          'portraitImageId' => 'image',
-          'root'      => 'Is root',
-          'firstName' => 'First name',
-          'surNames'  => 'Sur names',
-          'lastName'  => 'Last name',
-          'birthName' => 'Birth name',
-          'birthday'  => 'Birthday',
-          'deathday'  => 'Deathday',
-          'relations' => 'Relations',
+          'portraitImageId' => __('Image', 'famtree'),
+          'root'      => __('Is root', 'famtree'),
+          'firstName' => __('First name', 'famtree'),
+          'surNames'  => __('Sur names', 'famtree'),
+          'lastName'  => __('Last name', 'famtree'),
+          'birthName' => __('Birth name', 'famtree'),
+          'birthday'  => __('Birthday', 'famtree'),
+          'deathday'  => __('Date of death', 'famtree'),
+          'relations' => __('Relations', 'famtree'),
           'edit' => '',
         );
         return $columns;
@@ -63,7 +63,7 @@ class Persons_List_Table extends WP_List_Table {
           case 'birthday': return $item[$column_name];
           case 'deathday': return $item[$column_name];
           case 'relations': return '<select disabled="disabled"></select>';
-          case 'edit': return '<button type="button" title="edit" onclick="window.famtree.editPerson(' . $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
+          case 'edit': return '<button type="button" title="' . __('edit', 'famtree') . '" onclick="window.famtree.editPerson(' . $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
           default:
             return print_r($item, true); //Show the whole array for troubleshooting purposes
             }

@@ -36,12 +36,13 @@
 .famtree-hidden {
   display: none;
 }
+
 .famtree-form__flex {
   display: flex;
 }
 
 .famtree-form fieldset {
-  border-right: 1px solid #00000022;
+  border-right: 1px solid #0002;
   padding-right: 20px;
   margin-right: 20px;
 }

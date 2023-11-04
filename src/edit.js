@@ -79,60 +79,60 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 		<div { ...useBlockProps() }>
 			<InspectorControls>
 				<PanelBody
-				  title={ __('General Settings') }
+				  title={ __('General Settings', 'famtree') }
 					initialOpen={ true }
 				>
 				  <SelectControl
-  			    label={ __( 'Current founder', 'famtree' ) }
+  			        label={ __('Current founder', 'famtree') }
 	  				labelPosition= 'side'
             value={ parseInt(founder) }
             onChange={ ( f ) => setAttributes({ founder: parseInt(f) }) }
 				  	options={ getFamiliesOptions() }
 					/>
           <ToggleControl
-  			    label={ __( 'Show founder FAB', 'famtree' ) }
+  			    label={ __('Show founder FAB', 'famtree') }
 	  				labelPosition= 'side'
             checked={ founderFAB }
             onChange={ () => setAttributes({ founderFAB: !founderFAB }) }
 					/>
 				</PanelBody>
 				<PanelColorSettings 
-					title={__('Color settings')}
+					title={__('Color settings', 'famtree')}
 					colorSettings={[
 						{
 							value: backgroundColor,
 							onChange: (c) => {
 								setAttributes({ backgroundColor: c })
 							},
-							label: __("Background Color"),
+							label: __('Background Color', 'famtree'),
 						},
 						{
 							value: textColor,
 							onChange: (c) => {
 								setAttributes({ textColor: c });
 							},
-							label: __('Text color')
+							label: __('Text color', 'famtree')
 						},
 						{
 							value: foregroundColor,
 							onChange: (c) => {
 								setAttributes({ foregroundColor: c })
 							},
-							label: __("Foreground Color"),
+							label: __('Foreground Color', 'famtree'),
 						},
 						{
 							value: highlightColor,
 							onChange: (c) => {
 								setAttributes({ highlightColor: c });
 							},
-							label: __("Highlight Color"),
+							label: __('Highlight Color', 'famtree'),
 						},
 						{
 							value: selectionColor,
 							onChange: (c) => {
 								setAttributes({ selectionColor: c });
 							},
-							label: __("Selection Color"),
+							label: __('Selection Color', 'famtree'),
 						},
 					]}
 				/>

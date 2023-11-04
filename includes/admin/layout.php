@@ -102,53 +102,53 @@ function famtree_render_edit_person_form() {
       <input readonly hidden type="text" name="id" id="personId" />
       <div class="famtree-form__flex">
         <fieldset>
-        <?php famtree_render_legend('Attributes') ?>
+        <?php famtree_render_legend(__('Attributes', 'famtree')) ?>
           <table>
             <?php
-            famtree_form_text_field('firstName', 'First Name');
-            famtree_form_text_field('surNames', 'Sur Names');
-            famtree_form_text_field('lastName', 'Last Name');
-            famtree_form_text_field('birthName', 'Birth Name');
-            famtree_form_date_field('birthday', 'Birth day');
-            famtree_form_date_field('deathday', 'Death day');
+            famtree_form_text_field('firstName', __('First name', 'famtree'));
+            famtree_form_text_field('surNames', __('Sur names', 'famtree'));
+            famtree_form_text_field('lastName', __('Last name', 'famtree'));
+            famtree_form_text_field('birthName', __('Birth name', 'famtree'));
+            famtree_form_date_field('birthday', __('Birthday', 'famtree'));
+            famtree_form_date_field('deathday', __('Date of death', 'famtree'));
             ?>
           </table>
         </fieldset>
         <fieldset name="fs_relations" disabled="disabled">
-        <?php famtree_render_legend('Relations') ?>
+        <?php famtree_render_legend(__('Relations', 'famtree')) ?>
           <table>  
             <tr>
-              <?php famtree_form_select_field('partners', 'Partners', 'partnerSelected', NULL, 'removePartner') ?>
+              <?php famtree_form_select_field('partners', __('Partners', 'famtree'), 'partnerSelected', NULL, 'removePartner') ?>
             </tr>
             <tr>
-              <?php famtree_form_select_field('children', 'Children', NULL, NULL, 'removeChild') ?>
+              <?php famtree_form_select_field('children', __('Children', 'famtree'), NULL, NULL, 'removeChild') ?>
             </tr>
             <?php
-            famtree_form_date_field('relStart', 'Begin', 'relMetaChanged', TRUE);
-            famtree_form_date_field('relEnd', 'End', 'relMetaChanged', TRUE);
+            famtree_form_date_field('relStart', __('Begin', 'famtree'), 'relMetaChanged', TRUE);
+            famtree_form_date_field('relEnd', __('End', 'famtree'), 'relMetaChanged', TRUE);
             ?>
             <tr>
-              <?php famtree_form_select_field('relType', 'Kind of', 'relMetaChanged', ['marriage', 'partnership']) ?>
+              <?php famtree_form_select_field('relType', __('Kind of', 'famtree'), 'relMetaChanged', ['marriage', 'partnership']) ?>
             </tr>
             <tr>
               <td><br/></td>
             </tr>
             <tr>
-              <?php famtree_form_select_field('candidates', 'add Person') ?>
+              <?php famtree_form_select_field('candidates', __('Add person', 'famtree')) ?>
             </tr>
             <tr>
               <td>
               </td>
               <td>
-                <button type="button" name="btn_addChild" disabled="disabled" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo __('as child', 'famtree') ?></button>
-                <button type="button" onclick="window.famtree.addPartner()" class="button famtree-form__button"><?php echo __('as partner', 'famtree') ?></button>
+                <button type="button" name="btn_addChild" disabled="disabled" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo __('As child', 'famtree') ?></button>
+                <button type="button" onclick="window.famtree.addPartner()" class="button famtree-form__button"><?php echo __('As partner', 'famtree') ?></button>
               </td>
             </tr>
            </table>
         </fieldset>
         <fieldset name="fs_portrait" disabled="disabled">
           <input hidden id="portraitImageId" type="text" name="portraitImageId" class="form"/>
-          <?php famtree_render_legend('Portrait foto') ?>
+          <?php famtree_render_legend(__('Portrait foto', 'famtree')) ?>
           <table>  
             <tr>
               <td>
@@ -160,21 +160,21 @@ function famtree_render_edit_person_form() {
             </tr>
             <tr>
               <td>
-                <input id="portrait-upload-button" type="button" class="button" value="Select Image" />
+                <input id="portrait-upload-button" type="button" class="button" value="<?php echo __('Select image', 'famtree') ?>" />
               </td>
             </tr>
           </table>
         </fieldset>
       </div>
       <fieldset class="submit" name="fs_buttons" disabled="disabled">
-        <button type="button" onclick="window.famtree.resetPerson()" class="button famtree-form__button"><?php echo __('Reset Person', 'famtree') ?></button>
-        <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo __('Remove Person', 'famtree') ?></button>
-        <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo __('Save Person', 'famtree') ?></button>
+        <button type="button" onclick="window.famtree.resetPerson()" class="button famtree-form__button"><?php echo __('Reset person', 'famtree') ?></button>
+        <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo __('Remove person', 'famtree') ?></button>
+        <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo __('Save person', 'famtree') ?></button>
       </fieldset>
       </form>
     </div>
     <div class="famtree-metadata-container">
-      <?php famtree_render_legend('Additional files') ?>
+      <?php famtree_render_legend(__('Additional files', 'famtree')) ?>
       <div class="famtree-metadata-container__list">
         <table class="wp-list-table striped widefat toplevel_page_famtree">
           <thead>
@@ -185,7 +185,7 @@ function famtree_render_edit_person_form() {
             <th scope="col"></th> 
           </thead>
           <tbody  id="existingMetadata">
-            <td colspan="5" class="column-nocontent"><?php echo __('no files found', 'famtree') ?></td>
+            <td colspan="5" class="column-nocontent"><?php echo __('No files found', 'famtree') ?></td>
           </tbody>
         </table>
       </div>
@@ -196,7 +196,7 @@ function famtree_render_edit_person_form() {
             <table>
               <tr>
                 <td>
-                  <input id="upload-metadata-button" type="button" class="button" value="Add Metadata"/>
+                  <input id="upload-metadata-button" type="button" class="button" value="<?php echo __('Add metadata', 'famtree') ?>"/>
                 </td>
               </tr>
             </table>
@@ -213,7 +213,7 @@ function famtree_render_runtime_message() {
     <div id="famtree-message" class="notice is-dismissible famtree-hidden">
       <p class="famtree-message__text"></p>
       <button type="button" class="notice-dismiss" onclick="window.famtree.hideMessage()">
-        <span class="screen-reader-text">Dismiss this notice.</span>
+        <span class="screen-reader-text"><?php print __('Dismiss this notice.', 'famtree') ?></span>
       </button>
     </div>
   <?php
