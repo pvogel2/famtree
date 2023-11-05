@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       FamTree
  * Description:       This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool).
- * Requires at least: 5.9
+ * Requires at least: 6.3
  * Requires PHP:      7.0
  * Version:           1.0.0
  * Author:            Peter Vogel
