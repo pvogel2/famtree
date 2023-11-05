@@ -26,6 +26,14 @@ function getMediaType(mimetype) {
   return 'unknown';
 };
 
+function getDateValue(ts) {
+  const DATE_FORMAT = 'yyyy-MM-dd';
+  if (ts) {
+    return new Date(parseInt(ts)).toISOString().substring(0,10);
+  }
+  return null;
+}
+
 export default class PersonEditor {
   constructor() {
     const f = this.edit.getForm();
@@ -121,19 +129,20 @@ export default class PersonEditor {
     setPerson(p) {
       this.reset();
       const f = this.getForm();
+
       f.elements['id'].value = p.id;
       f.elements['firstName'].value = p.firstName;
       f.elements['surNames'].value = p.surNames;
       f.elements['lastName'].value = p.lastName;
       f.elements['birthName'].value = p.birthName;
-      f.elements['birthday'].value = p.birthday;
-      f.elements['deathday'].value = p.deathday;
-      f.elements['portraitImageId'].value = p._portraitId;
+      f.elements['birthday'].value = getDateValue(p.birthday);
+      f.elements['deathday'].value = getDateValue(p.deathday);
+      f.elements['portraitId'].value = p.portraitId;
 
       f.elements['firstName'].dispatchEvent(new Event('input'));
       f.elements['lastName'].dispatchEvent(new Event('input'));
 
-      this.setPortrait({ id: p._portraitId, url: p._portraitUrl });
+      this.setPortrait({ id: p.portraitId, url: p.portraitUrl });
 
       const rs = Relation.filter((r) => r.members.includes(p.id));
 
@@ -150,7 +159,7 @@ export default class PersonEditor {
       }
 
       img.src = data.url || this.defaultPortraitImage;
-      f.elements['portraitImageId'].value = data.id;
+      f.elements['portraitId'].value = data.id;
     },
 
     updateCandidatesSelect() {
@@ -174,7 +183,7 @@ export default class PersonEditor {
     getPerson() {
       const f = this.getForm();
       const id = f.id.value;
-      const imageId = f.portraitImageId.value;
+      const imageId = f.portraitId.value;
       const p = {
         id: (id ? parseInt(id) : ''),
         firstName: f.firstName.value,
@@ -183,7 +192,7 @@ export default class PersonEditor {
         birthName:f.birthName.value,
         birthday: f.birthday.value,
         deathday: f.deathday.value,
-        portraitImageId: (imageId ? parseInt(imageId) : ''),
+        portraitId: (imageId ? parseInt(imageId) : ''),
       };
       return p;
     },

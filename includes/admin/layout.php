@@ -147,7 +147,7 @@ function famtree_render_edit_person_form() {
            </table>
         </fieldset>
         <fieldset name="fs_portrait" disabled="disabled">
-          <input hidden id="portraitImageId" type="text" name="portraitImageId" class="form"/>
+          <input hidden id="portraitId" type="text" name="portraitId" class="form"/>
           <?php famtree_render_legend(__('Portrait foto', 'famtree')) ?>
           <table>  
             <tr>

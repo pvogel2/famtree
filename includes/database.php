@@ -52,7 +52,7 @@ function famtree_database_setup() {
 		  birthName varchar(55) DEFAULT '' NOT NULL,
 		  birthday date NULL DEFAULT NULL,
 		  deathday date NULL DEFAULT NULL,
-      portraitImageId mediumint(9) DEFAULT NULL,
+      portraitId mediumint(9) DEFAULT NULL,
 		  PRIMARY KEY  (id)
 	  ) $charset_collate;";
 
@@ -130,7 +130,7 @@ function famtree_database_get_persons() {
   $pRresults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
 
   foreach ($pRresults as &$item) {
-    $item->portraitUrl = wp_get_attachment_image_url($item->portraitImageId, 'thumbnail');
+    $item->portraitUrl = wp_get_attachment_image_url($item->portraitId, 'thumbnail');
   }
 
   $table_name = famtree_relations_tablename();
@@ -203,7 +203,7 @@ function famtree_database_update_portrait_image($id, $mediaId) {
     $wpdb->update( 
       $table_name,
       array(
-        'portraitImageId' => filter_var($mediaId, FILTER_SANITIZE_NUMBER_INT),
+        'portraitId' => filter_var($mediaId, FILTER_SANITIZE_NUMBER_INT),
       ),
       array(
         'id' => $id,
@@ -287,7 +287,7 @@ function famtree_person_fields($person) {
     'birthName' => $person['birthName'],
     'birthday' => $person['birthday'],
     'deathday' => $person['deathday'],
-    'portraitImageId' => $person['portraitImageId'],
+    'portraitId' => $person['portraitId'],
   );
 }
 

@@ -1,12 +1,11 @@
 import { CardMedia } from '@mui/material';
-import { format } from 'date-fns';
 
 export const DATE_FORMAT = 'dd.MM.yyyy';
 
 export function showDate(ts = null) {
   try {
     if (!isNaN(parseInt(ts))) {
-      return format(new Date(parseInt(ts)), DATE_FORMAT);
+      return new Date(parseInt(ts)).toLocaleDateString();
     }
   } catch (err) {
     console.log(err);

@@ -30,8 +30,6 @@ export function getEditFormElements() {
 
   addInput(fE, { name: 'surNames', disabled: 'disabled' });
   addInput(fE, { name: 'birthName', disabled: 'disabled' });
-  addInput(fE, { name: 'birthday', disabled: 'disabled' });
-  addInput(fE, { name: 'deathday', disabled: 'disabled' });
   
   const eElems = {
     personId: addInput(fE, { name: 'id' }),
@@ -39,12 +37,14 @@ export function getEditFormElements() {
     lastName: addInput(fE, { name: 'lastName' }),
     partners: addSelect(fE, { name: 'partners', disabled: 'disabled' }),
     children: addSelect(fE, { name: 'children', disabled: 'disabled' }),
+    birthday: addInput(fE, { name: 'birthday', type: 'date', disabled: 'disabled' }),
+    deathday: addInput(fE, { name: 'deathday', type: 'date', disabled: 'disabled' }),  
     candidates: addSelect(fE, { name: 'candidates', disabled: 'disabled' }),
     partnersBtn: addButton(fE, { name: 'partners_remove', disabled: 'disabled' }),
     childrenBtn: addButton(fE, { name: 'children_remove', disabled: 'disabled' }),
   };
   
-  addInput(fE, { name: 'portraitImageId' });
+  addInput(fE, { name: 'portraitId' });
   addElement(fE, 'img', { id: 'person-portrait' });
   addInput(fE, { name: 'relType' });
   addInput(fE, { name: 'relStart' });

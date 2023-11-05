@@ -10,5 +10,5 @@ it('shows the correct format for null', () => {
 
 it('shows the correct format for 0', () => {
   const result = showDate(0);
-  expect(result).toBe('01.01.1970');
+  expect(result).toBe('1.1.1970');
 });

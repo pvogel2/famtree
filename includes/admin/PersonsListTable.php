@@ -15,7 +15,7 @@ class Persons_List_Table extends WP_List_Table {
 
   function get_columns() {
         $columns = array(
-          'portraitImageId' => __('Image', 'famtree'),
+          'portraitId' => __('Image', 'famtree'),
           'root'      => __('Is root', 'famtree'),
           'firstName' => __('First name', 'famtree'),
           'surNames'  => __('Sur names', 'famtree'),
@@ -45,7 +45,7 @@ class Persons_List_Table extends WP_List_Table {
 
       function column_default($item, $column_name) {
         $id = $item['id'];
-        $portrait = $item['portraitImageId'];
+        $portrait = $item['portraitId'];
 
         $avatarUrl = wp_get_attachment_image_url($portrait, 'thumbnail');
         if (!$avatarUrl) {
@@ -54,7 +54,7 @@ class Persons_List_Table extends WP_List_Table {
 
         // wp_get_attachment_image_url($portrait, 'thumbnail')
         switch ($column_name) {
-          case 'portraitImageId' :return '<img alt="" src="' . $avatarUrl . '" class="avatar avatar-32 photo" height="32" width="32" loading="lazy" decoding="async">';
+          case 'portraitId' :return '<img alt="" src="' . $avatarUrl . '" class="avatar avatar-32 photo" height="32" width="32" loading="lazy" decoding="async">';
           case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.famtree.updateRoot(this, ' . $id . ')" />';
           case 'firstName': return $item[$column_name];
           case 'surNames': return $item[$column_name];
