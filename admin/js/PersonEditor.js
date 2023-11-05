@@ -135,8 +135,8 @@ export default class PersonEditor {
       f.elements['surNames'].value = p.surNames;
       f.elements['lastName'].value = p.lastName;
       f.elements['birthName'].value = p.birthName;
-      f.elements['birthday'].value = getDateValue(p.birthday);
-      f.elements['deathday'].value = getDateValue(p.deathday);
+      f.elements['birthday'].value = p.birthday;
+      f.elements['deathday'].value = p.deathday;
       f.elements['portraitId'].value = p.portraitId;
 
       f.elements['firstName'].dispatchEvent(new Event('input'));

@@ -32,7 +32,7 @@ function resetDOM() {
 const spyRelationFilter = jest.spyOn(Relation, 'filter');
 
 describe('The person editor', () => {
-  const person = {name: 'person', id: 1, firstName: 'First', lastName: 'Last', deathday: '1698796800000', birthday: '1698796800000' };
+  const person = {name: 'person', id: 1, firstName: 'First', lastName: 'Last', deathday: '2023-11-02', birthday: '2023-11-01' };
   const partner = { name: 'partner', id: 2 };
   const child = { name: 'child', id: 3 };
 
@@ -129,7 +129,7 @@ describe('The person editor', () => {
 
       pe.edit.setPerson(person);
 
-      expect(deathday.value).toBe('2023-11-01');
+      expect(deathday.value).toBe('2023-11-02');
     });
 
     it('enables correct relation fields', () => {
