@@ -21,7 +21,7 @@ msgstr ""
 #. Description of the plugin
 #, fuzzy
 msgid "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool)."
-msgstr "Noch experimenteller Block zur Erstellung und Anzeige von Familienstammbäumen."
+msgstr "Block zur Erstellung und Anzeige von Familienstammbäumen."
 
 #. Author of the plugin
 msgid "Peter Vogel"
@@ -233,4 +233,4 @@ msgstr ""
 #, fuzzy
 msgctxt "block description"
 msgid "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool)."
-msgstr "Noch experimenteller Block zur Erstellung und Anzeige von Familienstammbäumen."
+msgstr "Block zur Erstellung und Anzeige von Familienstammbäumen."
