@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FamTree 0.12.2-beta\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/famtree\n"
+"POT-Creation-Date: 2023-11-05T21:50:23+01:00\n"
+"PO-Revision-Date: 2023-11-05 21:52+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-04T23:03:59+01:00\n"
-"PO-Revision-Date: 2023-11-04 23:05+0100\n"
-"Language: de_DE\n"
 "X-Generator: Poedit 2.0.6\n"
 "X-Domain: famtree\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -20,7 +20,9 @@ msgstr ""
 
 #. Description of the plugin
 #, fuzzy
-msgid "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool)."
+msgid ""
+"This plugin provides a block to manage and visualize family trees "
+"(Scaffolded with Create Block tool)."
 msgstr "Block zur Erstellung und Anzeige von Familienstammbäumen."
 
 #. Author of the plugin
@@ -35,44 +37,33 @@ msgstr "löschen"
 msgid "Attributes"
 msgstr "Eigenschaften"
 
-#: includes/admin/layout.php:108
-#: includes/admin/PersonsListTable.php:20
+#: includes/admin/layout.php:108 includes/admin/PersonsListTable.php:20
 msgid "First name"
 msgstr "Vorname"
 
-#: includes/admin/layout.php:109
-#: includes/admin/PersonsListTable.php:21
+#: includes/admin/layout.php:109 includes/admin/PersonsListTable.php:21
 msgid "Sur names"
 msgstr "Zunamen"
 
-#: includes/admin/layout.php:110
-#: includes/admin/PersonsListTable.php:22
+#: includes/admin/layout.php:110 includes/admin/PersonsListTable.php:22
 msgid "Last name"
 msgstr "Nachname"
 
-#: includes/admin/layout.php:111
-#: includes/admin/PersonsListTable.php:23
+#: includes/admin/layout.php:111 includes/admin/PersonsListTable.php:23
 msgid "Birth name"
 msgstr "Geburtsname"
 
-#: includes/admin/layout.php:112
-#: includes/admin/PersonsListTable.php:24
-#: build/index.js:20995
-#: build/view.js:20963
-#: build/view.js:17069
+#: includes/admin/layout.php:112 includes/admin/PersonsListTable.php:24
+#: build/index.js:20986 build/view.js:20954 build/view.js:17059
 msgid "Birthday"
 msgstr "Geburtstag"
 
-#: includes/admin/layout.php:113
-#: includes/admin/PersonsListTable.php:25
-#: build/index.js:21003
-#: build/view.js:20971
-#: build/view.js:17073
+#: includes/admin/layout.php:113 includes/admin/PersonsListTable.php:25
+#: build/index.js:20994 build/view.js:20962 build/view.js:17063
 msgid "Date of death"
 msgstr "Todestag"
 
-#: includes/admin/layout.php:118
-#: includes/admin/PersonsListTable.php:26
+#: includes/admin/layout.php:118 includes/admin/PersonsListTable.php:26
 msgid "Relations"
 msgstr "Beziehungen"
 
@@ -176,53 +167,53 @@ msgstr "editieren"
 msgid "Person configuration"
 msgstr "Person konfigurieren"
 
-#: build/index.js:20699
-#: build/view.js:20667
-#: build/view.js:16824
+#: build/index.js:20690 build/view.js:20658 build/view.js:16814
 msgid "previous"
 msgstr "vorheriges"
 
-#: build/index.js:20703
-#: build/view.js:20671
-#: build/view.js:16825
+#: build/index.js:20694 build/view.js:20662 build/view.js:16815
 msgid "next"
 msgstr "nächstes"
 
-#: build/index.js:21127
+#: build/index.js:21118
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
-#: build/index.js:21130
+#: build/index.js:21121
 msgid "Current founder"
 msgstr "Aktueller Gründer"
 
-#: build/index.js:21138
+#: build/index.js:21129
 msgid "Show founder FAB"
 msgstr "Gründer Auswahl anzeigen"
 
-#: build/index.js:21145
+#: build/index.js:21136
 msgid "Color settings"
 msgstr "Farbeinstellungen"
 
-#: build/index.js:21153
+#: build/index.js:21144
 msgid "Background Color"
 msgstr "Hintergrundfarbe"
 
-#: build/index.js:21161
+#: build/index.js:21152
 msgid "Text color"
 msgstr "Textfarbe"
 
-#: build/index.js:21169
+#: build/index.js:21160
 msgid "Foreground Color"
 msgstr "Vordergrundfarbe"
 
-#: build/index.js:21177
+#: build/index.js:21168
 msgid "Highlight Color"
 msgstr "Highlight Farbe"
 
-#: build/index.js:21185
+#: build/index.js:21176
 msgid "Selection Color"
 msgstr "Auswahlfarbe"
+
+#: build/index.js:22213 build/view.js:21924 build/view.js:18073
+msgid "no information"
+msgstr "keine Informationen"
 
 #: build/block.json
 msgctxt "block title"
@@ -232,5 +223,7 @@ msgstr ""
 #: build/block.json
 #, fuzzy
 msgctxt "block description"
-msgid "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool)."
+msgid ""
+"This plugin provides a block to manage and visualize family trees "
+"(Scaffolded with Create Block tool)."
 msgstr "Block zur Erstellung und Anzeige von Familienstammbäumen."

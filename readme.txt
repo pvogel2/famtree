@@ -50,7 +50,7 @@ Currently no asked questions are known.
 
 == Changelog ==
 
-Version 1.0.0
+Version 1.0.2
 
 Initial vrsion deployed.
 

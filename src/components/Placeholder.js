@@ -29,7 +29,7 @@ function Placeholder(config) {
     const { clean, root } = createTreeNode(null, { renderer, parent, type: 'placeholder' }, { offset, colors });
 
     renderer.registerEventCallback('render', () => {
-      root.rotation.y = -0.02;
+      root.rotation.y -= 0.02;
     });
 
     return clean;

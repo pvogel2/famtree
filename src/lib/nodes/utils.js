@@ -1,11 +1,12 @@
 import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
-
+import { __ } from '@wordpress/i18n';
 // import ThreeText from '../../lib/three/Text';
 import ThreeText3D from '../../lib/three/Text3D';
 import ThreePreparedMeshes from '../../lib/three/PreparedMeshes';
 import Transition from '../../lib/Transition';
 import avatarImage from '../../assets/images/avatar.png';
 import Person from '../../../lib/js/Person';
+
 
 const textureLoader = new TextureLoader();
 
@@ -433,7 +434,7 @@ export function createTreeNode(person, meta, layout) {
   renderer.addObject(rId, rg, false, parent);
 
   const dg = getDataGroup(rg);
-  const lt = addLabelText3D(dg, `${p ? p.name : 'no information'}`, colors.text);
+  const lt = addLabelText3D(dg, `${p ? p.name : __('no information', 'famtree')}`, colors.text);
 
   getAssetsGroup(rg);
 
