@@ -18,7 +18,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import RenderContext from '../../components/RenderContext';
 import { getAssetsGroup, getSymbolGroup, getNavigationGroup } from '../../lib/nodes/utils';
 
-import Person from '../../../lib/js/Person';
+import Person from '../../../public/js/Person';
 
 
 if (!global.structuredClone) {

@@ -1,4 +1,4 @@
-import Person from '../../lib/js/Person';
+import Person from '../../public/js/Person';
 import PersonList from './PersonList';
 
 

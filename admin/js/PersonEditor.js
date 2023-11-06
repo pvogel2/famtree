@@ -1,5 +1,5 @@
 import ManagedSelect from './ManagedSelect.js';
-import PersonList from '../../lib/js/PersonList.js';
+import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
 
 function getMediaType(mimetype) {

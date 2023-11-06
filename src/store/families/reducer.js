@@ -1,6 +1,3 @@
-import Person from '../../../lib/js/Person';
-
-
 const DEFAULT_STATE = {
   families: [],
   founder: -1,

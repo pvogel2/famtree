@@ -1,5 +1,5 @@
 import PersonEditor from './PersonEditor.js';
-import PersonList from '../../lib/js/PersonList.js';
+import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
 
 

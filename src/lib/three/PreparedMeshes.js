@@ -1,7 +1,6 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { getBaseUrl } from '../Connect';
 
-
 const gltfLoader = new GLTFLoader();
 
 const navigationMeshPromise = new Promise((resolve, reject) => {

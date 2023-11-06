@@ -9,7 +9,7 @@ import ExtendedDialogTitle from './ExtendedDialogTitle';
 import PersonDetails from './PersonDetails';
 import RenderContext from '../RenderContext.js';
 
-import Person from '../../../lib/js/Person';
+import Person from '../../../public/js/Person';
 import { getMetaContainer } from '../../lib/ui/utils';
 
 
