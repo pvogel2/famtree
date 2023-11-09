@@ -4,7 +4,7 @@
  * Description:       This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool).
  * Requires at least: 6.3
  * Requires PHP:      7.0
- * Version:           1.0.3
+ * Version:           1.0.5
  * Author:            Peter Vogel
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -25,6 +25,7 @@
 if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 define( 'FAMTREE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'FAMTREE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 require_once(FAMTREE_PLUGIN_DIR . 'includes/activation.php');
 require_once(FAMTREE_PLUGIN_DIR . 'includes/rest.php');
@@ -60,6 +61,11 @@ function create_block_famtree_block_init() {
 	    'render_callback' => 'famtree_render_block',
 	)
   );
+
+  $inline_data = 'const FAMTREE = ' . json_encode( array(
+    'pluginUrl' => FAMTREE_PLUGIN_URL,
+	'restUrl' => 'famtree/v1',
+  ));
   /**
    * Be aware of currently not supported autoloaded custom pathes:
    * Custom pathes for translations are yet not available for translations handled via block.json auto loading mechanims.
@@ -68,6 +74,9 @@ function create_block_famtree_block_init() {
   wp_set_script_translations('famtree-visualize-editor-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
   wp_set_script_translations('famtree-visualize-view-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
 
+  wp_add_inline_script( 'famtree-visualize-editor-script', $inline_data, 'before' );
+
+  wp_add_inline_script( 'famtree-visualize-view-script', $inline_data, 'before' );
 }
 
 add_action( 'init', 'create_block_famtree_block_init' );

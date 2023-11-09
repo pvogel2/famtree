@@ -2,7 +2,7 @@ import apiFetch from '@wordpress/api-fetch';
 
 
 export async function loadFamily() {
-  const data = await apiFetch({ path: 'famtree/v1/family/' });
+  const data = await apiFetch({ path: `${FAMTREE.restUrl}/family/` });
   const { persons = [], relations = [] } = { ...data };
   persons.forEach(p => {
     p.id = Number(p.id);
@@ -30,11 +30,11 @@ export async function loadFamily() {
 
 
 export async function loadMetadata(personId) {
-  const data = await apiFetch({ path: `famtree/v1/person/${personId}/metadata` });
+  const data = await apiFetch({ path: `${FAMTREE.restUrl}/person/${personId}/metadata` });
 
   return data;
 }
 
 export function getBaseUrl() {
-  return `${apiFetch.nonceEndpoint.replace(/(wp-admin).*/, '')}wp-content/plugins/famtree/`;
+  return FAMTREE.pluginUrl;
 }
