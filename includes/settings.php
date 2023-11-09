@@ -4,13 +4,6 @@ require_once(FAMTREE_PLUGIN_DIR . 'includes/database.php');
 require_once(FAMTREE_PLUGIN_DIR . 'includes/admin/layout.php');
 require_once(FAMTREE_PLUGIN_DIR . 'includes/admin/PersonsListTable.php');
 
-function famtree_field_families_cb() {
-  $families = get_option( 'famtree_families', array('default' => 'default') );
-	$args = isset( $families ) ? (array) $families : array('default' => 'default');
-
-  famtree_render_families_fieldsets($args);
-}
-
 /* Register settings script. */
 function famtree_admin_init() {
   wp_register_script( 'famtree-admin-script-s', plugins_url('/../admin/js/script.js', __FILE__) );
@@ -20,6 +13,27 @@ function famtree_admin_init() {
   wp_register_script( 'famtree-admin-script-pl', plugins_url('/../public/js/PersonList.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-e', plugins_url('/../admin/js/PersonEditor.js', __FILE__) );
   wp_register_style( 'famtree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
+
+  add_settings_section(
+    'famtree_globals_section', 
+    __('Global settings', 'famtree'),
+     'famtree_render_global_settings',    
+    'famtree'                   
+  );
+
+  add_settings_field(
+    'famtree_public_access',
+    __('Visiblity of family data', 'famtree'),
+    'famtree_render_public_access',
+    'famtree',
+    'famtree_globals_section'
+ );
+
+  register_setting('famtree', 'famtree_public_access', array(
+    'type' => 'boolean',
+    'description' => 'defines if the family data can be read for anonymus page visitors',
+    )
+  );
 }
 
 function add_type_attribute($tag, $handle, $src) {
@@ -110,11 +124,17 @@ function famtree_options_page_html() {
       famtree_render_page_title(__(get_admin_page_title(), 'famtree'));
       famtree_render_runtime_message();
 
+    ?>
+    <form method="POST" action="options.php">
+    <?php
+      settings_fields('famtree');
+      do_settings_sections('famtree');
+      submit_button(__('Save global settings', 'famtree'));
+    ?>
+    </form>
+    <?php
       famtree_render_section_title(__('Person configuration', 'famtree'));
 
-      $families = get_option( 'famtree_families', array('default' => 'default') );
-      $args = isset( $families ) ? (array) $families : array('default' => 'default');
-    
       famtree_render_edit_person_form();
     ?>
   </div>

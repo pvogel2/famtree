@@ -4,13 +4,17 @@ This plugin provides a block to manage and visualize family trees (Scaffolded wi
 
 ## Description
 
-The plugin provides the FamTree Block showing configured family trees using threejs.
+The plugin provides the FamTree Block showing configured family trees. The visualization is setup in a virtual 3d scene using threejs and can be navigated by mouse or keyboard. Selecting a tree node (a person of the family tree) provides access to meta information for this person if configured.
+
+One block can be configured to visualize the configured family of a founder, this can be switched on run time if configured in the block settings.
 
 Multiple families are supported and can be configured on the famtree options page.
 
-Each block instance can be configured to visualize the configured family of a so called founder with the option to switch the founder on run time.
+The block itself does not support access restrictions, this can be achieved by using one of the several available WP plugins.
 
-Kepp in mind that the plugin is still in beta and currently in development.
+The plugin creates a dedicated WP role named 'famtree' with custom capabilities to read and write stored family trees.
+
+The administrator role also is extended with this capabilities.
 
 ### Security
 
@@ -19,6 +23,7 @@ The block itself does not support access restricitons, this can be achieved by u
 ### Roles
 
 The plugin creates a dedicated WP role named 'famtree' with custom capabilities to read and write stored family trees.
+
 The administrator role also is extended with this capabilities.
 
 ## Installation

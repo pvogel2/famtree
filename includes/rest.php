@@ -2,7 +2,7 @@
 require_once(FAMTREE_PLUGIN_DIR . 'includes/database.php');
 
 function famtree_rest_permission_read() {
-  return current_user_can( 'famtree_load' );
+  return (current_user_can('famtree_load') || get_option('famtree_public_access'));
 }
 
 function famtree_rest_permission_write() {
