@@ -104,7 +104,7 @@ function famtree_update_db_check() {
 }
 add_action( 'plugins_loaded', 'famtree_update_db_check' );
 
-function famtree_database_get_persons_new($search) {
+function famtree_database_search_persons($search) {
   global $wpdb;
 
   $table_name = famtree_persons_tablename();

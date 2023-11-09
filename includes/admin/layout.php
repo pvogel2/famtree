@@ -103,8 +103,7 @@ function famtree_render_public_access() {
 }
 
 function famtree_render_global_settings() {
-  ?><p><?php _e('Here the overall behaviour of the plugin and the famtree blocks is defined.', 'famtree') ?></p>
-  <?php
+  // currently nothing to render
 }
 
 function famtree_render_edit_person_form() {

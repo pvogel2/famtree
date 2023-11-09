@@ -18,21 +18,25 @@ One block can be configured to visualize the configured family of a founder, thi
 
 Multiple families are supported and can be configured on the famtree options page.
 
-The block itself does not support access restrictions, this can be achieved by using one of the several available WP plugins.
-
-The plugin creates a dedicated WP role named 'famtree' with custom capabilities to read and write stored family trees.
-
-The administrator role also is extended with this capabilities.
-
 The source code of the plugin can be found on the github page https://github.com/pvogel2/famtree.
 
 == Configuration ==
 
-An options page for the famtree plugin is added to the WP admin panel for configuring the relations and persons of the family trees.
+The block itself does not support access restrictions, this can be achieved by using one of the several available WP plugins.
+
+The plugin creates a dedicated user role named 'famtree' with custom capabilities to read and write stored family trees.
+
+The administrator role also is extended with this capabilities.
+
+An options page for the famtree plugin is added to the admin panel for configuring the relations and persons of the family trees.
 
 These data are stored in dedicated plugin tables of the used database.
 
 All block instances use the stored informations to visualize the desired founder family trees.
+
+Per default only logged in users with famtree read access can see the family trees on a pubished page.
+
+The plugin can be configured to grant access to the stored data for any page visitors.
 
 == Installation ==
 

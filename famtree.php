@@ -75,7 +75,6 @@ function create_block_famtree_block_init() {
   wp_set_script_translations('famtree-visualize-view-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
 
   wp_add_inline_script( 'famtree-visualize-editor-script', $inline_data, 'before' );
-
   wp_add_inline_script( 'famtree-visualize-view-script', $inline_data, 'before' );
 }
 

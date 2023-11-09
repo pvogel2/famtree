@@ -7,7 +7,7 @@
 }
 
 .wp-list-table.toplevel_page_famtree .column-root {
-  width: 3em;
+  width: 5em;
 }
 
 .wp-list-table.toplevel_page_famtree .column-edit,
@@ -24,7 +24,7 @@
   width: 8em;
 }
 
-.wp-list-table.toplevel_page_famtree .column-portraitImageId {
+.wp-list-table.toplevel_page_famtree .column-portraitId {
   width: 3em;
 }
 
@@ -71,6 +71,10 @@
 
 .famtree-metadata-container__list img {
   height: 40px;
+}
+
+.column-relations select {
+  width: 100%;
 }
 
 .famtree-metadata-container__list span.famtree-dashicons-thumb.dashicons {
