@@ -207,8 +207,8 @@ it('serialize returns serialiable person data', () => {
 
 describe('hasDetails', () => {
   it.each([
-    { key: 'birthday', value: 1 },
-    { key: 'deathday', value: 2 },
+    { key: 'birthday', value: '1921-03-01' },
+    { key: 'deathday', value: '2011-03-01' },
   ])('returns true for property $key', ({ key, value }) => {
     const node = new Person({ [key]: value, id: 'p1' });
 

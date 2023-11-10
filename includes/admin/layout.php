@@ -94,6 +94,18 @@ function famtree_render_persons_listing() {
   echo '</div>';
 }
 
+function famtree_render_public_access() {
+  $public_access = get_option('famtree_public_access');
+  ?>
+  <input name="famtree_public_access" type="checkbox" id="famtree_public_access" <?php ($public_access ? _e('checked') : '') ?> >
+  <label for="famtree_public_access"><?php _e( 'On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public.', 'famtree' ); ?></label>
+  <?php
+}
+
+function famtree_render_global_settings() {
+  // currently nothing to render
+}
+
 function famtree_render_edit_person_form() {
   ?>
   <div style="display: flex;">

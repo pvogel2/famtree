@@ -4,8 +4,8 @@ export const DATE_FORMAT = 'dd.MM.yyyy';
 
 export function showDate(ts = null) {
   try {
-    if (!isNaN(parseInt(ts))) {
-      return new Date(parseInt(ts)).toLocaleDateString();
+    if (ts) {
+      return new Date(ts).toLocaleDateString();
     }
   } catch (err) {
     console.log(err);

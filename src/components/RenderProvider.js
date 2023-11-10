@@ -1,10 +1,7 @@
 import { useRef, useEffect, useState } from '@wordpress/element';
 import { AmbientLight } from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Renderer } from '../lib/Renderer.js';
 import RenderContext from './RenderContext.js';
-
-const gltfLoader = new GLTFLoader();
 
 function RenderProvider(props) {
   const { instanceId = 'famtree0' } = props;
@@ -28,15 +25,12 @@ function RenderProvider(props) {
     const ambientLight = new AmbientLight( 0xFFFFFF, 3 );
     newRenderer.three.scene.add( ambientLight );
 
-    newRenderer.three.gammaOutput = true;
-    newRenderer.three.gammaFactor = 2.2;
-
     setRenderer(newRenderer);
   }, [renderer, rendererId]);
 
   const style = {left: 0, top: 0, bottom: 0, right: 0, position: 'absolute'};
 
-  return (<RenderContext.Provider value={ { renderer, renderTarget, gltfLoader } }>
+  return (<RenderContext.Provider value={ { renderer, renderTarget } }>
       <div style={ style } id={ rendererId } ref={ renderTarget }></div>
       { props.children }
     </RenderContext.Provider>

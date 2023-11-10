@@ -99,7 +99,7 @@ class Persons_List_Table extends WP_List_Table {
       }
 
       private function get_persons_data($search = '') {
-        $persons = famtree_database_get_persons_new($search);
+        $persons = famtree_database_search_persons($search);
         return $persons;
-      }      //...
+      }
 }

@@ -4,7 +4,7 @@
  * Description:       This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool).
  * Requires at least: 6.3
  * Requires PHP:      7.0
- * Version:           1.0.5
+ * Version:           1.1.0
  * Author:            Peter Vogel
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -75,7 +75,6 @@ function create_block_famtree_block_init() {
   wp_set_script_translations('famtree-visualize-view-script', 'famtree', FAMTREE_PLUGIN_DIR . '/languages');
 
   wp_add_inline_script( 'famtree-visualize-editor-script', $inline_data, 'before' );
-
   wp_add_inline_script( 'famtree-visualize-view-script', $inline_data, 'before' );
 }
 
