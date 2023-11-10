@@ -7,6 +7,13 @@ jest.mock('@wordpress/api-fetch');
 afterEach(() => {
   jest.clearAllMocks();
 });
+
+// define global injected plugin inline data
+window.FAMTREE = {
+  restUrl: 'famtree/v1',
+  pluginUrl: 'wp-content/plugins/famtree/',
+};
+
 describe('loadFamily', () => {
   it('is a function', () => {
     expect(loadFamily).toEqual(expect.any(Function));
@@ -60,7 +67,7 @@ describe('loadMetadata', () => {
 
     await loadMetadata(id);
 
-    expect(apiFetch).toHaveBeenCalledWith(expect.objectContaining({ path: `famtree/v1/person/${id}/metadata` }));
+    expect(apiFetch).toHaveBeenCalledWith(expect.objectContaining({ path: `${window.FAMTREE.restUrl}/person/${id}/metadata` }));
   });
 
   it('returns data object', async () => {
@@ -75,30 +82,9 @@ describe('loadMetadata', () => {
 });
 
 describe('getBaseUrl', () => {
-  let origNonceEndpoint;
-  const expectedPath = 'wp-content/plugins/famtree/';
-
-  beforeAll(() => {
-    origNonceEndpoint = apiFetch.nonceEndpoint;
-  });
-
-  afterEach(() => {
-    apiFetch.nonceEndpoint = origNonceEndpoint;
-  });
-
   it('returns correct path', () => {
-    apiFetch.nonceEndpoint = '';
-
     const path = getBaseUrl();
 
-    expect(path).toBe(expectedPath);
-  });
-
-  it('replaces correct path', () => {
-    apiFetch.nonceEndpoint = 'xxx/wp-admin/yyy/zzz/';
-
-    const path = getBaseUrl();
-
-    expect(path).toBe(`xxx/${expectedPath}`);
+    expect(path).toBe(window.FAMTREE.pluginUrl);
   });
 });

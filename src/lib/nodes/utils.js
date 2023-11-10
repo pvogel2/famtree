@@ -1,6 +1,5 @@
-import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils } from 'three';
+import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils, SRGBColorSpace } from 'three';
 import { __ } from '@wordpress/i18n';
-// import ThreeText from '../../lib/three/Text';
 import ThreeText3D from '../../lib/three/Text3D';
 import ThreePreparedMeshes from '../../lib/three/PreparedMeshes';
 import Transition from '../../lib/Transition';
@@ -175,8 +174,10 @@ export async function getSymbolGroup(person, layout = {}) {
     texture = textureLoader.load(avatarImage);
   }
   texture.flipY = false;
+  texture.colorSpace = SRGBColorSpace;
+
   portraitMesh.material = portraitMesh.material.clone();
-  portraitMesh.material.setValues({ map: texture });
+  portraitMesh.material.setValues({ color: '#FFFFFF', map: texture });
 
   newPersonMesh.rotateY(Math.PI * 0.5);
   newPersonMesh.rotateX(Math.PI * 0.5);

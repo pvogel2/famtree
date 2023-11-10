@@ -8,7 +8,7 @@ it('shows the correct format for null', () => {
   expect(result).toBe(null);
 });
 
-it('shows the correct format for 0', () => {
-  const result = showDate(0);
-  expect(result).toBe('1.1.1970');
+it('shows the correct format for a valid date', () => {
+  const result = showDate('1989-12-01');
+  expect(result).toBe('1.12.1989');
 });

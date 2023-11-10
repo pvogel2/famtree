@@ -98,7 +98,7 @@ function famtree_render_public_access() {
   $public_access = get_option('famtree_public_access');
   ?>
   <input name="famtree_public_access" type="checkbox" id="famtree_public_access" <?php ($public_access ? _e('checked') : '') ?> >
-  <label for="famtree_public_access"><?php _e( 'On the published page the data of the family trees can be read without login. Usefull for trees taht should be visible to the public.', 'famtree' ); ?></label>
+  <label for="famtree_public_access"><?php _e( 'On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public.', 'famtree' ); ?></label>
   <?php
 }
 
