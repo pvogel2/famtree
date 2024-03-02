@@ -9,7 +9,7 @@ class Persons_List_Table extends WP_List_Table {
   private $persons_data;
 
   function single_row( $item ) {
-    echo '<tr data-id="' . $item['id'] . '">';
+    echo '<tr data-id="' . esc_html($item['id']) . '">';
     $this->single_row_columns( $item );
     echo '</tr>';
   }
@@ -59,19 +59,19 @@ class Persons_List_Table extends WP_List_Table {
 
         // wp_get_attachment_image_url($portrait, 'thumbnail')
         switch ($column_name) {
-          case 'portraitId' :return '<img alt="" src="' . $avatarUrl . '" class="avatar avatar-32 photo" height="32" width="32" loading="lazy" decoding="async">';
-          case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.famtree.updateRoot(this, ' . $id . ')" />';
-          case 'firstName': return $item[$column_name];
-          case 'surNames': return $item[$column_name];
-          case 'lastName': return $item[$column_name];
-          case 'birthName': return $item[$column_name];
-          case 'birthday': return $item[$column_name];
-          case 'deathday': return $item[$column_name];
+          case 'portraitId' :return '<img alt="" src="' . esc_url($avatarUrl) . '" class="avatar avatar-32 photo" height="32" width="32" loading="lazy" decoding="async">';
+          case 'root': return '<input data-portrait-url="' . wp_get_attachment_image_url($portrait, 'medium') . '" type="checkbox" ' . ( $item[$column_name] ? 'checked' : '' ) . ' onclick="window.famtree.updateRoot(this, ' . esc_html($id) . ')" />';
+          case 'firstName': return esc_html($item[$column_name]);
+          case 'surNames': return esc_html($item[$column_name]);
+          case 'lastName': return esc_html($item[$column_name]);
+          case 'birthName': return esc_html($item[$column_name]);
+          case 'birthday': return esc_html($item[$column_name]);
+          case 'deathday': return esc_html($item[$column_name]);
           case 'relations': return '<select disabled="disabled"></select>';
-          case 'edit': return '<button type="button" title="' . __('edit', 'famtree') . '" onclick="window.famtree.editPerson(' . $id . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
+          case 'edit': return '<button type="button" title="' . esc_html_e('edit', 'famtree') . '" onclick="window.famtree.editPerson(' . esc_html($id) . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
           default:
             return print_r($item, true); //Show the whole array for troubleshooting purposes
-            }
+        }
       }
 
       function get_sortable_columns() {

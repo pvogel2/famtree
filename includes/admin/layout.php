@@ -3,8 +3,8 @@
 function famtree_form_read_field($name, $label) {
   ?>
   <tr>
-    <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-    <td><input readonly type="text" name="<?php print ($name) ?>" id="<?php print ($name) ?>" /></td>
+    <td><label for="<?php print esc_html($name) ?>"><?php print esc_html($label) ?>:</label></td>
+    <td><input readonly type="text" name="<?php print esc_html($name) ?>" id="<?php print esc_html($name) ?>" /></td>
   </tr>  
   <?php
 }
@@ -12,8 +12,8 @@ function famtree_form_read_field($name, $label) {
 function famtree_form_text_field($name, $label) {
   ?>
   <tr>
-    <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-    <td><input type="text" name="<?php print ($name) ?>" id="<?php print ($name) ?>" /></td>
+    <td><label for="<?php print esc_html($name) ?>"><?php print esc_html($label) ?>:</label></td>
+    <td><input type="text" name="<?php print esc_html($name) ?>" id="<?php print esc_html($name) ?>" /></td>
   </tr>  
   <?php
 }
@@ -21,21 +21,21 @@ function famtree_form_text_field($name, $label) {
 function famtree_form_date_field($name, $label, $callback = NULL, $disabled = NULL) {
   ?>
   <tr>
-    <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
-    <td><input type="date" name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . $callback . '()"') ?> min="1700-01-01" id="<?php print ($name) ?>" <?php if(isset($disabled)) print('disabled="disabled"') ?> /></td>
+    <td><label for="<?php print esc_html($name) ?>"><?php print esc_html($label) ?>:</label></td>
+    <td><input type="date" name="<?php print esc_html($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . esc_html($callback) . '()"') ?> min="1700-01-01" id="<?php print esc_html($name) ?>" <?php if(isset($disabled)) print('disabled="disabled"') ?> /></td>
   </tr>
   <?php
 }
 
 function famtree_form_select_field($name, $label, $callback = NULL, $options = NULL, $rmCb = NULL) {
   ?>
-  <td><label for="<?php print ($name) ?>"><?php print ($label) ?>:</label></td>
+  <td><label for="<?php print esc_html($name) ?>"><?php print esc_html($label) ?>:</label></td>
   <td><div class="famtree-form__flex">
-    <select autocomplete name="<?php print ($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . $callback . '()"') ?> id="<?php print ($name) ?>" class="famtree-form__data" disabled="disabled">
+    <select autocomplete name="<?php print esc_html($name) ?>" <?php if(isset($callback)) print('onchange="window.famtree.' . esc_html($callback) . '()"') ?> id="<?php print esc_html($name) ?>" class="famtree-form__data" disabled="disabled">
     <?php
       if(isset($options)) {
         foreach ($options as $option) {
-          ?><option value="<?php print ($option['value']) ?>"><?php print ($option['title']) ?></option><?php
+          ?><option value="<?php print esc_html($option['value']) ?>"><?php print esc_html($option['title']) ?></option><?php
         }
       }
     ?>
@@ -67,8 +67,8 @@ function famtree_render_legend($text) {
 
 function render_remove_button($callback, $prefix) {
   ?>
-  <button disabled="disabled" type="button" onclick="window.famtree.<?php echo $callback ?>()" class="button icon" <?php if(isset($prefix)) print('name="' . $prefix . '_remove"') ?>>
-    <span title="<?php echo __('remove', 'famtree') ?>" class="dashicons dashicons-trash"></span>
+  <button disabled="disabled" type="button" onclick="window.famtree.<?php echo esc_html($callback) ?>()" class="button icon" <?php if(isset($prefix)) print('name="' . esc_html($prefix) . '_remove"') ?>>
+    <span title="<?php echo esc_html_e('remove', 'famtree') ?>" class="dashicons dashicons-trash"></span>
   </button>
   <?php
 }
@@ -98,7 +98,7 @@ function famtree_render_public_access() {
   $public_access = get_option('famtree_public_access');
   ?>
   <input name="famtree_public_access" type="checkbox" id="famtree_public_access" <?php ($public_access ? print('checked') : '') ?> >
-  <label for="famtree_public_access"><?php echo __( 'On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public.', 'famtree' ); ?></label>
+  <label for="famtree_public_access"><?php echo esc_html_e( 'On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public.', 'famtree' ); ?></label>
   <?php
 }
 
@@ -158,8 +158,8 @@ function famtree_render_edit_person_form() {
               <td>
               </td>
               <td>
-                <button type="button" name="btn_addChild" disabled="disabled" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo __('As child', 'famtree') ?></button>
-                <button type="button" onclick="window.famtree.addPartner()" class="button famtree-form__button"><?php echo __('As partner', 'famtree') ?></button>
+                <button type="button" name="btn_addChild" disabled="disabled" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo esc_html_e('As child', 'famtree') ?></button>
+                <button type="button" onclick="window.famtree.addPartner()" class="button famtree-form__button"><?php echo esc_html_e('As partner', 'famtree') ?></button>
               </td>
             </tr>
            </table>
@@ -178,16 +178,16 @@ function famtree_render_edit_person_form() {
             </tr>
             <tr>
               <td>
-                <input id="portrait-upload-button" type="button" class="button" value="<?php echo __('Select image', 'famtree') ?>" />
+                <input id="portrait-upload-button" type="button" class="button" value="<?php echo esc_html_e('Select image', 'famtree') ?>" />
               </td>
             </tr>
           </table>
         </fieldset>
       </div>
       <fieldset class="submit" name="fs_buttons" disabled="disabled">
-        <button type="button" onclick="window.famtree.resetPerson()" class="button famtree-form__button"><?php echo __('Reset person', 'famtree') ?></button>
-        <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo __('Remove person', 'famtree') ?></button>
-        <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo __('Save person', 'famtree') ?></button>
+        <button type="button" onclick="window.famtree.resetPerson()" class="button famtree-form__button"><?php echo esc_html_e('Reset person', 'famtree') ?></button>
+        <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo esc_html_e('Remove person', 'famtree') ?></button>
+        <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo esc_html_e('Save person', 'famtree') ?></button>
       </fieldset>
       </form>
     </div>
@@ -196,14 +196,14 @@ function famtree_render_edit_person_form() {
       <div class="famtree-metadata-container__list">
         <table class="wp-list-table striped widefat toplevel_page_famtree">
           <thead>
-            <th scope="col"><?php echo __('Preview', 'famtree') ?></th>
-            <th scope="col"><?php echo __('Name', 'famtree') ?></th>
-            <th scope="col"><?php echo __('Description', 'famtree') ?></th>
+            <th scope="col"><?php echo esc_html_e('Preview', 'famtree') ?></th>
+            <th scope="col"><?php echo esc_html_e('Name', 'famtree') ?></th>
+            <th scope="col"><?php echo esc_html_e('Description', 'famtree') ?></th>
             <th scope="col"></th> 
             <th scope="col"></th> 
           </thead>
           <tbody  id="existingMetadata">
-            <td colspan="5" class="column-nocontent"><?php echo __('No files found', 'famtree') ?></td>
+            <td colspan="5" class="column-nocontent"><?php echo esc_html_e('No files found', 'famtree') ?></td>
           </tbody>
         </table>
       </div>
@@ -214,7 +214,7 @@ function famtree_render_edit_person_form() {
             <table>
               <tr>
                 <td>
-                  <input id="upload-metadata-button" type="button" class="button" value="<?php echo __('Add metadata', 'famtree') ?>"/>
+                  <input id="upload-metadata-button" type="button" class="button" value="<?php echo esc_html_e('Add metadata', 'famtree') ?>"/>
                 </td>
               </tr>
             </table>
@@ -231,7 +231,7 @@ function famtree_render_runtime_message() {
     <div id="famtree-message" class="notice is-dismissible famtree-hidden">
       <p class="famtree-message__text"></p>
       <button type="button" class="notice-dismiss" onclick="window.famtree.hideMessage()">
-        <span class="screen-reader-text"><?php print __('Dismiss this notice.', 'famtree') ?></span>
+        <span class="screen-reader-text"><?php print esc_html_e('Dismiss this notice.', 'famtree') ?></span>
       </button>
     </div>
   <?php
@@ -240,7 +240,7 @@ function famtree_render_runtime_message() {
 function famtree_render_success_feedback($message) {
   ?>
   <div class="notice notice-success is-dismissible">
-      <p><?php echo $message; ?></p>
+      <p><?php echo esc_html($message); ?></p>
   </div>
   <?php
 }
@@ -248,7 +248,7 @@ function famtree_render_success_feedback($message) {
 function famtree_render_error_feedback($message) {
   ?>
   <div class="notice notice-error is-dismissible">
-      <p><?php print __('Error', 'famtree'); echo ': '; echo $message; ?></p>
+      <p><?php print esc_html_e('Error', 'famtree'); echo ': '; echoesc_html($message); ?></p>
   </div>
   <?php
 }
