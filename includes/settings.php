@@ -121,7 +121,7 @@ function famtree_options_page_html() {
 
   <div class="famtree wrap">
     <?php
-      famtree_render_page_title(__(get_admin_page_title(), 'famtree'));
+      famtree_render_page_title(__('FamTree configuration', 'famtree'));
       famtree_render_runtime_message();
 
     ?>

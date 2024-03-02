@@ -35,7 +35,7 @@ function famtree_form_select_field($name, $label, $callback = NULL, $options = N
     <?php
       if(isset($options)) {
         foreach ($options as $option) {
-          ?><option value="<?php print ($option) ?>"><?php echo __($option, 'famtree') ?></option><?php
+          ?><option value="<?php print ($option['value']) ?>"><?php print ($option['title']) ?></option><?php
         }
       }
     ?>
@@ -97,8 +97,8 @@ function famtree_render_persons_listing() {
 function famtree_render_public_access() {
   $public_access = get_option('famtree_public_access');
   ?>
-  <input name="famtree_public_access" type="checkbox" id="famtree_public_access" <?php ($public_access ? _e('checked') : '') ?> >
-  <label for="famtree_public_access"><?php _e( 'On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public.', 'famtree' ); ?></label>
+  <input name="famtree_public_access" type="checkbox" id="famtree_public_access" <?php ($public_access ? print('checked') : '') ?> >
+  <label for="famtree_public_access"><?php echo __( 'On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public.', 'famtree' ); ?></label>
   <?php
 }
 
@@ -140,7 +140,13 @@ function famtree_render_edit_person_form() {
             famtree_form_date_field('relEnd', __('End', 'famtree'), 'relMetaChanged', TRUE);
             ?>
             <tr>
-              <?php famtree_form_select_field('relType', __('Kind of', 'famtree'), 'relMetaChanged', ['marriage', 'partnership']) ?>
+              <?php
+                $options = [
+                  array('value' => 'marriage', 'title' => __('marriage', 'famtree')),
+                  array('value' => 'partnership', 'title' => __('partnership', 'famtree')),
+                ];
+                famtree_form_select_field('relType', __('Kind of', 'famtree'), 'relMetaChanged', $options);  
+              ?>
             </tr>
             <tr>
               <td><br/></td>
