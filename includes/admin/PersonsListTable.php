@@ -5,7 +5,7 @@ if (!class_exists('WP_List_Table')) {
   
 require_once(FAMTREE_PLUGIN_DIR . 'includes/database.php');
 
-class Persons_List_Table extends WP_List_Table {
+class Famtree_Persons_List_Table extends WP_List_Table {
   private $persons_data;
 
   function single_row( $item ) {

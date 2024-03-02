@@ -36,7 +36,7 @@ function famtree_admin_init() {
   );
 }
 
-function add_type_attribute($tag, $handle, $src) {
+function famtree_add_type_attribute($tag, $handle, $src) {
   // if not your script, do nothing and return original $tag
   if ( 'famtree-admin-script-ms' !== $handle
     && 'famtree-admin-script-s' !== $handle
@@ -51,7 +51,7 @@ function add_type_attribute($tag, $handle, $src) {
   return $tag;
 }
 
-add_filter('script_loader_tag', 'add_type_attribute' , 10, 3);
+add_filter('script_loader_tag', 'famtree_add_type_attribute' , 10, 3);
 
 function famtree_admin_scripts() {
   /*

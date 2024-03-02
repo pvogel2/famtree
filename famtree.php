@@ -54,7 +54,7 @@ function famtree_render_block($attributes) {
   );
 }
 
-function create_block_famtree_block_init() {
+function famtree_create_block_famtree_block_init() {
   register_block_type(
 	__DIR__ . '/build',
 	  array(
@@ -78,7 +78,7 @@ function create_block_famtree_block_init() {
   wp_add_inline_script( 'famtree-visualize-view-script', $inline_data, 'before' );
 }
 
-add_action( 'init', 'create_block_famtree_block_init' );
+add_action( 'init', 'famtree_create_block_famtree_block_init' );
 
 register_activation_hook( __FILE__, 'famtree_activate' );
 register_deactivation_hook( __FILE__, 'famtree_role_teardown' );

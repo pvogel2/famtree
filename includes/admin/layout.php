@@ -41,7 +41,7 @@ function famtree_form_select_field($name, $label, $callback = NULL, $options = N
     ?>
     </select>
     <?php if(isset($rmCb)) {
-      render_remove_button($rmCb, $name);
+      famtree_render_remove_button($rmCb, $name);
     } ?>
   </div></td>
   <?php
@@ -65,7 +65,7 @@ function famtree_render_legend($text) {
   <?php
 }
 
-function render_remove_button($callback, $prefix) {
+function famtree_render_remove_button($callback, $prefix) {
   ?>
   <button disabled="disabled" type="button" onclick="window.famtree.<?php echo esc_html($callback) ?>()" class="button icon" <?php if(isset($prefix)) print('name="' . esc_html($prefix) . '_remove"') ?>>
     <span title="<?php echo esc_html_e('remove', 'famtree') ?>" class="dashicons dashicons-trash"></span>
@@ -76,7 +76,7 @@ function render_remove_button($callback, $prefix) {
 function famtree_render_persons_listing() {
 
   // Creating an instance
-  $personsTable = new Persons_List_Table();
+  $personsTable = new Famtree_Persons_List_Table();
 
   echo '<div class="wrap">';
   // Prepare table
