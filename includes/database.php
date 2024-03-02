@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 global $famtree_db_version;
 $famtree_db_version = '6.0';

@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 function famtree_form_read_field($name, $label) {
   ?>

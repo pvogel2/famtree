@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 require_once(FAMTREE_PLUGIN_DIR . 'includes/database.php');
 
 function famtree_role_setup() {
