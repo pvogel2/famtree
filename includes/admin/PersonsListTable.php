@@ -7,10 +7,11 @@ require_once(FAMTREE_PLUGIN_DIR . 'includes/database.php');
 
 class Persons_List_Table extends WP_List_Table {
   private $persons_data;
-    function single_row( $item ) {
-      echo '<tr data-id="' . $item['id'] . '">';
-      $this->single_row_columns( $item );
-      echo '</tr>';
+
+  function single_row( $item ) {
+    echo '<tr data-id="' . $item['id'] . '">';
+    $this->single_row_columns( $item );
+    echo '</tr>';
   }
 
   function get_columns() {
@@ -30,11 +31,15 @@ class Persons_List_Table extends WP_List_Table {
       }
 
       function usort_reorder($a, $b) {
-        // If no sort, default to lastName
-        $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'birthday';
+        $orderby = 'birthday';
+        if (isset($_GET['orderby'])) {
+          $orderby = sanitize_text_field($_GET['orderby']);
+        }
 
-        // If no order, default to asc
-        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc';
+        $order = 'desc';
+        if (isset($_GET['orderby'])) {
+          $order = sanitize_text_field($_GET['order']);
+        }
 
         // Determine sort order
         $result = strcmp($a[$orderby], $b[$orderby]);
@@ -83,7 +88,8 @@ class Persons_List_Table extends WP_List_Table {
       // Bind table with columns, data and all
       function prepare_items() {
         if (isset($_POST['page']) && isset($_POST['s'])) {
-          $this->persons_data = $this->get_persons_data($_POST['s']);
+          $search = sanitize_text_field($_POST['s']);
+          $this->persons_data = $this->get_persons_data($search);
         } else {
           $this->persons_data = $this->get_persons_data();
         }
