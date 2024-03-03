@@ -4,31 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 global $famtree_db_version;
 $famtree_db_version = '6.0';
 
-function famtree_persons_tablename() {
+function famtree_prefix_tablename($name) {
 	global $wpdb;
-  return $wpdb->prefix . 'famtree_persons';
-}
-
-function famtree_relations_tablename() {
-	global $wpdb;
-  return $wpdb->prefix . 'famtree_relations';
-}
-
-function famtree_metadata_tablename() {
-	global $wpdb;
-  return $wpdb->prefix . 'famtree_metadata';
-}
-
-function famtree_rename_persons_table() {
-  global $wpdb;
-  $old_table_name = $wpdb->prefix . 'famtree';
-  $table_name = famtree_persons_tablename();
-  if ($old_table_name != $table_name) {
-    $ok = $wpdb->query("RENAME TABLE " . $old_table_name . " TO " . $table_name);
-    if( !$ok ) {
-      echo 'Failed to rename table. Last DB error: ' . $wpdb->last_error;
-    }
-  }
+  return $wpdb->prefix . 'famtree_'  . $name;
 }
 
 // https://codex.wordpress.org/Creating_Tables_with_Plugins
@@ -38,13 +16,9 @@ function famtree_database_setup() {
   $installed_db_version = get_option( 'famtree_db_version' );
 
   if ($installed_db_version != $famtree_db_version) {
-    famtree_rename_persons_table();
+    $charset_collate = $wpdb->get_charset_collate();
 
-    $table_name = famtree_persons_tablename();
-
-	  $charset_collate = $wpdb->get_charset_collate();
-
-    $sql = "CREATE TABLE $table_name (
+    $sql = "CREATE TABLE {$wpdb->prefix}famtree_persons (
 		  id mediumint(9) NOT NULL AUTO_INCREMENT,
       root boolean DEFAULT FALSE,
 		  firstName varchar(55) DEFAULT '' NOT NULL,
@@ -61,11 +35,7 @@ function famtree_database_setup() {
 
     dbDelta( $sql );
 
-	  $table_name = famtree_relations_tablename();
-
-	  $charset_collate = $wpdb->get_charset_collate();
-
-    $sql = "CREATE TABLE $table_name (
+    $sql = "CREATE TABLE {$wpdb->prefix}famtree_relations (
 		  id mediumint(9) NOT NULL AUTO_INCREMENT,
       type varchar(55) NULL DEFAULT NULL,
       start date NULL DEFAULT NULL,
@@ -77,11 +47,7 @@ function famtree_database_setup() {
 
     dbDelta( $sql );
 
-	  $table_name = famtree_metadata_tablename();
-
-	  $charset_collate = $wpdb->get_charset_collate();
-
-    $sql = "CREATE TABLE $table_name (
+    $sql = "CREATE TABLE {$wpdb->prefix}famtree_metadata (
 		  id mediumint(9) NOT NULL AUTO_INCREMENT,
 		  refId mediumint(9) NOT NULL,
 		  mediaId mediumint(9) NOT NULL,
@@ -108,16 +74,14 @@ add_action( 'plugins_loaded', 'famtree_update_db_check' );
 function famtree_database_search_persons($search) {
   global $wpdb;
 
-  $table_name = famtree_persons_tablename();
-
   if (empty($search)) {
-    $pResults = $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
+    $pResults = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}famtree_persons", ARRAY_A );
   } else {
-    $pResults = $wpdb->get_results( "SELECT * FROM $table_name WHERE firstName LIKE '%{$search}%' OR lastName LIKE '%{$search}%'", ARRAY_A );
+    $results_sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}famtree_persons WHERE firstName LIKE '%s' OR lastName LIKE '%s'", '%' . $search . '%', '%' . $search . '%');
+    $pResults = $wpdb->get_results($results_sql , ARRAY_A );
   }
 
-  $table_name = famtree_relations_tablename();
-  $rResults = $wpdb->get_results( "SELECT * FROM $table_name", ARRAY_A );
+  $rResults = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}famtree_relations", ARRAY_A );
 
   return $pResults;
 }
@@ -125,18 +89,15 @@ function famtree_database_search_persons($search) {
 function famtree_database_get_persons() {
   global $wpdb;
 
-  $table_name = famtree_persons_tablename();
   // to add relations to the result directly from db
   // SELECT p.*,r.id relations FROM `wp_testfamtree_persons` AS p LEFT JOIN `wp_testfamtree_relations` AS r ON JSON_CONTAINS(r.members, CONCAT('[',p.id,']'))
-  $pRresults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
+  $pRresults = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}famtree_persons", OBJECT );
 
   foreach ($pRresults as &$item) {
     $item->portraitUrl = wp_get_attachment_image_url($item->portraitId, 'thumbnail');
   }
 
-  $table_name = famtree_relations_tablename();
-
-  $rResults = $wpdb->get_results( "SELECT * FROM $table_name", OBJECT );
+  $rResults = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}famtree_relations", OBJECT );
 
   return array(
     'persons' => $pRresults,
@@ -147,10 +108,10 @@ function famtree_database_get_persons() {
 function famtree_database_get_metadata($personId) {
   global $wpdb;
 
-  $table_name = famtree_metadata_tablename();
   // to add relations to the result directly from db
   // SELECT p.*,r.id relations FROM `wp_testfamtree_persons` AS p LEFT JOIN `wp_testfamtree_relations` AS r ON JSON_CONTAINS(r.members, CONCAT('[',p.id,']'))
-  $results = $wpdb->get_results( "SELECT * FROM $table_name WHERE refId='$personId'", OBJECT );
+  $results_sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}famtree_metadata WHERE refId='$s'", $personId);
+  $results = $wpdb->get_results($results_sql, OBJECT );
 
   foreach ($results as &$item) {
     $post = get_post($item->mediaId);
@@ -167,42 +128,51 @@ function famtree_database_get_metadata($personId) {
 
 function famtree_database_delete_relation($id) {
   global $wpdb;
-  $table_name = famtree_relations_tablename();
+
   if (empty($id)) {
     return false;
   } else {
-    return $wpdb -> delete( $table_name, array('id' => $id ));
+    return $wpdb -> delete(
+      famtree_prefix_tablename('relations'),
+      array('id' => $id ),
+    );
   }
 }
 
 function famtree_database_delete_person($id) {
   global $wpdb;
-  $table_name = famtree_persons_tablename();
+
   if (empty($id)) {
     return false;
   } else {
-    return $wpdb -> delete( $table_name, array('id' => $id ));
+    return $wpdb -> delete(
+      famtree_prefix_tablename('persons'),
+      array('id' => $id ),
+    );
   }
 }
 
 function famtree_database_delete_metadata($id) {
   global $wpdb;
-  $table_name = famtree_metadata_tablename();
+
   if (empty($id)) {
     return false;
   } else {
-    return $wpdb -> delete( $table_name, array('id' => $id ));
+    return $wpdb -> delete(
+      famtree_prefix_tablename('metadata'),
+      array('id' => $id ),
+    );
   }
 }
 
 function famtree_database_update_portrait_image($id, $mediaId) {
   global $wpdb;
-  $table_name = famtree_persons_tablename();
+
   if (empty($id)) {
     return false;
   } else {
     $wpdb->update( 
-      $table_name,
+      famtree_prefix_tablename('persons'),
       array(
         'portraitId' => filter_var($mediaId, FILTER_SANITIZE_NUMBER_INT),
       ),
@@ -223,11 +193,10 @@ function famtree_metadata_fields($metadata) {
 
 function famtree_database_create_metadata($metadata) {
 	global $wpdb;
-	$table_name = famtree_metadata_tablename();
 
   $result = (boolean) $wpdb->insert( 
-    $table_name, 
-    famtree_metadata_fields($metadata)
+    famtree_prefix_tablename('metadata'),
+    famtree_metadata_fields($metadata),
   );
 
   if (!$result) {
@@ -255,12 +224,12 @@ function famtree_database_create_metadata($metadata) {
 
 function famtree_database_update_root($id, $value) {
   global $wpdb;
-  $table_name = famtree_persons_tablename();
+
   if (empty($id)) {
     return false;
   } else {
     $wpdb->update( 
-      $table_name,
+      famtree_prefix_tablename('persons'),
       array(
         'root' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
       ),
@@ -294,10 +263,9 @@ function famtree_person_fields($person) {
 
 function famtree_database_create_person($person) {
 	global $wpdb;
-	$table_name = famtree_persons_tablename();
 
   $result = (boolean) $wpdb->insert( 
-    $table_name, 
+    famtree_prefix_tablename('persons'), 
     famtree_person_fields($person)
   );
   return $result;
@@ -310,9 +278,8 @@ function famtree_database_update_person($person) {
   if (empty($id)) {
     return false;
   }
-	$table_name = famtree_persons_tablename();
-  $result = $wpdb->update( 
-    $table_name,
+	$result = $wpdb->update( 
+    famtree_prefix_tablename('persons'),
     famtree_person_fields($person),
     array(
       'id' => $id,
@@ -333,21 +300,19 @@ function famtree_relation_fields($relation) {
 
 function famtree_database_create_relation($relation) {
 	global $wpdb;
-	$table_name = famtree_relations_tablename();
 
   $result = (boolean) $wpdb->insert( 
-    $table_name, 
-    famtree_relation_fields($relation)
+    famtree_prefix_tablename('relations'),
+    famtree_relation_fields($relation),
   );
   return $result;
 }
 
 function famtree_database_update_relation($relation) {
 	global $wpdb;
-	$table_name = famtree_relations_tablename();
 
   $result = (boolean) $wpdb->update( 
-    $table_name, 
+    famtree_prefix_tablename('relations'),
     famtree_relation_fields($relation),
     array(
       'id' => $relation['id'],
