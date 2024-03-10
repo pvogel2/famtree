@@ -3,33 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once(FAMTREE_PLUGIN_DIR . 'includes/database.php');
 
-function famtree_is_update_family_root() {
-  return !empty($_POST['rootId']);
-}
-
-function famtree_is_update_portrait_image() {
-  return !empty($_POST['portrait-id']);
-}
-
-function famtree_update_portrait_image() {
-  $portraitId = sanitize_text_field($_POST['portrait-id']);
-  $personId = sanitize_text_field($_POST['id']);
-  return famtree_database_update_portrait_image($personId, $portraitId);
-}
-
-function famtree_delete_metadata(WP_REST_Request $req = null) {
-  $metadataId = '';
-  if (isset($req)) {
-    $result = preg_match('/\/metadata\/([0-9]+)$/', urldecode($req->get_route()), $matches);
-    if ($result == 1) {
-      $metadataId = $matches[1];
-    }
-  }
-
-  return famtree_database_delete_metadata($metadataId);
-}
-
 function famtree_update_family_root(WP_REST_Request $req = null) {
+  check_admin_referer('update-root-nonce', 'update-root-nonce');
+
   $personId = '';
   if (isset($req)) {
     $result = preg_match('/\/root\/([0-9]+)$/', urldecode($req->get_route()), $matches);
@@ -42,17 +18,7 @@ function famtree_update_family_root(WP_REST_Request $req = null) {
   return famtree_database_update_root($personId, $root);
 }
 
-function famtree_delete_relation(WP_REST_Request $req = null) {
-  $relationId = '';
-  if (isset($req)) {
-    $result = preg_match('/\/relation\/([0-9]+)$/', urldecode($req->get_route()), $matches);
-    if ($result == 1) {
-      $relationId = $matches[1];
-    }
-  }
-
-  return famtree_database_delete_relation($relationId);
-}
+// RELATION
 
 function famtree_sanitize_relation($flag) {
   $relationArgs = array(
@@ -89,6 +55,34 @@ function famtree_sanitize_relation($flag) {
   return $relation;
 }
 
+function famtree_save_relation() {
+  check_admin_referer('edit-person-nonce', 'edit-person-nonce');
+
+  $relation = famtree_sanitize_relation(INPUT_POST);
+
+  if (empty($relation['id'])) {
+    return famtree_database_create_relation($relation);
+  } else {
+    return famtree_database_update_relation($relation);
+  }
+}
+
+function famtree_delete_relation(WP_REST_Request $req = null) {
+  $relationId = '';
+  check_admin_referer('edit-person-nonce', 'edit-person-nonce');
+
+  if (isset($req)) {
+    $result = preg_match('/\/relation\/([0-9]+)$/', urldecode($req->get_route()), $matches);
+    if ($result == 1) {
+      $relationId = $matches[1];
+    }
+  }
+
+  return famtree_database_delete_relation($relationId);
+}
+
+// PERSON
+
 function famtree_sanitize_person($flag) {
   $personArgs = array(
     'id' => FILTER_VALIDATE_INT,
@@ -113,6 +107,35 @@ function famtree_sanitize_person($flag) {
   return $person;
 }
 
+function famtree_save_person() {
+  check_admin_referer('edit-person-nonce', 'edit-person-nonce');
+
+  $person = famtree_sanitize_person(INPUT_POST);
+
+  if (empty($person['id'])) {
+    return famtree_database_create_person($person);
+  } else {
+    return famtree_database_update_person($person);
+  }
+}
+
+function famtree_delete_person(WP_REST_Request $req = null) {
+  check_admin_referer('edit-person-nonce', 'edit-person-nonce');
+
+  // TODO: also clean up relations and child lists
+  $personId = '';
+  if (isset($req)) {
+    $result = preg_match('/\/person\/([0-9]+)$/', urldecode($req->get_route()), $matches);
+    if ($result == 1) {
+      $personId = $matches[1];
+    }
+  }
+
+  return famtree_database_delete_person($personId);
+}
+
+// METADATA
+
 function famtree_sanitize_metadata($flag) {
   $metadataArgs = array(
     'refId' => FILTER_VALIDATE_INT,
@@ -124,27 +147,18 @@ function famtree_sanitize_metadata($flag) {
   return $metadata;
 }
 
-function famtree_save_relation() {
-  $relation = famtree_sanitize_relation(INPUT_POST);
+function famtree_delete_metadata(WP_REST_Request $req = null) {
+  check_admin_referer('edit-metadata-nonce', 'edit-metadata-nonce');
 
-  if (empty($relation['id'])) {
-    return famtree_database_create_relation($relation);
-  } else {
-    return famtree_database_update_relation($relation);
-  }
-}
-
-function famtree_delete_person(WP_REST_Request $req = null) {
-  // TODO: also clean up relations and child lists
-  $personId = '';
+  $metadataId = '';
   if (isset($req)) {
-    $result = preg_match('/\/person\/([0-9]+)$/', urldecode($req->get_route()), $matches);
+    $result = preg_match('/\/metadata\/([0-9]+)$/', urldecode($req->get_route()), $matches);
     if ($result == 1) {
-      $personId = $matches[1];
+      $metadataId = $matches[1];
     }
   }
 
-  return famtree_database_delete_person($personId);
+  return famtree_database_delete_metadata($metadataId);
 }
 
 function famtree_get_metadata(WP_REST_Request $req = null) {
@@ -159,17 +173,9 @@ function famtree_get_metadata(WP_REST_Request $req = null) {
   return famtree_database_get_metadata($personId);
 }
 
-function famtree_save_person() {
-  $person = famtree_sanitize_person(INPUT_POST);
-
-  if (empty($person['id'])) {
-    return famtree_database_create_person($person);
-  } else {
-    return famtree_database_update_person($person);
-  }
-}
-
 function famtree_save_metadata() {
+  check_admin_referer('edit-metadata-nonce', 'edit-metadata-nonce');
+
   $metadata = famtree_sanitize_metadata(INPUT_POST);
 
   if (empty($metadata['refId'])) {

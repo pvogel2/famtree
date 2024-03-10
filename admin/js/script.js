@@ -5,6 +5,23 @@ import Relation from './Relation.js';
 
 window.famtree = window.famtree || {};
 
+window.famtree.saveAll = function() {
+  const person = personEditor.edit.getPerson();
+
+  // validate minimal valid input
+  if (!person.firstName || !person.lastName) {
+    window.famtree.showMessage('Persons need at least firstname and lastname', 'error');
+    return;
+  };
+
+  const ps = window.famtree.saveRelations();
+  ps.push(window.famtree.savePerson(person));
+
+  Promise.allSettled(ps).then(() => {
+    document.location.reload();
+  });
+}
+
 window.famtree.saveRelations = function() {
   const rls = personEditor.edit.relations.filter((rl) => rl.modified);
   const ps = [];
@@ -34,28 +51,12 @@ window.famtree.saveRelations = function() {
         delete options.data.id;
       }
     };
+    personEditor.edit.setNonce(options);
 
     ps.push(wp.apiRequest(options));
   });
 
   return ps;
-}
-
-window.famtree.saveAll = function() {
-  const person = personEditor.edit.getPerson();
-
-  // validate minimal valid input
-  if (!person.firstName || !person.lastName) {
-    window.famtree.showMessage('Persons need at least firstname and lastname', 'error');
-    return;
-  };
-
-  const ps = window.famtree.saveRelations();
-  ps.push(window.famtree.savePerson(person));
-
-  Promise.allSettled(ps).then((ress) => {
-    document.location.reload();
-  });
 }
 
 window.famtree.loadFamilies = async () => {
@@ -89,6 +90,8 @@ window.famtree.savePerson = function(person) {
     type: 'POST',
     data: { ...person },
   };
+
+  personEditor.edit.setNonce(options);
 
   return wp.apiRequest(options);
 }
@@ -276,6 +279,8 @@ window.famtree.deletePerson = async () => {
     type: 'DELETE',
   };
 
+  personEditor.edit.setNonce(options);
+
   wp.apiRequest(options).then(() => {
     // remove from global list
     PersonList.remove(pId);
@@ -305,6 +310,7 @@ window.famtree.removeMeta = (mId) => {
     path: `famtree/v1/metadata/${mId}`,
     type: 'DELETE',
   };
+  personEditor.metadata.setNonce(options);
 
   wp.apiRequest(options).then(() => {    // remove from html
     personEditor.metadata.remove(mId);
@@ -343,6 +349,7 @@ window.famtree.saveMeta = (attachment) => {
     type: 'POST',
     data: { ...item },
   };
+  personEditor.metadata.setNonce(options);
 
   wp.apiRequest(options).then((resultData) => {
     personEditor.metadata.addItem(resultData);
@@ -362,6 +369,8 @@ window.famtree.updateRoot = async (elem, pId) => {
     type: 'POST',
     data: { root },
   };
+
+  options.data['update-root-nonce'] = document.getElementById('update-root-nonce').value;
 
   const ps = PersonList.find(pId);
 

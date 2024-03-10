@@ -34,6 +34,15 @@ function getDateValue(ts) {
   return null;
 }
 
+function addNonceOption(options, name, value) {
+  if (options.type === 'POST')  {
+    options.data[name] = value;
+  } else if (options.path.contains('?')) {
+    options.path += `&${name}=${value}`;
+  } else {
+    options.path += `?${name}=${value}`;
+  }
+}
 export default class PersonEditor {
   constructor() {
     const f = this.edit.getForm();
@@ -85,6 +94,12 @@ export default class PersonEditor {
       this.updateCandidatesSelect();
     },
 
+    setNonce(options) {
+      const name = 'edit-person-nonce';
+      const nonce = this.getForm().elements[name].value;
+      addNonceOption(options, name, nonce);
+    },
+ 
     getForm() {
       return document.querySelector(this.form);
     },
@@ -358,6 +373,12 @@ export default class PersonEditor {
     uploadButton: '#upload-metadata-button',
     default: '',
     form: '#uploadMetadataForm',
+
+    setNonce(options) {
+      const name = 'edit-metadata-nonce';
+      const nonce = this.getForm().elements[name].value;
+      addNonceOption(options, name, nonce);
+    },
 
     getForm() {
       return document.querySelector(this.form);
