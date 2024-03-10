@@ -90,6 +90,8 @@ class Famtree_Persons_List_Table extends WP_List_Table {
       // Bind table with columns, data and all
       function prepare_items() {
         if (isset($_POST['page']) && isset($_POST['s'])) {
+          check_admin_referer('search-person-nonce', 'search-person-nonce');
+
           $search = sanitize_text_field($_POST['s']);
           $this->persons_data = $this->get_persons_data($search);
         } else {

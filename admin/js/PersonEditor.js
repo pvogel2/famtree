@@ -85,6 +85,10 @@ export default class PersonEditor {
       this.updateCandidatesSelect();
     },
 
+    getNonce() {
+      return this.getForm().elements['edit-person-nonce'].value;
+    },
+  
     getForm() {
       return document.querySelector(this.form);
     },
@@ -359,6 +363,9 @@ export default class PersonEditor {
     default: '',
     form: '#uploadMetadataForm',
 
+    getNonce() {
+      return this.getForm().elements['edit-metadata-nonce'].value;
+    },
     getForm() {
       return document.querySelector(this.form);
     },

@@ -80,11 +80,15 @@ function famtree_render_persons_listing() {
   $personsTable = new Famtree_Persons_List_Table();
 
   echo '<div class="wrap">';
+  wp_nonce_field('update-root-nonce', 'update-root-nonce');
   // Prepare table
   $personsTable->prepare_items();
 
   ?>
   <form method="post">
+    <?php
+      wp_nonce_field('search-person-nonce', 'search-person-nonce');
+    ?>
     <input type="hidden" name="page" value="famtree" />
     <?php $personsTable->search_box('search', 'search_id'); ?>
   </form>
@@ -112,6 +116,9 @@ function famtree_render_edit_person_form() {
   <div style="display: flex;">
     <div>
     <form method="post" action="javascript:;" onsubmit="window.famtree.saveAll()" id="editPersonForm" class="form famtree-form">
+      <?php
+        wp_nonce_field('edit-person-nonce', 'edit-person-nonce');
+      ?>
       <input readonly hidden type="text" name="id" id="personId" />
       <div class="famtree-form__flex">
         <fieldset>
@@ -190,7 +197,7 @@ function famtree_render_edit_person_form() {
         <button type="button" onclick="window.famtree.deletePerson()" class="button famtree-form__button"><?php echo esc_html_e('Remove person', 'famtree') ?></button>
         <button id="person-submit"  type="submit" value="Submit" class="button button-primary famtree-form__button"><?php echo esc_html_e('Save person', 'famtree') ?></button>
       </fieldset>
-      </form>
+    </form>
     </div>
     <div class="famtree-metadata-container">
       <?php famtree_render_legend(__('Additional files', 'famtree')) ?>
@@ -210,6 +217,9 @@ function famtree_render_edit_person_form() {
       </div>
       <div>
         <form method="post" id="uploadMetadataForm" action="javascript:;" class="form famtree-form">
+          <?php
+            wp_nonce_field('edit-metadata-nonce', 'edit-metadata-nonce');
+          ?>
           <fieldset class="last" disabled="disabled" name="fs_add">
             <input hidden id="upload-metadata-refid" type="text" name="refid" />
             <table>
