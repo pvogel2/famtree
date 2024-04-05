@@ -1,15 +1,15 @@
-# Copyright (C) 2023 Peter Vogel
+# Copyright (C) 2024 Peter Vogel
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: FamTree 1.1.0\n"
+"Project-Id-Version: FamTree 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/famtree\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-10T11:23:35+01:00\n"
+"POT-Creation-Date: 2024-04-05T22:29:02+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: famtree\n"
@@ -26,223 +26,230 @@ msgstr ""
 msgid "Peter Vogel"
 msgstr ""
 
-#: includes/admin/layout.php:71
+#: includes/admin/layout.php:72
 msgid "remove"
 msgstr ""
 
-#: includes/admin/layout.php:101
+#: includes/admin/layout.php:106
 msgid "On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public."
 msgstr ""
 
-#: includes/admin/layout.php:117
+#: includes/admin/layout.php:125
 msgid "Attributes"
 msgstr ""
 
-#: includes/admin/layout.php:120
-#: includes/admin/PersonsListTable.php:20
+#: includes/admin/layout.php:128
+#: includes/admin/PersonsListTable.php:23
 msgid "First name"
 msgstr ""
 
-#: includes/admin/layout.php:121
-#: includes/admin/PersonsListTable.php:21
+#: includes/admin/layout.php:129
+#: includes/admin/PersonsListTable.php:24
 msgid "Sur names"
 msgstr ""
 
-#: includes/admin/layout.php:122
-#: includes/admin/PersonsListTable.php:22
+#: includes/admin/layout.php:130
+#: includes/admin/PersonsListTable.php:25
 msgid "Last name"
 msgstr ""
 
-#: includes/admin/layout.php:123
-#: includes/admin/PersonsListTable.php:23
+#: includes/admin/layout.php:131
+#: includes/admin/PersonsListTable.php:26
 msgid "Birth name"
 msgstr ""
 
-#: includes/admin/layout.php:124
-#: includes/admin/PersonsListTable.php:24
-#: build/index.js:20986
-#: build/view.js:20954
-#: build/view.js:17059
+#: includes/admin/layout.php:132
+#: includes/admin/PersonsListTable.php:27
+#: build/index.js:74
+#: build/view.js:74
 msgid "Birthday"
 msgstr ""
 
-#: includes/admin/layout.php:125
-#: includes/admin/PersonsListTable.php:25
-#: build/index.js:20994
-#: build/view.js:20962
-#: build/view.js:17063
+#: includes/admin/layout.php:133
+#: includes/admin/PersonsListTable.php:28
+#: build/index.js:74
+#: build/view.js:74
 msgid "Date of death"
 msgstr ""
 
-#: includes/admin/layout.php:130
-#: includes/admin/PersonsListTable.php:26
+#: includes/admin/layout.php:138
+#: includes/admin/PersonsListTable.php:29
 msgid "Relations"
 msgstr ""
 
-#: includes/admin/layout.php:133
+#: includes/admin/layout.php:141
 msgid "Partners"
 msgstr ""
 
-#: includes/admin/layout.php:136
+#: includes/admin/layout.php:144
 msgid "Children"
 msgstr ""
 
-#: includes/admin/layout.php:139
+#: includes/admin/layout.php:147
 msgid "Begin"
 msgstr ""
 
-#: includes/admin/layout.php:140
+#: includes/admin/layout.php:148
 msgid "End"
 msgstr ""
 
-#: includes/admin/layout.php:143
-msgid "Kind of"
+#: includes/admin/layout.php:153
+msgid "marriage"
 msgstr ""
 
-#: includes/admin/layout.php:149
-msgid "Add person"
-msgstr ""
-
-#: includes/admin/layout.php:155
-msgid "As child"
+#: includes/admin/layout.php:154
+msgid "partnership"
 msgstr ""
 
 #: includes/admin/layout.php:156
-msgid "As partner"
+msgid "Kind of"
 msgstr ""
 
 #: includes/admin/layout.php:163
+msgid "Add person"
+msgstr ""
+
+#: includes/admin/layout.php:169
+msgid "As child"
+msgstr ""
+
+#: includes/admin/layout.php:170
+msgid "As partner"
+msgstr ""
+
+#: includes/admin/layout.php:177
 msgid "Portrait foto"
 msgstr ""
 
-#: includes/admin/layout.php:175
+#: includes/admin/layout.php:189
 msgid "Select image"
 msgstr ""
 
-#: includes/admin/layout.php:182
+#: includes/admin/layout.php:196
 msgid "Reset person"
 msgstr ""
 
-#: includes/admin/layout.php:183
+#: includes/admin/layout.php:197
 msgid "Remove person"
 msgstr ""
 
-#: includes/admin/layout.php:184
+#: includes/admin/layout.php:198
 msgid "Save person"
 msgstr ""
 
-#: includes/admin/layout.php:189
+#: includes/admin/layout.php:203
 msgid "Additional files"
 msgstr ""
 
-#: includes/admin/layout.php:193
+#: includes/admin/layout.php:207
 msgid "Preview"
 msgstr ""
 
-#: includes/admin/layout.php:194
+#: includes/admin/layout.php:208
 msgid "Name"
 msgstr ""
 
-#: includes/admin/layout.php:195
+#: includes/admin/layout.php:209
 msgid "Description"
 msgstr ""
 
-#: includes/admin/layout.php:200
+#: includes/admin/layout.php:214
 msgid "No files found"
 msgstr ""
 
-#: includes/admin/layout.php:211
+#: includes/admin/layout.php:228
 msgid "Add metadata"
 msgstr ""
 
-#: includes/admin/layout.php:228
+#: includes/admin/layout.php:245
 msgid "Dismiss this notice."
 msgstr ""
 
-#: includes/admin/layout.php:245
+#: includes/admin/layout.php:262
 msgid "Error"
 msgstr ""
 
-#: includes/admin/PersonsListTable.php:18
+#: includes/admin/PersonsListTable.php:21
 msgid "Image"
 msgstr ""
 
-#: includes/admin/PersonsListTable.php:19
+#: includes/admin/PersonsListTable.php:22
 msgid "Is root"
 msgstr ""
 
-#: includes/admin/PersonsListTable.php:66
+#: includes/admin/PersonsListTable.php:73
 msgid "edit"
 msgstr ""
 
-#: includes/settings.php:19
+#: includes/settings.php:21
 msgid "Global settings"
 msgstr ""
 
-#: includes/settings.php:26
+#: includes/settings.php:28
 msgid "Visiblity of family data"
 msgstr ""
 
-#: includes/settings.php:132
+#: includes/settings.php:126
+msgid "FamTree configuration"
+msgstr ""
+
+#: includes/settings.php:134
 msgid "Save global settings"
 msgstr ""
 
-#: includes/settings.php:136
+#: includes/settings.php:138
 msgid "Person configuration"
 msgstr ""
 
-#: build/index.js:20690
-#: build/view.js:20658
-#: build/view.js:16814
+#: build/index.js:1
+#: build/view.js:1
+msgid "no information"
+msgstr ""
+
+#: build/index.js:74
+#: build/view.js:74
 msgid "previous"
 msgstr ""
 
-#: build/index.js:20694
-#: build/view.js:20662
-#: build/view.js:16815
+#: build/index.js:74
+#: build/view.js:74
 msgid "next"
 msgstr ""
 
-#: build/index.js:21118
+#: build/index.js:74
 msgid "General Settings"
 msgstr ""
 
-#: build/index.js:21121
+#: build/index.js:74
 msgid "Current founder"
 msgstr ""
 
-#: build/index.js:21129
+#: build/index.js:74
 msgid "Show founder FAB"
 msgstr ""
 
-#: build/index.js:21136
+#: build/index.js:74
 msgid "Color settings"
 msgstr ""
 
-#: build/index.js:21144
+#: build/index.js:74
 msgid "Background Color"
 msgstr ""
 
-#: build/index.js:21152
+#: build/index.js:74
 msgid "Text color"
 msgstr ""
 
-#: build/index.js:21160
+#: build/index.js:74
 msgid "Foreground Color"
 msgstr ""
 
-#: build/index.js:21168
+#: build/index.js:74
 msgid "Highlight Color"
 msgstr ""
 
-#: build/index.js:21176
+#: build/index.js:74
 msgid "Selection Color"
-msgstr ""
-
-#: build/index.js:22213
-#: build/view.js:21924
-#: build/view.js:18074
-msgid "no information"
 msgstr ""
 
 #: build/block.json
