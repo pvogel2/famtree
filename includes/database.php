@@ -110,7 +110,7 @@ function famtree_database_get_metadata($personId) {
 
   // to add relations to the result directly from db
   // SELECT p.*,r.id relations FROM `wp_testfamtree_persons` AS p LEFT JOIN `wp_testfamtree_relations` AS r ON JSON_CONTAINS(r.members, CONCAT('[',p.id,']'))
-  $results_sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}famtree_metadata WHERE refId='$s'", $personId);
+  $results_sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}famtree_metadata WHERE refId='%s'", $personId);
   $results = $wpdb->get_results($results_sql, OBJECT );
 
   foreach ($results as &$item) {

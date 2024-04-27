@@ -37,7 +37,7 @@ function getDateValue(ts) {
 function addNonceOption(options, name, value) {
   if (options.type === 'POST')  {
     options.data[name] = value;
-  } else if (options.path.contains('?')) {
+  } else if (options.path.includes('?')) {
     options.path += `&${name}=${value}`;
   } else {
     options.path += `?${name}=${value}`;
