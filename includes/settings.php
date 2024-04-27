@@ -49,8 +49,12 @@ function famtree_add_type_attribute($tag, $handle, $src) {
       return $tag;
   }
   // change the script tag by adding type="module" and return it.
-  $tag = '<script type="module" src="' . esc_url( $src ) . '"></script>';
-  return $tag;
+  return wp_get_script_tag(
+    array(
+      'src'  => $src,
+      'type' => 'module',
+    )
+  );
 }
 
 add_filter('script_loader_tag', 'famtree_add_type_attribute' , 10, 3);
