@@ -144,7 +144,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       const ps = PersonList.find(mId);
 
       if (!ps) {
-        console.warn('Relation Error: Could not find partner relation with id', mId, ', skipping relation.');
+        console.warn('Relation Warning: Could not find partner relation with id', mId, ', skipping relation.');
         return;
       }
 
@@ -158,7 +158,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const ps = PersonList.find(cId);
 
         if (!ps) {
-          console.warn('Relation Error: Could not find child with id', cId, ', skipping relation.');
+          console.warn('Relation Warning: Could not find child with id', cId, ', skipping relation.');
           return;
         }
 
