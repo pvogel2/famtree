@@ -179,8 +179,8 @@ function famtree_render_edit_person_form() {
             <tr>
               <td>
                 <?php printf(
-                '<img src="%1$s" id="person-portrait" width="100" height="100" style="object-fit: cover"/>',
-                  plugins_url( '../../admin/images/default.jpg', __FILE__ )
+                  '<img src="%1$s" id="person-portrait" width="100" height="100" style="object-fit: cover"/>',
+                  esc_html(plugins_url( '../../admin/images/default.jpg', __FILE__ ))
                 );?>
               </td>
             </tr>
