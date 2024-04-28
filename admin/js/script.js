@@ -9,7 +9,7 @@ window.famtree.saveAll = function() {
   const person = personEditor.edit.getPerson();
 
   // validate minimal valid input
-  if (!person.firstName || !person.lastName) {
+  if (!person.hasMinimumData()) {
     window.famtree.showMessage('Persons need at least firstname and lastname', 'error');
     return;
   };
@@ -77,7 +77,11 @@ window.famtree.loadMetadata = async (id) => {
   return wp.apiRequest(options);
 }
 
-// returns a Promise
+/**
+ * Save the person object to the database.
+ * @param {Person} person 
+ * @returns Promise
+ */
 window.famtree.savePerson = function(person) {
   // get root information from table, the only place where it is modified
   const input = document.querySelector(`.wp-list-table tbody tr[data-id="${person.id}"] .root input`);
@@ -88,7 +92,7 @@ window.famtree.savePerson = function(person) {
   const options = {
     path: `famtree/v1/person${person.id ? `/${person.id}` : ''}`,
     type: 'POST',
-    data: { ...person },
+    data: person.serialize(),
   };
 
   personEditor.edit.setNonce(options);
@@ -194,10 +198,8 @@ window.famtree.relMetaChanged = () => {
 
 window.famtree.removePartner = () => {
   const rId = personEditor.edit.removeRelation();
-  // const rId = personEditor.edit.rSelect.removeSelected();
   if (rId) {
     Relation.remove(rId);
-    // personEditor.edit.removeRelation(rId);
   }
 }
 
@@ -295,7 +297,6 @@ window.famtree.deletePerson = async () => {
       tBody.removeChild(tr);
     };
   });
-
 }
 
 window.famtree.editMedia = (mediaId) => {

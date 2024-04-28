@@ -43,7 +43,7 @@ export function getEditFormElements() {
     partnersBtn: addButton(fE, { name: 'partners_remove', disabled: 'disabled' }),
     childrenBtn: addButton(fE, { name: 'children_remove', disabled: 'disabled' }),
   };
-  
+
   addInput(fE, { name: 'portraitId' });
   addElement(fE, 'img', { id: 'person-portrait' });
   addInput(fE, { name: 'relType' });

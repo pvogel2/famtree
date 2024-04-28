@@ -1,5 +1,6 @@
 import ManagedSelect from './ManagedSelect.js';
 import PersonList from '../../public/js/PersonList.js';
+import Person from '../../public/js/Person.js';
 import Relation from './Relation.js';
 
 function getMediaType(mimetype) {
@@ -46,16 +47,16 @@ function addNonceOption(options, name, value) {
 export default class PersonEditor {
   constructor() {
     const f = this.edit.getForm();
-    const firstname = f.elements['firstName'];
-    const lastname = f.elements['lastName'];
-    const partners = f.elements['partners'];
+    const firstname = f.elements.firstName;
+    const lastname = f.elements.lastName;
+    const partners = f.elements.partners;
     const partnersBtn = f.elements['partners_remove'];
-    const children = f.elements['children'];
+    const children = f.elements.children;
     const childrenBtn = f.elements['children_remove'];
-    const candidates = f.elements['candidates'];
-    const relType = f.elements['relType'];
-    const relStart = f.elements['relStart'];
-    const relEnd = f.elements['relEnd'];
+    const candidates = f.elements.candidates;
+    const relType = f.elements.relType;
+    const relStart = f.elements.relStart;
+    const relEnd = f.elements.relEnd;
 
     if (!firstname || !lastname) {
       console.error('missing mandatory form elements');
@@ -66,7 +67,6 @@ export default class PersonEditor {
       const wasEditing = !!this.edit.editing;
       this.edit.editing = !!firstname.value && !!lastname.value;
       if (wasEditing !== this.edit.editing) {
-        f.elements['fs_buttons'].disabled = !this.edit.editing;
         this.edit.update(this.edit.editing);
         this.metadata.update(this.edit.editing);
       }
@@ -89,6 +89,7 @@ export default class PersonEditor {
 
     update(editing) {
       const f = this.getForm();
+      f.elements['fs_buttons'].disabled = !editing;
       f.elements['fs_portrait'].disabled = !editing;
       f.elements['fs_relations'].disabled = !editing;
       this.updateCandidatesSelect();
@@ -106,7 +107,7 @@ export default class PersonEditor {
 
     setRelations(rs) {
       const f = this.getForm();
-      const pId = f.elements['id'].value;
+      const pId = f.elements.id.value;
 
       if (!pId) {
         return;
@@ -124,7 +125,7 @@ export default class PersonEditor {
 
     setPartnersSelect() {
       const f = this.getForm();
-      const pId = parseInt(f['id'].value);
+      const pId = parseInt(f.elements.id.value);
 
       this.relations.forEach((r) => {
         const ps = r.members.filter((id) => id !== pId);
@@ -145,17 +146,17 @@ export default class PersonEditor {
       this.reset();
       const f = this.getForm();
 
-      f.elements['id'].value = p.id;
-      f.elements['firstName'].value = p.firstName;
-      f.elements['surNames'].value = p.surNames;
-      f.elements['lastName'].value = p.lastName;
-      f.elements['birthName'].value = p.birthName;
-      f.elements['birthday'].value = p.birthday;
-      f.elements['deathday'].value = p.deathday;
-      f.elements['portraitId'].value = p.portraitId;
+      f.elements.id.value = p.id;
+      f.elements.firstName.value = p.firstName;
+      f.elements.surNames.value = p.surNames;
+      f.elements.lastName.value = p.lastName;
+      f.elements.birthName.value = p.birthName;
+      f.elements.birthday.value = p.birthday;
+      f.elements.deathday.value = p.deathday;
+      f.elements.portraitId.value = p.portraitId;
 
-      f.elements['firstName'].dispatchEvent(new Event('input'));
-      f.elements['lastName'].dispatchEvent(new Event('input'));
+      f.elements.firstName.dispatchEvent(new Event('input'));
+      f.elements.lastName.dispatchEvent(new Event('input'));
 
       this.setPortrait({ id: p.portraitId, url: p.portraitUrl });
 
@@ -174,7 +175,7 @@ export default class PersonEditor {
       }
 
       img.src = data.url || this.defaultPortraitImage;
-      f.elements['portraitId'].value = data.id;
+      f.elements.portraitId.value = data.id;
     },
 
     updateCandidatesSelect() {
@@ -187,34 +188,39 @@ export default class PersonEditor {
 
     setCandidatesSelect() {
       const f = this.getForm();
-      const id = parseInt(f.id.value);
-      const cs = PersonList.filter((p) => (id !== p.id));
+      const pId = parseInt(f.elements.id.value);
+      const cs = PersonList.filter((p) => (pId !== p.id));
       cs.forEach((p) => {
         this.caSelect.addOption(p.name, p.id);
       });
       this.caSelect.setIndex();
     },
 
+    /**
+     * get the person currenlty edited
+     * 
+     * @returns valid person or null 
+     */
     getPerson() {
       const f = this.getForm();
-      const id = f.id.value;
-      const imageId = f.portraitId.value;
-      const p = {
-        id: (id ? parseInt(id) : ''),
-        firstName: f.firstName.value,
-        surNames: f.surNames.value,
-        lastName: f.lastName.value,
-        birthName:f.birthName.value,
-        birthday: f.birthday.value,
-        deathday: f.deathday.value,
+      const pId = f.elements.id.value;
+      const imageId = f.elements.portraitId.value;
+      const p = new Person({
+        id: (pId ? parseInt(pId) : ''),
+        firstName: f.elements.firstName.value,
+        surNames: f.elements.surNames.value,
+        lastName: f.elements.lastName.value,
+        birthName: f.elements.birthName.value,
+        birthday: f.elements.birthday.value,
+        deathday: f.elements.deathday.value,
         portraitId: (imageId ? parseInt(imageId) : ''),
-      };
+      });
       return p;
     },
 
     removePerson(id) {
       const f = this.getForm();
-      const pId = parseInt(f.id.value);
+      const pId = parseInt(f.elements.id.value);
       const rId = parseInt(id);
 
       if (pId !== rId) {
@@ -234,8 +240,8 @@ export default class PersonEditor {
       this.relation = null;
       this.relations = [];
 
-      f.elements['firstName'].dispatchEvent(new Event('input'));
-      f.elements['lastName'].dispatchEvent(new Event('input'));
+      f.elements.firstName.dispatchEvent(new Event('input'));
+      f.elements.lastName.dispatchEvent(new Event('input'));
 
       this.editing = false;
     },
@@ -280,7 +286,6 @@ export default class PersonEditor {
 
       const pId = rl.members[1];
       const newPartner = PersonList.find(pId);
-
       // defined partner can not be found
       if (!newPartner) {
         return null;
@@ -292,6 +297,7 @@ export default class PersonEditor {
       this.setRelation(rl.clone());
 
       this.rSelect.addOption(newPartner.name, rId);
+
       f.elements['btn_addChild'].disabled = false;
 
       return rId;
@@ -330,11 +336,11 @@ export default class PersonEditor {
     setRelation(rl = null) {
       const f = this.getForm();
       this.cSelect.reset();
-      const rs = f.elements['relStart']
+      const rs = f.elements.relStart;
       rs.value = null;
-      const re = f.elements['relEnd']
+      const re = f.elements.relEnd;
       re.value = null;
-      const rt = f.elements['relType']
+      const rt = f.elements.relType;
       rt.value = null;
 
       this.relation = rl;

@@ -1,6 +1,6 @@
 const defaultConfig = {
-  firstName: 'firstName',
-  lastName: 'lastName',
+  firstName: '',
+  lastName: '',
   birthday: null,
   surNames: '',
   birthName: '',
@@ -32,15 +32,16 @@ function parseDate(d) {
 }
 
 export default class Person {
+  /**
+   * Valid id has to be non empty string or a number.
+   * @param {*} id 
+   * @returns boolean
+   */
   static isValidId(id) {
-    return id && (typeof id === 'string' || typeof id === 'number');
+    return ((typeof id === 'string' && !!id) || typeof id === 'number');
   }
     
   constructor(config = defaultConfig) {
-    if (!Person.isValidId(config.id)) {
-      throw new Error('Missing id');
-    }
-
     this.pFirstName = config.firstName ? config.firstName.trim() : defaultConfig.firstName;
     this.pLastName = config.lastName ? config.lastName.trim() : defaultConfig.lastName;
     this.pBirthday = parseDate(config.birthday);
@@ -49,7 +50,7 @@ export default class Person {
     this.pBirthName = config.birthName ? config.birthName.trim() : defaultConfig.birthName;
     this.pDeathday = parseDate(config.deathday);
 
-    this.id = config.id || `${this.pFirstName}${this.pLastName}${this.pBirthday}`; // TODO: remove generated id stuff
+    this.id = Person.isValidId(config.id) ? config.id : null; //  || `${this.pFirstName}${this.pLastName}${this.pBirthday}`; // TODO: remove generated id stuff
 
     this.pRelations = getInitializedArray(config.relations);
 
@@ -134,6 +135,14 @@ export default class Person {
 
   hasRelations() {
     return !!this.pRelations.length;
+  }
+
+  hasId() {
+    return Person.isValidId(this.id);
+  }
+
+  hasMinimumData() {
+    return (!!this.firstName && !!this.lastName);
   }
 
   equals(p = {}) {

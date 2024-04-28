@@ -3,14 +3,14 @@ import Person from './Person.js';
 const properties = [
   {
     key: 'name',
-    default: 'firstName lastName',
+    default: '',
     config: { firstName: 'Peter', lastName: 'Vogel' },
     expect: 'Peter Vogel',
     setter: false,
   },
   {
     key: 'firstName',
-    default: 'firstName',
+    default: '',
     config: { firstName: 'Peter', },
     expect: 'Peter',
     setter: true,
@@ -24,7 +24,7 @@ const properties = [
   },
   {
     key: 'lastName',
-    default: 'lastName',
+    default: '',
     config: { lastName: 'Vogel', },
     expect: 'Vogel',
     setter: true,
@@ -69,14 +69,13 @@ const lists = [
 ];
 
 it('creates instance', () => {
-  const node = new Person({ id: 'p1' });
+  const node = new Person();
   expect(node).toBeInstanceOf(Person);
 });
 
-it('throws error if no id is provided', () => {
-  expect(() => {
-    new Person();
-  }).toThrow();
+it.each([{}, null, undefined])('sets id to null for id is %o', (id) => {
+  const node = new Person({ id });
+  expect(node.id).toEqual(null);
 });
 
 it('equals returns true for same Person', () => {
@@ -178,12 +177,12 @@ describe.each(['firstName', 'surNames', 'lastName', 'birthName'])('Property %s',
 
 describe('name property', () => {
   it.each([
-    { firstName: 'X', full: 'X lastName' },
-    { surNames: 'Y', full: 'firstName Y lastName' },
-    { lastName: 'Z', full: 'firstName Z' },
-    { firstName: 'X ', full: 'X lastName' },
-    { surNames: '  Y', full: 'firstName Y lastName' },
-    { lastName: 'Z ', full: 'firstName Z' },
+    { firstName: 'X', full: 'X' },
+    { surNames: 'Y', full: 'Y' },
+    { lastName: 'Z', full: 'Z' },
+    { firstName: 'X ', full: 'X' },
+    { surNames: '  Y', full: 'Y' },
+    { lastName: 'Z ', full: 'Z' },
     { firstName: 'X', lastName: 'Z', full: 'X Z' },
     { firstName: 'X', surNames: 'Y', lastName: 'Z', full: 'X Y Z' },
   ])('name returns full name $full for partials', (names) => {
@@ -216,8 +215,39 @@ describe('hasDetails', () => {
   });
 
   it('returns false for no detail found', () => {
-    const node = new Person({ id: 'p1' });
+    const node = new Person();
 
     expect(node.hasDetails()).toBe(false);
+  });
+});
+
+describe('hasId', () => {
+  it.each([
+    { id: {}, value: false },
+    { id: null, value: false },
+    { id: undefined, value: false},
+    { id: 0, value: true },
+    { id: 1, value: true },
+    { id: 'test', value: true },
+    { id: '', value: false },
+  ])('returns $value for property $id', ({ id, value }) => {
+    const node = new Person({ id });
+
+    expect(node.hasId()).toBe(value);
+  });
+});
+
+describe('hasMinimumData', () => {
+  it.each([
+    { lastName: undefined, firstName: undefined, value: false },
+    { lastName: 'Last', firstName: undefined, value: false },
+    { lastName: undefined, firstName: '', value: false },
+    { lastName: 'Last', firstName: 'First', value: true },
+    { lastName: '', firstName: 'First', value: false },
+    { lastName: 'Last', firstName: '', value: false },
+  ])('returns $value for lastname $lastName and firstname $firstName', ({ lastName, firstName, value }) => {
+    const person = new Person({ lastName, firstName });
+
+    expect(person.hasMinimumData()).toBe(value);
   });
 });

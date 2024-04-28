@@ -166,8 +166,12 @@ function famtree_render_edit_person_form() {
               <td>
               </td>
               <td>
-                <button type="button" name="btn_addChild" disabled="disabled" onclick="window.famtree.addChild()" class="button famtree-form__button"><?php echo esc_html_e('As child', 'famtree') ?></button>
-                <button type="button" onclick="window.famtree.addPartner()" class="button famtree-form__button"><?php echo esc_html_e('As partner', 'famtree') ?></button>
+                <button type="button" name="btn_addChild" disabled="disabled" onclick="window.famtree.addChild()" class="button famtree-form__button">
+                  <?php echo esc_html_e('As child', 'famtree') ?>
+                </button>
+                <button type="button" name="btn_addPartner" onclick="window.famtree.addPartner()" class="button famtree-form__button">
+                  <?php echo esc_html_e('As partner', 'famtree') ?>
+                </button>
               </td>
             </tr>
            </table>

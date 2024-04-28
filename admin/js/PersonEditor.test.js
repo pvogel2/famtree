@@ -1,5 +1,6 @@
 import PersonEditor from './PersonEditor.js';
 import PersonList from '../../public/js/PersonList.js';
+import Person from '../../public/js/Person.js';
 import Relation from './Relation.js';
 import { getEditFormElements, getMetadataFormElements } from '../../tests/utils.js';
 
@@ -33,8 +34,8 @@ const spyRelationFilter = jest.spyOn(Relation, 'filter');
 
 describe('The person editor', () => {
   const person = {name: 'person', id: 1, firstName: 'First', lastName: 'Last', deathday: '2023-11-02', birthday: '2023-11-01' };
-  const partner = { name: 'partner', id: 2 };
-  const child = { name: 'child', id: 3 };
+  const partner = { name: 'partner', id: 2, firstName: 'PartnerFirst', lastName: 'PartnerLast' };
+  const child = { name: 'child', id: 3, firstName: 'ChildFirst', lastName: 'ChildLast' };
 
   const relation = {
     start: null,
@@ -99,13 +100,14 @@ describe('The person editor', () => {
       expect(partners.disabled).toBe(true);
       expect(children.disabled).toBe(true);
       expect(candidates.disabled).toBe(false);
-
       expect(personForm.elements['fs_portrait'].disabled).toBe(false);
+
+      // this element covers addChild and addPartner availability
       expect(personForm.elements['fs_relations'].disabled).toBe(false);
     });
   });
 
-  describe('setting a person for editing', () => {
+  describe('sets a person for editing', () => {
     it('enables correct person fields', () => {
       const { pe, personId, firstName, lastName } = render();
 
@@ -142,6 +144,26 @@ describe('The person editor', () => {
     });
   });
 
+  describe('gets a person for editing', () => {
+    it('for non editing returns empty person', () => {
+      const { pe } = render();
+
+      const p = pe.edit.getPerson();
+
+      expect(p).toBeInstanceOf(Person);
+      expect(p.hasId()).toBe(false);
+    });
+
+    it('returns the currently edited Person instance', () => {
+      const { pe } = render();
+      pe.edit.setPerson(person);
+    
+      const p = pe.edit.getPerson();
+      expect(p).toBeInstanceOf(Person);
+      expect(p.hasId()).toBe(true);
+    });
+  });
+
   describe('for relation', () => {
     it('when partner is added activates relation fields', () => {
       const { pe, partners, partnersBtn, children, childrenBtn, addChildBtn } = render({ person });
@@ -151,6 +173,7 @@ describe('The person editor', () => {
       expect(returnedId).toEqual(expect.any(Number));
       expect(partners.disabled).toBe(false);
       expect(partnersBtn.disabled).toBe(false);
+
       expect(children.disabled).toBe(true);
       expect(childrenBtn.disabled).toBe(true);
       expect(addChildBtn.disabled).toBe(false);
