@@ -38,7 +38,7 @@ export default class ManagedSelect {
   
     setLast() {
       if (this.s.options.length) {
-        this.s.selectedIndx = this.s.options.length - 1;
+        this.s.selectedIndex = this.s.options.length - 1;
       }
     }
   
