@@ -27,13 +27,13 @@ function getMediaType(mimetype) {
   return 'unknown';
 };
 
-function getDateValue(ts) {
+/* function getDateValue(ts) {
   const DATE_FORMAT = 'yyyy-MM-dd';
   if (ts) {
     return new Date(parseInt(ts)).toISOString().substring(0,10);
   }
   return null;
-}
+} */
 
 function addNonceOption(options, name, value) {
   if (options.type === 'POST')  {
@@ -44,6 +44,7 @@ function addNonceOption(options, name, value) {
     options.path += `?${name}=${value}`;
   }
 }
+
 export default class PersonEditor {
   constructor() {
     const f = this.edit.getForm();
@@ -199,7 +200,7 @@ export default class PersonEditor {
     /**
      * get the person currenlty edited
      * 
-     * @returns valid person or null 
+     * @returns Person
      */
     getPerson() {
       const f = this.getForm();
@@ -215,6 +216,7 @@ export default class PersonEditor {
         deathday: f.elements.deathday.value,
         portraitId: (imageId ? parseInt(imageId) : ''),
       });
+
       return p;
     },
 
