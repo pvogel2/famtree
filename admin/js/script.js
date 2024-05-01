@@ -1,6 +1,7 @@
 import PersonEditor from './PersonEditor.js';
 import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
+import RestClient from './rest.js';
 
 
 window.famtree = window.famtree || {};
@@ -22,6 +23,10 @@ window.famtree.saveAll = function() {
   });
 }
 
+/**
+ * Saves all modified relations.
+ * @returns [Promise]
+ */
 window.famtree.saveRelations = function() {
   const rls = personEditor.edit.relations.filter((rl) => rl.modified);
   const ps = [];
@@ -36,45 +41,34 @@ window.famtree.saveRelations = function() {
 
   rls.forEach((rl) => {
     const deleted = rl.deleted === true;
+
     if (rl.id < 0 && deleted) { // new relation directly removed in edit mode, nothing to save
       return;
     }
 
-    const options = {
-      path: `famtree/v1/relation/${rl.id >= 0 ? rl.id : ''}`,
-      type: deleted ? 'DELETE' : 'POST',
-    };
+    const endpoint = `/relation/${rl.id >= 0 ? rl.id : ''}`;
+    const nonce = personEditor.edit.getNonce();
 
     if (!deleted) {
-      options.data = rl.serialize();
-      if (options.data.id < 0) { // new relation
-        delete options.data.id;
+      const data = rl.serialize();
+      if (data.id < 0) { // new relation
+        delete data.id;
       }
-    };
-    personEditor.edit.setNonce(options);
-
-    ps.push(wp.apiRequest(options));
+      ps.push(restClient.post(endpoint, nonce, data));
+    } else {
+      ps.push(restClient.delete(endpoint, nonce));
+    }
   });
 
   return ps;
 }
 
 window.famtree.loadFamilies = async () => {
-  const options = {
-    path: 'famtree/v1/family/',
-    type: 'GET',
-  };
-
-  return wp.apiRequest(options);
+  return restClient.get('/family/');
 }
 
 window.famtree.loadMetadata = async (id) => {
-  const options = {
-    path: `famtree/v1/person/${id}/metadata`,
-    type: 'GET',
-  };
-
-  return wp.apiRequest(options);
+  return restClient.get(`/person/${id}/metadata`);
 }
 
 /**
@@ -89,20 +83,18 @@ window.famtree.savePerson = function(person) {
     person.root = input.checked;
   }
 
-  const options = {
-    path: `famtree/v1/person${person.id ? `/${person.id}` : ''}`,
-    type: 'POST',
-    data: person.serialize(),
-  };
-
-  personEditor.edit.setNonce(options);
-
-  return wp.apiRequest(options);
+  const endpoint = `/person${person.id ? `/${person.id}` : ''}`
+  const nonce = personEditor.edit.getNonce();
+  const data = person.serialize();
+  return restClient.post(endpoint, nonce, data);
 }
 
 let personEditor;
+let restClient;
 
 window.addEventListener('DOMContentLoaded', async () => {
+  restClient = new RestClient();
+
   const { relations, persons } = await window.famtree.loadFamilies();
 
   relations.forEach((r) => {
@@ -276,14 +268,7 @@ window.famtree.deletePerson = async () => {
   const pId = person.id;
   if (!pId) return;
 
-  const options = {
-    path: `famtree/v1/person/${pId}`,
-    type: 'DELETE',
-  };
-
-  personEditor.edit.setNonce(options);
-
-  wp.apiRequest(options).then(() => {
+  restClient.delete(`/person/${pId}`, personEditor.edit.getNonce()).then(() => {
     // remove from global list
     PersonList.remove(pId);
 
@@ -307,16 +292,13 @@ window.famtree.editMedia = (mediaId) => {
 }
 
 window.famtree.removeMeta = (mId) => {
-  const options = {
-    path: `famtree/v1/metadata/${mId}`,
-    type: 'DELETE',
-  };
-  personEditor.metadata.setNonce(options);
+  const endpoint = `/metadata/${mId}`;
+  const nonce = personEditor.metadata.getNonce();
 
-  wp.apiRequest(options).then(() => {    // remove from html
-    personEditor.metadata.remove(mId);
+  restClient.delete(endpoint, nonce).then(() => {    
+    personEditor.metadata.remove(mId); // remove from html
     window.famtree.showMessage('Additional file removed');
- })
+  })
   .fail((request, statusText) => {
     window.famtree.showMessage('Additional file remove failed', 'error');
     console.log('error', statusText)
@@ -345,14 +327,11 @@ window.famtree.saveMeta = (attachment) => {
     refId: metadataForm.refid.value,
   };
 
-  const options = {
-    path: 'famtree/v1/metadata/',
-    type: 'POST',
-    data: { ...item },
-  };
-  personEditor.metadata.setNonce(options);
+  const endpoint = '/metadata/';
+  const nonce = personEditor.metadata.getNonce();;
+  const data = { ...item };
 
-  wp.apiRequest(options).then((resultData) => {
+  restClient.post(endpoint, nonce, data).then((resultData) => {
     personEditor.metadata.addItem(resultData);
     window.famtree.showMessage('Additional file saved');
   })
@@ -364,21 +343,17 @@ window.famtree.saveMeta = (attachment) => {
 
 window.famtree.updateRoot = async (elem, pId) => {
   const root = elem.checked;
-
-  const options = {
-    path: `famtree/v1/root/${pId}`,
-    type: 'POST',
-    data: { root },
-  };
-
-  options.data['update-root-nonce'] = document.getElementById('update-root-nonce').value;
-
   const ps = PersonList.find(pId);
 
-  wp.apiRequest(options).then(() => {
+  const endpoint = `/root/${pId}`;
+  const nonce = { name: 'update-root-nonce', value: document.getElementById('update-root-nonce').value };
+  const data = { root };
+
+  restClient.post(endpoint, nonce, data).then(() => {
     window.famtree.showMessage(`${ root ? 'Added' : 'Removed'} ${ ps.name } as available family founder.`);
   })
-  .catch((err) => {
+  .fail((request, statusText) => {
+    console.log('error', statusText);
     window.famtree.showMessage('Updating roots failed', 'error');
   });
 }

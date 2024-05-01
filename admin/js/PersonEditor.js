@@ -27,24 +27,6 @@ function getMediaType(mimetype) {
   return 'unknown';
 };
 
-/* function getDateValue(ts) {
-  const DATE_FORMAT = 'yyyy-MM-dd';
-  if (ts) {
-    return new Date(parseInt(ts)).toISOString().substring(0,10);
-  }
-  return null;
-} */
-
-function addNonceOption(options, name, value) {
-  if (options.type === 'POST')  {
-    options.data[name] = value;
-  } else if (options.path.includes('?')) {
-    options.path += `&${name}=${value}`;
-  } else {
-    options.path += `?${name}=${value}`;
-  }
-}
-
 export default class PersonEditor {
   constructor() {
     const f = this.edit.getForm();
@@ -96,12 +78,14 @@ export default class PersonEditor {
       this.updateCandidatesSelect();
     },
 
-    setNonce(options) {
+    getNonce() {
       const name = 'edit-person-nonce';
-      const nonce = this.getForm().elements[name].value;
-      addNonceOption(options, name, nonce);
+      return {
+        name,
+        value: this.getForm().elements[name].value,
+      };
     },
- 
+
     getForm() {
       return document.querySelector(this.form);
     },
@@ -382,10 +366,12 @@ export default class PersonEditor {
     default: '',
     form: '#uploadMetadataForm',
 
-    setNonce(options) {
+    getNonce() {
       const name = 'edit-metadata-nonce';
-      const nonce = this.getForm().elements[name].value;
-      addNonceOption(options, name, nonce);
+      return {
+        name,
+        value: this.getForm().elements[name].value,
+      };
     },
 
     getForm() {
