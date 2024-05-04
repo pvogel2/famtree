@@ -174,6 +174,7 @@ export default class Person {
       deathday: this.pDeathday,
       relations: this.pRelations.slice(),
       portraitUrl: this.pPortraitUrl,
+      portraitId: this.pPortraitId,
     };
   };
 };

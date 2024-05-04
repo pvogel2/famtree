@@ -192,7 +192,7 @@ describe('name property', () => {
 });
 
 it('serialize returns serialiable person data', () => {
-  const person = new Person({ id: 'p1' });
+  const person = new Person({ id: 'p1', portraitId: '14' });
   const data = person.serialize();
   expect(data).toEqual(expect.objectContaining({
     id: 'p1',
@@ -201,6 +201,7 @@ it('serialize returns serialiable person data', () => {
     birthday: null,
     deathday: null,
     relations: expect.any(Array),
+    portraitId: 14,
   }));
 });
 
