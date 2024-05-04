@@ -26,6 +26,12 @@ export default class PersonRelations {
     return null;
   }
 
+  getModified() {
+    return this.#relations
+      .filter((rl) => rl.modified)
+      .map((rl) => rl.clone());
+  }
+
   setDeleted(id) {
     const rl = this.#find(id);
     if (rl) {
