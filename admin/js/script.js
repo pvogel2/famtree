@@ -1,4 +1,4 @@
-import PersonEditor from './PersonEditor.js';
+import PersonEditor from './editor/PersonEditor.js';
 import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
 import RestClient from './rest.js';
@@ -204,7 +204,7 @@ window.famtree.addPartner = (id) => {
   if (isNaN(pId)) return;
 
   const person = personEditor.edit.getPerson();
-  if (!personEditor.edit.findInvolvedRelation(pId)) {
+  if (!personEditor.edit.hasRelation(pId)) {
     // new relation
     const relation = {
       start: null,

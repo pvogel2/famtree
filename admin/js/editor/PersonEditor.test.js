@@ -1,8 +1,8 @@
 import PersonEditor from './PersonEditor.js';
-import PersonList from '../../public/js/PersonList.js';
-import Person from '../../public/js/Person.js';
-import Relation from './Relation.js';
-import { getEditFormElements, getMetadataFormElements } from '../../tests/utils.js';
+import PersonList from '../../../public/js/PersonList.js';
+import Person from '../../../public/js/Person.js';
+import Relation from '../Relation.js';
+import { getEditFormElements, getMetadataFormElements } from '../../../tests/utils.js';
 
 function setName(fn, ln) {
   fn.value = 'First';
@@ -16,7 +16,7 @@ function render({ person } = {}) {
   const fElems = getMetadataFormElements();
   document.body.appendChild(eElems.personForm);
   document.body.appendChild(fElems.metadataForm);
-  document.body.appendChild(fElems.mediaTable);
+  document.body.appendChild(fElems.metaTable);
 
   const pe = new PersonEditor();
 
@@ -220,7 +220,7 @@ describe('The person editor', () => {
     });
   });
 
-  describe('findInvolvedRelation', () => {
+  describe('hasRelation', () => {
     const params = [
       { id: relation.members[0], found: true },
       { id: relation.members[1], found: true },
@@ -232,7 +232,7 @@ describe('The person editor', () => {
 
       pe.edit.addRelation(relation);
 
-      const result = !!pe.edit.findInvolvedRelation(id);
+      const result = !!pe.edit.hasRelation(id);
       expect(result).toBe(found);
     });
 
@@ -242,7 +242,7 @@ describe('The person editor', () => {
       pe.edit.addRelation({ ...relation });
       pe.edit.removeRelation();
 
-      const result = !!pe.edit.findInvolvedRelation(person.Id);
+      const result = !!pe.edit.hasRelation(person.Id);
       expect(result).toBe(false);
     });
   });
@@ -298,10 +298,11 @@ describe('The person editor', () => {
       const { pe, children } = render({ person });
 
       pe.edit.addRelation(relation);
-      const rl = pe.edit.relations[0];
 
       pe.edit.addChild(child.id);
       pe.edit.addChild(child.id);
+
+      const rl = pe.edit.relations.getFirst();
 
       expect(rl.children).toHaveLength(1);
       expect(children.options).toHaveLength(1);
@@ -321,52 +322,53 @@ describe('The person editor', () => {
   });
 
   describe('metadata', () => {
-    function isEmptyMediaTable(t) {
+    const item = { id: 1, title: 'The title' };
+
+    function isEmptyMetaTable(t) {
       expect(t.children).toHaveLength(1);
       expect(t.children[0].querySelector('td').classList.contains('column-nocontent')).toBe(true);
     }
 
     describe('calling set without items', () => {
       it('adds a placeholder to table', () => {
-        const { pe, mediaTable } = render({ person });
+        const { pe, metaTable } = render({ person });
+
         pe.metadata.set([]);
 
-        isEmptyMediaTable(mediaTable);
+        isEmptyMetaTable(metaTable);
       });
     });
 
     describe('addItem', () => {
       it('adds a new row to the media table', () => {
-        const { pe, mediaTable } = render({ person });
-        const item = {};
-        pe.metadata.addItem(item)
+        const { pe, metaTable } = render({ person });
 
-        expect(mediaTable.children).toHaveLength(1);
+        pe.metadata.addItem({ ...item, id: 25 });
+
+        expect(metaTable.children).toHaveLength(1);
       });
     });
 
     describe('remove', () => {
       it('cleans media table with placeholder', () => {
-        const { pe, mediaTable } = render({ person });
-        const id = 1;
-        const item = { id };
-        pe.metadata.addItem(item);
+        const { pe, metaTable } = render({ person });
+        pe.metadata.addItem({ ...item });
 
-        pe.metadata.remove(id);
+        pe.metadata.remove(item.id);
 
-        isEmptyMediaTable(mediaTable);
+        isEmptyMetaTable(metaTable);
       });
     });
 
     describe('reset', () => {
       it('cleans media table with placeholder', () => {
-        const { pe, mediaTable } = render({ person });
+        const { pe, metaTable } = render({ person });
         const item = {};
         pe.metadata.addItem(item);
 
         pe.metadata.reset();
 
-        isEmptyMediaTable(mediaTable);
+        isEmptyMetaTable(metaTable);
       });
     });
   });

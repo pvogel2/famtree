@@ -10,10 +10,10 @@ require_once(FAMTREE_PLUGIN_DIR . 'includes/admin/PersonsListTable.php');
 function famtree_admin_init() {
   wp_register_script( 'famtree-admin-script-s', plugins_url('/../admin/js/script.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-r', plugins_url('/../admin/js/Relation.js', __FILE__) );
-  wp_register_script( 'famtree-admin-script-ms', plugins_url('/../admin/js/ManagedSelect.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-ms', plugins_url('/../admin/js/editor/ManagedSelect.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-p', plugins_url('/../public/js/Person.js', __FILE__) );
   wp_register_script( 'famtree-admin-script-pl', plugins_url('/../public/js/PersonList.js', __FILE__) );
-  wp_register_script( 'famtree-admin-script-e', plugins_url('/../admin/js/PersonEditor.js', __FILE__) );
+  wp_register_script( 'famtree-admin-script-e', plugins_url('/../admin/js/editor/PersonEditor.js', __FILE__) );
   wp_register_style( 'famtree-admin-style', plugins_url('/../admin/css/style.css', __FILE__) );
 
   add_settings_section(

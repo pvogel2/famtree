@@ -1,33 +1,13 @@
 import ManagedSelect from './ManagedSelect.js';
-import PersonList from '../../public/js/PersonList.js';
-import Person from '../../public/js/Person.js';
-import Relation from './Relation.js';
-
-function getMediaType(mimetype) {
-  if (!(typeof mimetype === 'string')) {
-    return 'unknown';
-  }
-
-  if (mimetype.startsWith('image')) {
-    return 'image';
-  }
-
-  if (mimetype.startsWith('video')) {
-    return 'video';
-  }
-
-  if (mimetype.endsWith('pdf') || mimetype.endsWith('msword')) {
-    return 'document';
-  }
-
-  if (mimetype.startsWith('text')) {
-    return 'text';
-  }
-
-  return 'unknown';
-};
+import metadata from './metadata.js';
+import PersonList from '../../../public/js/PersonList.js';
+import Person from '../../../public/js/Person.js';
+import Relation from '../Relation.js';
+import PersonRelations from './PersonRelations.js';
 
 export default class PersonEditor {
+  metadata = metadata();
+
   constructor() {
     const f = this.edit.getForm();
     const firstname = f.elements.firstName;
@@ -65,7 +45,7 @@ export default class PersonEditor {
   edit = {
     stageCounter: -1,
     editing: false,
-    relations: [], // Relation class instances
+    relations: new PersonRelations(),
     relation: null, //Relation class instance
     form: '#editPersonForm',
     rSelect: null,
@@ -98,33 +78,30 @@ export default class PersonEditor {
         return;
       };
 
-      this.relations = rs.map((r) => new Relation(r));
+      this.relations.set(rs);
 
       this.rSelect.reset();
       this.setPartnersSelect();
-      if (this.relations.length) {
-        this.setRelation(this.relations[0].clone());
+
+      const rl = this.relations.getFirst();
+      if (rl) {
+        this.setRelation(rl);
         f.elements['btn_addChild'].disabled = false;
-      }
+      };
     },
 
     setPartnersSelect() {
       const f = this.getForm();
       const pId = parseInt(f.elements.id.value);
 
-      this.relations.forEach((r) => {
-        const ps = r.members.filter((id) => id !== pId);
-        const person = PersonList.find(ps[0]);
-  
-        this.rSelect.addOption(person.name, r.id);
+      this.relations.getMembers(pId).forEach(({ rId, mId }) =>  {
+        const person = PersonList.find(mId);
+        this.rSelect.addOption(person.name, rId);
       });
     },
 
     updateRelations() {
-      this.relations = this.relations.filter((rl) => !rl.deleted);
-      this.relations.forEach((rl) => {
-        rl.modified = false;
-      });
+      this.relations.sanitize();
     },
 
     setPerson(p) {
@@ -224,7 +201,7 @@ export default class PersonEditor {
       this.caSelect.reset();
       this.setPortrait();
       this.relation = null;
-      this.relations = [];
+      this.relations.reset();
 
       f.elements.firstName.dispatchEvent(new Event('input'));
       f.elements.lastName.dispatchEvent(new Event('input'));
@@ -240,24 +217,15 @@ export default class PersonEditor {
         this.relation = null;
       }
 
-      const rl = this.relations.find(rl => rl.id === rId);
-      if (rl) {
-        rl.deleted = true;
-      }
+      this.relations.setDeleted(rId);
 
       this.cSelect.reset();
       f.elements['btn_addChild'].disabled = this.rSelect.isDisabled();
       return rId;
     },
 
-    findInvolvedRelation(personId) {
-      let r = null;
-      this.relations.forEach((rl) => {
-        if (rl.hasMember(personId) && !rl.deleted) {
-          r = rl.serialize();
-        }
-      });
-      return r;
+    hasRelation(personId) {
+      return this.relations.hasRelation(personId);
     },
 
     addRelation(r) {
@@ -278,7 +246,7 @@ export default class PersonEditor {
       }
 
       rl.modified = true;
-      this.relations.push(rl.clone());
+      this.relations.add(rl.serialize());
 
       this.setRelation(rl.clone());
 
@@ -298,10 +266,8 @@ export default class PersonEditor {
         this.relation.removeChild(cId);
 
         // update current staged relation
-        const rl = this.relations.find((r) => r.id === rId);
-        if (rl) {
-          rl.removeChild(cId);
-        }
+        this.relations.removeChild(rId, cId);
+
         this.cSelect.removeOption(cId);
       }
     },
@@ -343,14 +309,10 @@ export default class PersonEditor {
       if (!this.relation) return;
 
       // add to current relation
-      // TODO do we need current relation
       this.relation.addChild(id);
 
       // add to staged relation
-      const rl = this.relations.find((r) => r.id == this.relation.id);
-      if (rl) {
-        rl.addChild(id);
-      }
+      this.relations.addChild(this.relation.id, id);
 
       // add to form child options
       const person = PersonList.find(id);
@@ -358,113 +320,5 @@ export default class PersonEditor {
       this.cSelect.addOption(person.name, person.id);
       this.cSelect.setLast();
     },
-  }
-
-  metadata = {
-    mediaTable: '#existingMetadata',
-    uploadButton: '#upload-metadata-button',
-    default: '',
-    form: '#uploadMetadataForm',
-
-    getNonce() {
-      const name = 'edit-metadata-nonce';
-      return {
-        name,
-        value: this.getForm().elements[name].value,
-      };
-    },
-
-    getForm() {
-      return document.querySelector(this.form);
-    },
-
-    update(enable) {
-      const f = this.getForm();
-      f.elements['fs_add'].disabled = !enable;
-    },
-
-    addItem(item) {
-      this.tableAddRow(item);
-    },
-
-    set(items) {
-      const form = this.getForm();
-      const table = document.querySelector(this.mediaTable);
-      const btn = form.querySelector(this.uploadButton);
-
-      table.innerHTML = '';
-      items.forEach((item) => {
-        this.tableAddRow(item);
-      });
-
-      btn.disabled = false;
-
-      if (!items.length) {
-        this.tableAddPlaceholder();
-      }
-    },
-
-    remove(id) {
-      const table = document.querySelector(this.mediaTable);
-      const tr = table.querySelector(`[data-id="${id}"]`);
-
-      if (tr) {
-        table.removeChild(tr);
-      };
-
-      if (!table.getElementsByTagName('tr').length) {  
-        this.tableAddPlaceholder();
-      }
-    },
-
-    reset() {
-      const table = document.querySelector(this.mediaTable);
-      table.innerHTML = '';
-      this.tableAddPlaceholder();
-    },
-
-    tableAddPlaceholder() {
-      const table = document.querySelector(this.mediaTable);
-      const tr = document.createElement('tr');
-      const nocontentTd = document.createElement('td');
-      nocontentTd.classList.add('column-nocontent');
-      nocontentTd.setAttribute('colspan', '5');
-      nocontentTd.innerText = 'no files available';
-      tr.appendChild(nocontentTd);
-      table.appendChild(tr);
-    },
-
-    tableAddRow(item) {
-      const table = document.querySelector(this.mediaTable);
-
-      const tr = document.createElement('tr');
-      tr.dataset.id = item.id;
-      const thumbTd = document.createElement('td');
-      const nameTd = document.createElement('td');
-      const excerptTd = document.createElement('td');
-      const editTd = document.createElement('td');
-      const removeTd = document.createElement('td');
-      editTd.classList.add('column-edit');
-      removeTd.classList.add('column-remove');
-
-      if (!item.thumbnail) {
-        const type = getMediaType(item.mimetype);
-        thumbTd.innerHTML = `<span title='${item.title}' class="famtree-dashicons-thumb dashicons dashicons-media-${type}"></span>`;
-      } else {
-        thumbTd.innerHTML = `<img title='${item.title}' src='${item.thumbnail}' />`;
-      }
-      nameTd.innerText = item.title;
-      
-      excerptTd.innerHTML = `<span>${item.excerpt}</span>`;
-      editTd.innerHTML = `<button type="button" title="edit" class="button icon" onclick="window.famtree.editMedia(${item.mediaId})"><span class="dashicons dashicons-edit"></span></button>`;
-      removeTd.innerHTML = `<button type="button" title="remove" class="button icon" onclick="window.famtree.removeMeta(${item.id})"><span class="dashicons dashicons-trash"></span></button>`;
-      tr.appendChild(thumbTd);
-      tr.appendChild(nameTd);
-      tr.appendChild(excerptTd);
-      tr.appendChild(editTd);
-      tr.appendChild(removeTd);
-
-      table.appendChild(tr);
-    }
   }
 };

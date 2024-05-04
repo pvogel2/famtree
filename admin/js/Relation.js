@@ -106,7 +106,7 @@ export default class Relation {
   }
 
   hasMember(id) {
-    return this._members.find((mId) => mId === parseInt(id));
+    return this._members.includes(parseInt(id));
   }
 
   addChild(id) {

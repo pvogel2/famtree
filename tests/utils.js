@@ -64,14 +64,19 @@ export function getMetadataFormElements() {
   const metadataForm = document.createElement('form');
   metadataForm.id = 'uploadMetadataForm';
 
-  const mediaTable = document.createElement('table');
-  mediaTable.id = 'existingMetadata'
+  let metaTable = document.getElementById('existingMetadata');
+  if (metaTable) {
+    metaTable.remove();
+  }
+
+  metaTable = document.createElement('table');
+  metaTable.id = 'existingMetadata';
 
   addFieldset(metadataForm, { name: 'fs_add' });
 
   return {
     metadataForm,
-    mediaTable,
+    metaTable,
     uploadButton: addButton(metadataForm, { id: 'upload-metadata-button', disabled: 'disabled' }),
   };
 };
