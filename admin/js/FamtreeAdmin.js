@@ -1,30 +1,9 @@
 import PersonEditor from './editor/PersonEditor.js';
 import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
-import RestClient from './rest.js';
-
-/*
-  window.famtree.saveAll
-  window.famtree.saveRelations
-  window.famtree.loadFamilies
-  window.famtree.loadMetadata
-  window.famtree.savePerson
-  window.famtree.partnerSelected
-  window.famtree.relMetaChanged
-  window.famtree.removePartner
-  window.famtree.addPartner
-  window.famtree.removeChild
-  window.famtree.addChild
-  window.famtree.editPerson
-  window.famtree.resetPerson
-  window.famtree.deletePerson
-  window.famtree.editMedia
-  window.famtree.removeMeta
-  window.famtree.showMessage
-  window.famtree.hideMessage
-  window.famtree.saveMeta
-  window.famtree.updateRoot
-*/
+import UIMessage from './UIMessage.js'
+import PersonTable from './PersonTable.js';
+import FamtreeClient from './FamtreeClient.js'
 
 export default class Famtree {
   /**
@@ -40,8 +19,14 @@ export default class Famtree {
       text: 'Save'
     }, multiple: false });
 
-    this.restClient = new RestClient();
+    this.message = new UIMessage();
+    this.personTable = new PersonTable();
 
+    this.client = new FamtreeClient(wp, {
+      person: this.pe.edit.getNonce.bind(this.pe.edit),
+      metadata: this.pe.metadata.getNonce.bind(this.pe.metadata),
+      root: this.personTable.getNonce.bind(this.personTable),
+    });
   }
 
   saveAll() {
@@ -49,14 +34,14 @@ export default class Famtree {
   
     // validate minimal valid input
     if (!person.hasMinimumData()) {
-      this.showMessage('Persons need at least firstname and lastname', 'error');
+      this.message.error('Persons need at least firstname and lastname');
       return;
     };
   
-    const ps = this.saveRelations();
-    ps.push(this.savePerson(person));
-  
-    Promise.allSettled(ps).then(() => {
+    Promise.allSettled([
+      this.saveRelations(),
+      this.savePerson(person)],
+    ).then(() => {
       document.location.reload();
     });
   }
@@ -78,23 +63,22 @@ export default class Famtree {
     }
 
     rls.forEach((rl) => {
-      const deleted = rl.deleted === true;
-  
-      if (rl.id < 0 && deleted) { // new relation directly removed in edit mode, nothing to save
+      if (rl.isObsolete()) {
+        return;
+      }
+      
+      if (rl.deleted) {
+        ps.push(this.client.deleteRelation(rl.id));
         return;
       }
 
-      const endpoint = `/relation/${rl.id >= 0 ? rl.id : ''}`;
-      const nonce = this.pe.edit.getNonce();
+      const data = rl.serialize();
 
-      if (!deleted) {
-        const data = rl.serialize();
-        if (data.id < 0) { // new relation
-          delete data.id;
-        }
-        ps.push(this.restClient.post(endpoint, nonce, data));
+      if (rl.isNew()) {
+        delete data.id;
+        ps.push(this.client.createRelation(data));
       } else {
-        ps.push(this.restClient.delete(endpoint, nonce));
+        ps.push(this.client.updateRelation(rl.id, data));
       }
     });
 
@@ -102,11 +86,11 @@ export default class Famtree {
   }
 
   loadFamilies() {
-    return this.restClient.get('/family/');
+    return this.client.loadFamilies();
   }
 
   async loadMetadata(id) {
-    return this.restClient.get(`/person/${id}/metadata`);
+    return this.client.loadPersonMetadata(id);
   }
 
   /**
@@ -116,15 +100,8 @@ export default class Famtree {
    */
   savePerson(person) {
     // get root information from table, the only place where it is modified
-    const input = document.querySelector(`.wp-list-table tbody tr[data-id="${person.id}"] .root input`);
-    if (input) {
-      person.root = input.checked;
-    }
-
-    const endpoint = `/person${person.id ? `/${person.id}` : ''}`
-    const nonce = this.pe.edit.getNonce();
-    const data = person.serialize();
-    return this.restClient.post(endpoint, nonce, data);
+    person.root = this.personTable.isFounder(person.id);
+    return this.client.savePerson(person.serialize());
   }
 
   partnerSelected() {
@@ -230,19 +207,15 @@ export default class Famtree {
     const pId = person.id;
     if (!pId) return;
 
-    this.restClient.delete(`/person/${pId}`, this.pe.edit.getNonce()).then(() => {
+    this.client.deletePerson(pId).then(() => {
       // remove from global list
       PersonList.remove(pId);
 
       // remove from person editor
       this.pe.edit.removePerson(pId);
 
-      // remove from html
-      const tBody = document.getElementById('the-list');
-      const tr = tBody.querySelector(`[data-id="${pId}"]`);
-      if (tr) {
-        tBody.removeChild(tr);
-      };
+      // remove from table
+      this.personTable.removePerson(pId);
     });
   }
 
@@ -251,69 +224,45 @@ export default class Famtree {
   }
 
   removeMeta(mId) {
-    const endpoint = `/metadata/${mId}`;
-    const nonce = this.pe.metadata.getNonce();
-
-    this.restClient.delete(endpoint, nonce).then(() => {    
-      this.pe.metadata.remove(mId); // remove from html
-      this.showMessage('Additional file removed');
+    this.client.deleteMetadata(mId).then(() => {
+      // remove from html
+      this.pe.metadata.remove(mId);
+      this.message.success('Additional file removed');
     })
     .fail((request, statusText) => {
-      this.showMessage('Additional file remove failed', 'error');
+      this.message.error('Additional file remove failed');
       console.log('error', statusText)
     });
-  }
-
-  showMessage(message, type = 'success') {
-    const m = document.getElementById('famtree-message');
-    m.classList.remove('famtree-hidden', 'notice-success', 'notice-error');
-    m.classList.add(`notice-${type}`);
-    const p = m.querySelector('.famtree-message__text');
-    p.textContent = message;
-    window.scrollTo(0,0);
-  }
-
-  hideMessage() {
-    const m = document.getElementById('famtree-message');
-    m.classList.add('famtree-hidden');
   }
 
   saveMeta(attachment) {
     const metadataForm = this.pe.metadata.getForm();
 
-    const item = {
+    const data = {
       mediaId: attachment.id,
       refId: metadataForm.refid.value,
     };
 
-    const endpoint = '/metadata/';
-    const nonce = this.pe.metadata.getNonce();;
-    const data = { ...item };
-
-    this.restClient.post(endpoint, nonce, data).then((resultData) => {
+    this.client.createMetadata(data).then((resultData) => {
       this.pe.metadata.addItem(resultData);
-      this.showMessage('Additional file saved');
+      this.message.success('Additional file saved');
     })
     .fail((request, statusText) => {
       console.log('error', statusText);
-      this.showMessage('Saving of additional file failed', 'error');
+      this.message.error('Saving of additional file failed');
     });
   }
 
-  async updateRoot(elem, pId) {
-    const root = elem.checked;
+  async updateRoot(root, pId) {
     const ps = PersonList.find(pId);
-
-    const endpoint = `/root/${pId}`;
-    const nonce = { name: 'update-root-nonce', value: document.getElementById('update-root-nonce').value };
     const data = { root };
 
-    this.restClient.post(endpoint, nonce, data).then(() => {
-      this.showMessage(`${ root ? 'Added' : 'Removed'} ${ ps.name } as available family founder.`);
+    this.client.updateRoot(pId, data).then(() => {
+      this.message.success(`${ root ? 'Added' : 'Removed'} ${ ps.name } as available family founder.`);
     })
     .fail((request, statusText) => {
       console.log('error', statusText);
-      this.showMessage('Updating roots failed', 'error');
+      this.message.error('Updating roots failed');
     });
   }
 }

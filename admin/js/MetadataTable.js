@@ -22,11 +22,11 @@ function getMediaType(mimetype) {
   return 'unknown';
 };
 
+const ELEMENT_ID = 'existingMetadata';
+
 export default class MetadataTable {
-  constructor(selector) {
-    const elements = document.querySelectorAll(selector);
-    // console.log('length', elements.length);
-    this.element = elements[0];
+  constructor() {
+    this.element = document.getElementById(ELEMENT_ID);
   }
 
   removeRow(id) {

@@ -20,7 +20,7 @@ export default () => ({
 
   getTable() {
     if (!this.table) {
-      this.table = new MetadataTable('#existingMetadata');
+      this.table = new MetadataTable();
     }
     return this.table;
   },

@@ -95,8 +95,9 @@ function famtree_render_persons_listing() {
 <?php
 
   // Display table
+  echo '<div id="persons_table_container">';
   $personsTable->display();
-  echo '</div>';
+  echo '</div></div>';
 }
 
 function famtree_render_public_access() {
@@ -245,7 +246,7 @@ function famtree_render_runtime_message() {
   ?>
     <div id="famtree-message" class="notice is-dismissible famtree-hidden">
       <p class="famtree-message__text"></p>
-      <button type="button" class="notice-dismiss" onclick="window.famtree.hideMessage()">
+      <button type="button" class="notice-dismiss" onclick="window.famtree.message.hide()">
         <span class="screen-reader-text"><?php print esc_html_e('Dismiss this notice.', 'famtree') ?></span>
       </button>
     </div>

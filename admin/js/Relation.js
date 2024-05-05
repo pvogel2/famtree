@@ -127,6 +127,14 @@ export default class Relation {
     }
   }
 
+  isNew() {
+    return this._id < 0;
+  }
+
+  isObsolete() {
+    return (this.isNew() && this._deleted === true); // new created new relation directly removed without saving
+  }
+
   serialize() {
     return {
       id: this.id,
