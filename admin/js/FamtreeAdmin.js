@@ -105,22 +105,14 @@ export default class Famtree {
   }
 
   partnerSelected() {
-    const form = this.pe.edit.getForm();
-    const partnersSelect = form.partners;
-
-    const relation = Relation.find(partnersSelect.value);
+    const relation = Relation.find(this.pe.edit.getRelation());
     if (relation) {
       this.pe.edit.setRelation(new Relation(relation));
     }
   }
 
   relMetaChanged() {
-    if (this.pe.edit.relation) {
-      const f = this.pe.edit.getForm();
-      this.pe.edit.relation.start = f.relStart.value;
-      this.pe.edit.relation.end = f.relEnd.value;
-      this.pe.edit.relation.type = f.relType.value;
-    }
+    this.pe.edit.updateRelation();
   }
 
   removePartner() {
@@ -184,8 +176,7 @@ export default class Famtree {
       window.scrollTo(0, 0);
       this.pe.edit.setPerson(person);
 
-      const metadataForm = this.pe.metadata.getForm();
-      metadataForm.refid.value = id;
+      this.pe.metadata.setRefId(id);
 
       this.loadMetadata(id)
         .then((results) => {
@@ -236,11 +227,9 @@ export default class Famtree {
   }
 
   saveMeta(attachment) {
-    const metadataForm = this.pe.metadata.getForm();
-
     const data = {
       mediaId: attachment.id,
-      refId: metadataForm.refid.value,
+      refId: this.pe.metadata.getRefId(),
     };
 
     this.client.createMetadata(data).then((resultData) => {

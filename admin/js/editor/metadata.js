@@ -1,57 +1,47 @@
 import MetadataTable from '../MetadataTable.js';
+import MetadataForm from '../MetadataForm.js';
 
-export default () => ({
-  uploadButton: '#upload-metadata-button',
-  default: '',
-  form: '#uploadMetadataForm',
-  table: null,
+export default class Metadata {
+  constructor() {
+    this.table = new MetadataTable();
+    this.form = new MetadataForm();
+  }
 
   getNonce() {
-    const name = 'edit-metadata-nonce';
-    return {
-      name,
-      value: this.getForm().elements[name].value,
-    };
-  },
+    return this.form.getNonce();
+  }
 
-  getForm() {
-    return document.querySelector(this.form);
-  },
+  getRefId() {
+    return this.form.getRefId();
+  }
 
-  getTable() {
-    if (!this.table) {
-      this.table = new MetadataTable();
-    }
-    return this.table;
-  },
+  setRefId(id) {
+    this.form.setRefId(id);
+  }
 
   update(enable) {
-    const f = this.getForm();
-    f.elements['fs_add'].disabled = !enable;
-  },
+    this.form.enableUpload(enable);
+  }
 
   addItem(item) {
-    this.getTable().addRow(item);
-  },
+    this.table.addRow(item);
+  }
 
   set(items) {
-    const form = this.getForm();
-    const btn = form.querySelector(this.uploadButton);
-
-    this.getTable().clearAll();
+    this.table.clearAll();
 
     items.forEach((item) => {
-      this.getTable().addRow(item);
+      this.table.addRow(item);
     });
 
-    btn.disabled = false;
-  },
+    this.form.enableUpload(true);
+  }
 
   remove(id) {
-    this.getTable().removeRow(id);
-  },
+    this.table.removeRow(id);
+  }
 
   reset() {
-    this.getTable().clearAll();
-  },
-});
+    this.table.clearAll();
+  }
+};

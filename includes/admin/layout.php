@@ -225,12 +225,12 @@ function famtree_render_edit_person_form() {
           <?php
             wp_nonce_field('edit-metadata-nonce', 'edit-metadata-nonce');
           ?>
-          <fieldset class="last" disabled="disabled" name="fs_add">
+          <fieldset class="last" name="fs_add" disabled="disabled">
             <input hidden id="upload-metadata-refid" type="text" name="refid" />
             <table>
               <tr>
                 <td>
-                  <input id="upload-metadata-button" type="button" class="button" value="<?php echo esc_html_e('Add metadata', 'famtree') ?>"/>
+                  <input id="upload-metadata-button"  type="button" class="button" value="<?php echo esc_html_e('Add metadata', 'famtree') ?>"/>
                 </td>
               </tr>
             </table>
