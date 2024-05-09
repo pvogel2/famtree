@@ -15,6 +15,9 @@ export default class PersonForm {
     const relStart = this.element.elements.relStart;
     const relEnd = this.element.elements.relEnd;
 
+    this.portraitImg = this.element.querySelector('#person-portrait');
+    this.defaultPortraitUrl = this.portraitImg.src;
+
     this.rSelect = new ManagedSelect(partners, partnersBtn, [relType, relStart, relEnd]);
     this.cSelect = new ManagedSelect(children, childrenBtn);
     this.caSelect = new ManagedSelect(candidates);
@@ -60,7 +63,8 @@ export default class PersonForm {
     f.elements.deathday.value = p.deathday;
   }
 
-  setPortrait(id) {
+  setPortrait(id, url) {
+    this.portraitImg.src = url || this.defaultPortraitUrl;
     this.element.elements.portraitId.value = id;
   }
 

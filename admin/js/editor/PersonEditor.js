@@ -85,13 +85,7 @@ export default class PersonEditor {
     },
 
     setPortrait(data = {}) {
-      const img = document.querySelector('#person-portrait');
-      if (!this.defaultPortraitImage) {
-        this.defaultPortraitImage = img.src;
-      }
-
-      img.src = data.url || this.defaultPortraitImage;
-      this.personForm.setPortrait(data.id);
+      this.personForm.setPortrait(data.id, data.url);
     },
 
     updateCandidatesSelect() {
