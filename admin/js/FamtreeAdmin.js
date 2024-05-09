@@ -122,33 +122,8 @@ export default class Famtree {
     }
   }
 
-  addPartner(id) {
-    let pId = parseInt(id);
-    if (isNaN(pId)) {
-      const cSelect = document.getElementById('candidates');
-      pId =  parseInt(cSelect.value);
-    }
-    if (isNaN(pId)) return;
-
-    const person = this.pe.edit.getPerson();
-    if (!this.pe.edit.hasRelation(pId)) {
-      // new relation
-      const relation = {
-        start: null,
-        end: null,
-        children: [],
-        members: [person.id, pId],
-      };
-
-      const rId = this.pe.edit.addRelation(relation);
-
-      if (!rId) {
-        return;
-      }
-
-      relation.id = rId;
-      Relation.add({ ...relation, members: [...relation.members], children: [...relation.children] });
-    }
+  addPartner() {
+    this.pe.edit.addRelation();
   }
 
   removeChild() {
@@ -156,14 +131,8 @@ export default class Famtree {
     this.pe.edit.removeChild();
   }
 
-  addChild(id) {
-    let cId = parseInt(id);
-    if (isNaN(cId)) {
-      const cSelect = document.getElementById('candidates');
-      cId =  parseInt(cSelect.value);
-    }
-    if (!this.pe.edit.relation || isNaN(cId)) return;
-    this.pe.edit.addChild(cId);
+  addChild() {
+    this.pe.edit.addChild();
   };
 
   setPortrait(portrait) {

@@ -99,6 +99,7 @@ export default class PersonForm {
     this.cSelect.reset();
     this.rSelect.reset();
     this.caSelect.reset();
+    this.enableAddChild(false);
     this.dispatchFirstname();
     this.dispatchLastname();
   }

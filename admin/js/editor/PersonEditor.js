@@ -172,21 +172,24 @@ export default class PersonEditor {
       return this.relations.hasRelation(personId);
     },
 
-    addRelation(r) {
-      const rl = new Relation({ ...r, id: this.stageCounter-- });
-      const rId = rl.id; 
-
-      // no partner is defined
-      if (rl.members.length <= 1) {
-        return null;
-      }
-
-      const pId = rl.members[1];
+    addRelation() {
+      const pId =  this.personForm.caSelect.value();
       const newPartner = PersonList.find(pId);
-      // defined partner can not be found
-      if (!newPartner) {
-        return null;
-      }
+      const person = this.getPerson();
+
+      if (isNaN(pId) || !newPartner || !person || this.hasRelation(pId)) return;
+  
+        // new relation
+      const rId = this.stageCounter--;
+      const relation = {
+        start: null,
+        end: null,
+        children: [],
+        members: [person.id, pId],
+        id: rId,
+      };
+  
+      const rl = new Relation(relation);
 
       rl.modified = true;
       this.relations.add(rl.serialize());
@@ -194,10 +197,11 @@ export default class PersonEditor {
       this.setRelation(rl.clone());
 
       this.personForm.rSelect.addOption(newPartner.name, rId);
+      this.personForm.rSelect.setLast();
 
       this.personForm.enableAddChild(true);
 
-      return rId;
+      Relation.add(rl.serialize());
     },
 
     removeChild() {
@@ -242,17 +246,19 @@ export default class PersonEditor {
       }
     },
   
-    addChild(id) {
-      if (!this.relation) return;
+    addChild() {
+      const cId =  this.personForm.caSelect.value();
 
+      if (!this.relation || isNaN(cId)) return;
+  
       // add to current relation
-      this.relation.addChild(id);
+      this.relation.addChild(cId);
 
       // add to staged relation
-      this.relations.addChild(this.relation.id, id);
+      this.relations.addChild(this.relation.id, cId);
 
       // add to form child options
-      const person = PersonList.find(id);
+      const person = PersonList.find(cId);
 
       this.personForm.cSelect.addOption(person.name, person.id);
       this.personForm.cSelect.setLast();

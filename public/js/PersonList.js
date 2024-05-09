@@ -33,4 +33,8 @@ export default {
   remove(id) {
     delete all[id];
   },
+
+  clear() {
+    Object.keys(all).forEach(key => delete all[key]);
+  },
 };

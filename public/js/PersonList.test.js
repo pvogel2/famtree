@@ -141,4 +141,18 @@ describe('PersonList', () => {
       expect(persons[1]).toBeInstanceOf(Person);
     });
   });
+
+  describe('clear', () => {
+    beforeEach(() => {
+      PersonList.add(p1);
+      PersonList.add(p2);
+    });
+
+    it('removes all persons', () => {
+      PersonList.clear();
+      const ps = PersonList.filter((p) => p);
+
+      expect(ps).toHaveLength(0);
+    });
+  });
 });

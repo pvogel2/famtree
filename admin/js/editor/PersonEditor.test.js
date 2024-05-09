@@ -11,49 +11,55 @@ function setName(fn, ln) {
   ln.dispatchEvent(new Event('input'));
 }
 
-function render({ person } = {}) {
-  const eElems = getEditFormElements();
-  const fElems = getMetadataFormElements();
-  document.body.appendChild(eElems.personForm);
-  document.body.appendChild(fElems.metadataForm);
-  document.body.appendChild(fElems.metaTable);
-
-  const pe = new PersonEditor();
-
-  if (person) {
-    pe.edit.setPerson(person);
-  }
-  return { pe, ...eElems, ...fElems };
-}
-
 function resetDOM() {
   document.body.innerHTML = '';
 }
-
-const spyRelationFilter = jest.spyOn(Relation, 'filter');
 
 describe('The person editor', () => {
   const person = {name: 'person', id: 1, firstName: 'First', lastName: 'Last', deathday: '2023-11-02', birthday: '2023-11-01' };
   const partner = { name: 'partner', id: 2, firstName: 'PartnerFirst', lastName: 'PartnerLast' };
   const child = { name: 'child', id: 3, firstName: 'ChildFirst', lastName: 'ChildLast' };
 
+  const defaultPersons = [person, partner, child];
+
   const relation = {
+    id: 4,
     start: null,
     end: null,
     children: [],
     members: [person.id, partner.id],
   };
 
-  beforeAll(() => {
-    PersonList.add(person);
-    PersonList.add(partner);
-    PersonList.add(child);
-  });
+  const unknownId = 5000;
+  const defaultRelations = [relation];
+
+  function render({ person, persons = defaultPersons, relations = defaultRelations } = {}) {
+    Relation.all = {}; // reset the global persistent object
+    relations.forEach((r) => {
+      Relation.add(r);
+    });
+    PersonList.clear();
+    persons.forEach((p) => {
+      PersonList.add(p);
+    });
+  
+    const eElems = getEditFormElements();
+    const fElems = getMetadataFormElements();
+    document.body.appendChild(eElems.personForm);
+    document.body.appendChild(fElems.metadataForm);
+    document.body.appendChild(fElems.metaTable);
+  
+    const pe = new PersonEditor();
+  
+    if (person) {
+      pe.edit.setPerson(person);
+    }
+    return { pe, ...eElems, ...fElems };
+  }
 
   beforeEach(() => {
     jest.clearAllMocks();
-    resetDOM();
-    
+    resetDOM(); 
   });
 
   it('is defined', () => {
@@ -136,7 +142,6 @@ describe('The person editor', () => {
 
     it('enables correct relation fields', () => {
       const { pe, addChildBtn } = render();
-      spyRelationFilter.mockReturnValueOnce([relation]);
 
       pe.edit.setPerson(person);
 
@@ -164,101 +169,84 @@ describe('The person editor', () => {
     });
   });
 
-  describe('for relation', () => {
-    it('when partner is added activates relation fields', () => {
-      const { pe, partners, partnersBtn, children, childrenBtn, addChildBtn } = render({ person });
+  describe('relation', () => {
+    describe('adding', () => {
+      it('for valid value activates relation fields', () => {
+        const { pe, partners, partnersBtn, children, childrenBtn, addChildBtn } = render({ person, relations: [] });
 
-      const returnedId = pe.edit.addRelation(relation);
+        pe.edit.addRelation();
 
-      expect(returnedId).toEqual(expect.any(Number));
-      expect(partners.disabled).toBe(false);
-      expect(partnersBtn.disabled).toBe(false);
+        expect(partners.disabled).toBe(false);
+        expect(partnersBtn.disabled).toBe(false);
+        expect(children.disabled).toBe(true);
+        expect(childrenBtn.disabled).toBe(true);
+        expect(addChildBtn.disabled).toBe(false);
+      });
 
-      expect(children.disabled).toBe(true);
-      expect(childrenBtn.disabled).toBe(true);
-      expect(addChildBtn.disabled).toBe(false);
+      it.each([
+        {
+          id: unknownId,
+          name: 'Unknown',
+          desc: 'unknown partner',
+        },
+        {
+          name: 'Missing',
+          desc: 'not enough members',
+        },
+      ])('does nothing in case of invalid partnerId', (p) => {
+        const { pe, partners, partnersBtn } = render({ person, persons: [person, p], relations: [] });
+
+        pe.edit.addRelation();
+
+        expect(partners.disabled).toBe(true);
+        expect(partnersBtn.disabled).toBe(true);
+      });
+
+      it('when last partner is removed deactivates add child button', () => {
+        const { pe, partners, partnersBtn, children, childrenBtn, addChildBtn } = render({ person });
+
+        pe.edit.removeRelation();
+
+        expect(partners.disabled).toBe(true);
+        expect(partnersBtn.disabled).toBe(true);
+        expect(children.disabled).toBe(true);
+        expect(childrenBtn.disabled).toBe(true);
+        expect(addChildBtn.disabled).toBe(true);
+      });
     });
 
-    it.each([
-      {
-        start: null,
-        end: null,
-        children: [],
-        members: [person.id, 5000],
-        desc: 'unknown partner',
-      },
-      {
-        start: null,
-        end: null,
-        children: [],
-        members: [person.id],
-        desc: 'not enough members',
-      },
-    ])('for invalid relation in case of $desc', (r) => {
-      const { pe, partners, partnersBtn } = render({ person });
+    describe('hasRelation', () => {
+      const params = [
+        { id: relation.members[0], found: true },
+        { id: relation.members[1], found: true },
+        { id: unknownId, found: false },
+      ];
 
-      const returnedId = pe.edit.addRelation(r);
+      it.each(params)('returns the relation if id $id of one members matches', ({ id, found }) => {
+        const { pe } = render({ person });
 
-      expect(returnedId).toBe(null);
-      expect(partners.disabled).toBe(true);
-      expect(partnersBtn.disabled).toBe(true);
-    });
+        const result = !!pe.edit.hasRelation(id);
 
-    it('when last partner is removed deactivates add child button', () => {
-      const { pe, partners, partnersBtn, children, childrenBtn, addChildBtn } = render({ person });
+        expect(result).toBe(found);
+      });
 
-      const addedId = pe.edit.addRelation(relation);
+      it('returns no deleted relation even if id of one members matches', () => {
+        const { pe } = render({ person, relations: [] });
 
-      const rId = pe.edit.removeRelation();
+        pe.edit.addRelation();
+        pe.edit.removeRelation();
 
-      expect(rId).toBe(addedId);
-      expect(partners.disabled).toBe(true);
-      expect(partnersBtn.disabled).toBe(true);
-      expect(children.disabled).toBe(true);
-      expect(childrenBtn.disabled).toBe(true);
-      expect(addChildBtn.disabled).toBe(true);
-    });
-  });
-
-  describe('hasRelation', () => {
-    const params = [
-      { id: relation.members[0], found: true },
-      { id: relation.members[1], found: true },
-      { id: 5000, found: false },
-    ];
-
-    it.each(params)('returns the relation if id $id of one members matches', ({ id, found }) => {
-      const { pe } = render({ person });
-
-      pe.edit.addRelation(relation);
-
-      const result = !!pe.edit.hasRelation(id);
-      expect(result).toBe(found);
-    });
-
-    it('returns no deleted relation even if id of one members matches', () => {
-      const { pe } = render({ person });
-
-      pe.edit.addRelation({ ...relation });
-      pe.edit.removeRelation();
-
-      const result = !!pe.edit.hasRelation(person.Id);
-      expect(result).toBe(false);
+        const result = !!pe.edit.hasRelation(person.id);
+        expect(result).toBe(false);
+      });
     });
   });
 
   describe('children', () => {
     it('elements are updated with existing children if relation is set', () => {
-      const otherRelation = {
-        start: null,
-        end: null,
-        children: [child.id],
-        members: [person.id, partner.id],
-      };
+      const relations = [{ ...relation, children: [child.id] }];
     
-      const { pe, children, childrenBtn } = render({ person });
-
-      pe.edit.addRelation(otherRelation);
+      const { children, childrenBtn } = render({ person, relations });
 
       expect(children.disabled).toBe(false);
       expect(children.children).toHaveLength(1);
@@ -267,17 +255,12 @@ describe('The person editor', () => {
       expect(childrenBtn.disabled).toBe(false);
     });
 
-    it('elements are not updated with unknowng children if relation is set', () => {
-      const otherRelation = {
-        start: null,
-        end: null,
-        children: [5000],
-        members: [person.id, partner.id],
-      };
+    it('elements are not updated with unknown children if relation is set', () => {
+      const relations = [{ ...relation, children: [unknownId] }];
     
-      const { pe, children, childrenBtn } = render({ person });
+      const { pe, children, childrenBtn } = render({ person, relations });
 
-      pe.edit.addRelation(otherRelation);
+      pe.edit.addRelation();
 
       expect(children.disabled).toBe(true);
       expect(children.children).toHaveLength(0);
@@ -285,10 +268,9 @@ describe('The person editor', () => {
     });
 
     it('fields activated when child is added to partner', () => {
-      const { pe, children, childrenBtn } = render({ person });
-
-      pe.edit.addRelation(relation);
-      pe.edit.addChild(child.id);
+      const relations = [relation];
+      const { pe, children, childrenBtn } = render({ person, relations });
+      pe.edit.addChild();
 
       expect(children.disabled).toBe(false);
       expect(childrenBtn.disabled).toBe(false);
@@ -297,10 +279,8 @@ describe('The person editor', () => {
     it('do not add a child when already existing', () => {
       const { pe, children } = render({ person });
 
-      pe.edit.addRelation(relation);
-
-      pe.edit.addChild(child.id);
-      pe.edit.addChild(child.id);
+      pe.edit.addChild();
+      pe.edit.addChild();
 
       const rl = pe.edit.relations.getFirst();
 
@@ -311,9 +291,9 @@ describe('The person editor', () => {
     it('are deactivated when last child removed', () => {
       const { pe, children, childrenBtn, addChildBtn } = render({ person });
 
-      pe.edit.addRelation(relation);
-      pe.edit.addChild(child.id);
-      pe.edit.removeChild(child.id);
+      pe.edit.addRelation();
+      pe.edit.addChild();
+      pe.edit.removeChild();
 
       expect(children.disabled).toBe(true);
       expect(childrenBtn.disabled).toBe(true);
