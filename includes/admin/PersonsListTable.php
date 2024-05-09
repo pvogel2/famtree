@@ -70,7 +70,7 @@ class Famtree_Persons_List_Table extends WP_List_Table {
           case 'birthday': return esc_html($item[$column_name]);
           case 'deathday': return esc_html($item[$column_name]);
           case 'relations': return '<select name="relations" disabled="disabled"></select>';
-          case 'edit': return '<button type="button" title="' . esc_html_e('edit', 'famtree') . '" onclick="window.famtree.editPerson(' . esc_html($id) . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
+          case 'edit': return '<button type="button" title="' . esc_html__("edit", "famtree") . '" onclick="window.famtree.editPerson(' . esc_html($id) . ')" class="button icon"><span class="dashicons dashicons-edit"></span></button>';
           default:
             return print_r($item, true); //Show the whole array for troubleshooting purposes
         }
