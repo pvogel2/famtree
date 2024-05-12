@@ -38,7 +38,7 @@ export default class Person {
    * @returns boolean
    */
   static isValidId(id) {
-    return ((typeof id === 'string' && !!id) || typeof id === 'number');
+    return ((typeof id === 'string' && !!id) || (typeof id === 'number' && !isNaN(id)));
   }
     
   constructor(config = defaultConfig) {

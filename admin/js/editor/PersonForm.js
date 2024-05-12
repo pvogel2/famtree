@@ -36,7 +36,7 @@ export default class PersonForm {
   }
 
   getId() {
-    return this.element.elements.id.value;
+    return parseInt(this.element.elements.id.value);
   }
 
   getPerson() {
@@ -69,7 +69,7 @@ export default class PersonForm {
   }
 
   getPortrait() {
-    return this.element.elements.portraitId.value;
+    return parseInt(this.element.elements.portraitId.value);
   }
 
   onEditing(isEditing) {
@@ -82,16 +82,18 @@ export default class PersonForm {
     this.element.elements['btn_addChild'].disabled = !enable;
   }
 
-  setRelStart(v) {
-    this.element.elements.relStart.value = v;
-  }
+  setRelationData(rData = null) {
+    this.element.elements.relStart.value = rData?.start || null;
+    this.element.elements.relEnd.value = rData?.end || null;
+    this.element.elements.relType.value = rData?.type || null;
+  } 
 
-  setRelEnd(v) {
-    this.element.elements.relEnd.value = v;
-  }
-
-  setRelType(v) {
-    this.element.elements.relType.value = v;
+  getRelationData() {
+    return {
+      start: this.element.elements.relStart.value,
+      end: this.element.elements.relEnd.value,
+      type: this.element.elements.relType.value,
+    };
   }
 
   reset() {

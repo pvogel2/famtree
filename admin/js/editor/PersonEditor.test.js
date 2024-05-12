@@ -4,11 +4,14 @@ import Person from '../../../public/js/Person.js';
 import Relation from '../Relation.js';
 import { getEditFormElements, getMetadataFormElements } from '../../../tests/utils.js';
 
+function setNamePart(el, part) {
+  el.value = part;
+  el.dispatchEvent(new Event('input'));
+}
+
 function setName(fn, ln) {
-  fn.value = 'First';
-  ln.value = 'Last';
-  fn.dispatchEvent(new Event('input'));
-  ln.dispatchEvent(new Event('input'));
+  setNamePart(fn, 'First');
+  setNamePart(ln, 'Last');
 }
 
 function resetDOM() {
@@ -52,7 +55,7 @@ describe('The person editor', () => {
     const pe = new PersonEditor();
   
     if (person) {
-      pe.edit.setPerson(person);
+      pe.setPerson(person);
     }
     return { pe, ...eElems, ...fElems };
   }
@@ -80,7 +83,7 @@ describe('The person editor', () => {
 
       const resetSpy = jest.spyOn(personForm, 'reset');
 
-      pe.edit.reset();
+      pe.reset();
 
       expect(resetSpy).toHaveBeenCalled();
       expect(firstName.value).toBe('');
@@ -117,7 +120,7 @@ describe('The person editor', () => {
     it('enables correct person fields', () => {
       const { pe, personId, firstName, lastName } = render();
 
-      pe.edit.setPerson(person);
+      pe.setPerson(person);
 
       expect(parseInt(personId.value)).toBe(person.id);
       expect(firstName.value).toBe(person.firstName);
@@ -127,7 +130,7 @@ describe('The person editor', () => {
     it('sets birthday', () => {
       const { pe, birthday } = render();
 
-      pe.edit.setPerson(person);
+      pe.setPerson(person);
 
       expect(birthday.value).toBe('2023-11-01');
     });
@@ -135,7 +138,7 @@ describe('The person editor', () => {
     it('sets deathday', () => {
       const { pe, deathday } = render();
 
-      pe.edit.setPerson(person);
+      pe.setPerson(person);
 
       expect(deathday.value).toBe('2023-11-02');
     });
@@ -143,7 +146,7 @@ describe('The person editor', () => {
     it('enables correct relation fields', () => {
       const { pe, addChildBtn } = render();
 
-      pe.edit.setPerson(person);
+      pe.setPerson(person);
 
       expect(addChildBtn.disabled).toBe(false);
     });
@@ -153,7 +156,7 @@ describe('The person editor', () => {
     it('for non editing returns empty person', () => {
       const { pe } = render();
 
-      const p = pe.edit.getPerson();
+      const p = pe.getPerson();
 
       expect(p).toBeInstanceOf(Person);
       expect(p.hasId()).toBe(false);
@@ -161,9 +164,9 @@ describe('The person editor', () => {
 
     it('returns the currently edited Person instance', () => {
       const { pe } = render();
-      pe.edit.setPerson(person);
+      pe.setPerson(person);
     
-      const p = pe.edit.getPerson();
+      const p = pe.getPerson();
       expect(p).toBeInstanceOf(Person);
       expect(p.hasId()).toBe(true);
     });
@@ -174,7 +177,7 @@ describe('The person editor', () => {
       it('for valid value activates relation fields', () => {
         const { pe, partners, partnersBtn, children, childrenBtn, addChildBtn } = render({ person, relations: [] });
 
-        pe.edit.addRelation();
+        pe.addRelation();
 
         expect(partners.disabled).toBe(false);
         expect(partnersBtn.disabled).toBe(false);
@@ -196,7 +199,7 @@ describe('The person editor', () => {
       ])('does nothing in case of invalid partnerId', (p) => {
         const { pe, partners, partnersBtn } = render({ person, persons: [person, p], relations: [] });
 
-        pe.edit.addRelation();
+        pe.addRelation();
 
         expect(partners.disabled).toBe(true);
         expect(partnersBtn.disabled).toBe(true);
@@ -205,7 +208,7 @@ describe('The person editor', () => {
       it('when last partner is removed deactivates add child button', () => {
         const { pe, partners, partnersBtn, children, childrenBtn, addChildBtn } = render({ person });
 
-        pe.edit.removeRelation();
+        pe.removeRelation();
 
         expect(partners.disabled).toBe(true);
         expect(partnersBtn.disabled).toBe(true);
@@ -225,7 +228,7 @@ describe('The person editor', () => {
       it.each(params)('returns the relation if id $id of one members matches', ({ id, found }) => {
         const { pe } = render({ person });
 
-        const result = !!pe.edit.hasRelation(id);
+        const result = !!pe.hasRelation(id);
 
         expect(result).toBe(found);
       });
@@ -233,10 +236,10 @@ describe('The person editor', () => {
       it('returns no deleted relation even if id of one members matches', () => {
         const { pe } = render({ person, relations: [] });
 
-        pe.edit.addRelation();
-        pe.edit.removeRelation();
+        pe.addRelation();
+        pe.removeRelation();
 
-        const result = !!pe.edit.hasRelation(person.id);
+        const result = !!pe.hasRelation(person.id);
         expect(result).toBe(false);
       });
     });
@@ -260,7 +263,7 @@ describe('The person editor', () => {
     
       const { pe, children, childrenBtn } = render({ person, relations });
 
-      pe.edit.addRelation();
+      pe.addRelation();
 
       expect(children.disabled).toBe(true);
       expect(children.children).toHaveLength(0);
@@ -270,7 +273,7 @@ describe('The person editor', () => {
     it('fields activated when child is added to partner', () => {
       const relations = [relation];
       const { pe, children, childrenBtn } = render({ person, relations });
-      pe.edit.addChild();
+      pe.addChild();
 
       expect(children.disabled).toBe(false);
       expect(childrenBtn.disabled).toBe(false);
@@ -279,10 +282,10 @@ describe('The person editor', () => {
     it('do not add a child when already existing', () => {
       const { pe, children } = render({ person });
 
-      pe.edit.addChild();
-      pe.edit.addChild();
+      pe.addChild();
+      pe.addChild();
 
-      const rl = pe.edit.relations.getFirst();
+      const rl = pe.relations.getFirst();
 
       expect(rl.children).toHaveLength(1);
       expect(children.options).toHaveLength(1);
@@ -291,9 +294,9 @@ describe('The person editor', () => {
     it('are deactivated when last child removed', () => {
       const { pe, children, childrenBtn, addChildBtn } = render({ person });
 
-      pe.edit.addRelation();
-      pe.edit.addChild();
-      pe.edit.removeChild();
+      pe.addRelation();
+      pe.addChild();
+      pe.removeChild();
 
       expect(children.disabled).toBe(true);
       expect(childrenBtn.disabled).toBe(true);
@@ -301,54 +304,48 @@ describe('The person editor', () => {
     });
   });
 
-  describe('metadata', () => {
-    const item = { id: 1, title: 'The title' };
+  describe('callback', () => {
+    let mockCb = null;
+    beforeEach(() => {
+      mockCb = jest.fn();
+    });
+    it('is tirggered for name fields edited', () => {
+      const { pe, firstName, lastName } = render();
+      pe.registerCallback(mockCb)
+      setName(firstName, lastName);
 
-    function isEmptyMetaTable(t) {
-      expect(t.children).toHaveLength(1);
-      expect(t.children[0].querySelector('td').classList.contains('column-nocontent')).toBe(true);
-    }
-
-    describe('calling set without items', () => {
-      it('adds a placeholder to table', () => {
-        const { pe, metaTable } = render({ person });
-
-        pe.metadata.set([]);
-
-        isEmptyMetaTable(metaTable);
-      });
+      expect(mockCb).toHaveBeenCalledWith(true);
     });
 
-    describe('addItem', () => {
-      it('adds a new row to the media table', () => {
-        const { pe, metaTable } = render({ person });
+    it('is tirggered for form reset', () => {
+      const { pe, firstName, lastName } = render();
+      pe.registerCallback(mockCb)
+      setName(firstName, lastName);
 
-        pe.metadata.addItem({ ...item, id: 25 });
-
-        expect(metaTable.children).toHaveLength(1);
-      });
+      pe.reset();
+ 
+      expect(mockCb).toHaveBeenCalledTimes(2);
     });
 
-    describe('remove', () => {
-      it('cleans media table with placeholder', () => {
-        const { pe, metaTable } = render({ person });
-        pe.metadata.addItem({ ...item });
+    describe.each(['firstName', 'lastName'])('for \'%s\'', (namePart) => {
+      it('not tirggered', () => {
+        const parts = render();
+        parts.pe.registerCallback(mockCb)
 
-        pe.metadata.remove(item.id);
+        setNamePart(parts[namePart], namePart);
 
-        isEmptyMetaTable(metaTable);
+        expect(mockCb).not.toHaveBeenCalled();
       });
-    });
 
-    describe('reset', () => {
-      it('cleans media table with placeholder', () => {
-        const { pe, metaTable } = render({ person });
-        const item = {};
-        pe.metadata.addItem(item);
+      it('cleared after setting complete name is triggered', () => {
+        const parts = render();
+        const { pe, firstName, lastName } = parts;
+        pe.registerCallback(mockCb)
+        setName(firstName, lastName);
 
-        pe.metadata.reset();
+        setNamePart(parts[namePart], '');
 
-        isEmptyMetaTable(metaTable);
+        expect(mockCb).toHaveBeenCalledTimes(2);
       });
     });
   });

@@ -145,8 +145,8 @@ function famtree_render_edit_person_form() {
               <?php famtree_form_select_field('children', __('Children', 'famtree'), NULL, NULL, 'removeChild') ?>
             </tr>
             <?php
-            famtree_form_date_field('relStart', __('Begin', 'famtree'), 'relMetaChanged', TRUE);
-            famtree_form_date_field('relEnd', __('End', 'famtree'), 'relMetaChanged', TRUE);
+            famtree_form_date_field('relStart', __('Begin', 'famtree'), 'relationModified', TRUE);
+            famtree_form_date_field('relEnd', __('End', 'famtree'), 'relationModified', TRUE);
             ?>
             <tr>
               <?php
@@ -154,7 +154,7 @@ function famtree_render_edit_person_form() {
                   array('value' => 'marriage', 'title' => __('marriage', 'famtree')),
                   array('value' => 'partnership', 'title' => __('partnership', 'famtree')),
                 ];
-                famtree_form_select_field('relType', __('Kind of', 'famtree'), 'relMetaChanged', $options);  
+                famtree_form_select_field('relType', __('Kind of', 'famtree'), 'relationModified', $options);  
               ?>
             </tr>
             <tr>

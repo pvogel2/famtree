@@ -1,7 +1,7 @@
 import MetadataTable from '../MetadataTable.js';
 import MetadataForm from '../MetadataForm.js';
 
-export default class Metadata {
+export default class MetadataEditor {
   constructor() {
     this.table = new MetadataTable();
     this.form = new MetadataForm();

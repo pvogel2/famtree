@@ -1,4 +1,5 @@
 import PersonEditor from './editor/PersonEditor.js';
+import MetadataEditor from './editor/MetadataEditor.js';
 import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
 import UIMessage from './UIMessage.js'
@@ -11,7 +12,8 @@ export default class Famtree {
    * @param {WordPressAPI} wp
    */
   constructor(wp) {
-    this.pe = new PersonEditor();
+    this.persEditor = new PersonEditor();
+    this.metaEditor = new MetadataEditor();
 
     this.wkEditMedia = wp.media({
       title: 'Edit media',
@@ -23,14 +25,19 @@ export default class Famtree {
     this.personTable = new PersonTable();
 
     this.client = new FamtreeClient(wp, {
-      person: this.pe.edit.getNonce.bind(this.pe.edit),
-      metadata: this.pe.metadata.getNonce.bind(this.pe.metadata),
+      person: this.persEditor.getNonce.bind(this.persEditor),
+      metadata: this.metaEditor.getNonce.bind(this.metaEditor),
       root: this.personTable.getNonce.bind(this.personTable),
     });
+
+    const editCb = (isEditing) => {
+      this.metaEditor.update(isEditing);
+    }
+    this.persEditor.registerCallback(editCb);
   }
 
   saveAll() {
-    const person = this.pe.edit.getPerson();
+    const person = this.persEditor.getPerson();
   
     // validate minimal valid input
     if (!person.hasMinimumData()) {
@@ -51,15 +58,15 @@ export default class Famtree {
    * @returns [Promise]
    */
   saveRelations() {
-    const rls = this.pe.edit.relations.getModified();
+    const rls = this.persEditor.relations.getModified();
     const ps = [];
 
     // replace current relation in array
-    const rIndex = rls.findIndex((rl) => rl.id === this.pe.edit.relation?.id);
+    const rIndex = rls.findIndex((rl) => rl.id === this.persEditor.relation?.id);
     if (rIndex > -1) {
-      rls.splice(rIndex, 1, this.pe.edit.relation.clone());
-    } else if (this.pe.edit.relation) {
-      rls.push(this.pe.edit.relation.clone());
+      rls.splice(rIndex, 1, this.persEditor.relation.clone());
+    } else if (this.persEditor.relation) {
+      rls.push(this.persEditor.relation.clone());
     }
 
     rls.forEach((rl) => {
@@ -105,51 +112,51 @@ export default class Famtree {
   }
 
   partnerSelected() {
-    const relation = Relation.find(this.pe.edit.getRelation());
+    const relation = Relation.find(this.persEditor.getRelation());
     if (relation) {
-      this.pe.edit.setRelation(new Relation(relation));
+      this.persEditor.setRelation(new Relation(relation));
     }
   }
 
-  relMetaChanged() {
-    this.pe.edit.updateRelation();
+  relationModified() {
+    this.persEditor.updateRelation();
   }
 
   removePartner() {
-    const rId = this.pe.edit.removeRelation();
+    const rId = this.persEditor.removeRelation();
     if (rId) {
       Relation.remove(rId);
     }
   }
 
   addPartner() {
-    this.pe.edit.addRelation();
+    this.persEditor.addRelation();
   }
 
   removeChild() {
-    if (!this.pe.edit.relation) return;
-    this.pe.edit.removeChild();
+    if (!this.persEditor.relation) return;
+    this.persEditor.removeChild();
   }
 
   addChild() {
-    this.pe.edit.addChild();
+    this.persEditor.addChild();
   };
 
   setPortrait(portrait) {
-    this.pe.edit.setPortrait(portrait);
+    this.persEditor.setPortrait(portrait);
   }
 
   editPerson(id) {
     const person = PersonList.find(id);
     if (person) {
       window.scrollTo(0, 0);
-      this.pe.edit.setPerson(person);
+      this.persEditor.setPerson(person);
 
-      this.pe.metadata.setRefId(id);
+      this.metaEditor.setRefId(id);
 
       this.loadMetadata(id)
         .then((results) => {
-          this.pe.metadata.set(results);
+          this.metaEditor.set(results);
         })
         .catch((err) => {
           console.log('Could not load metadata', err);
@@ -158,12 +165,12 @@ export default class Famtree {
   }
 
   resetPerson() {
-    this.pe.edit.reset();
-    this.pe.metadata.reset();
+    this.persEditor.reset();
+    this.metaEditor.reset();
   };
 
   deletePerson() {
-    const person = this.pe.edit.getPerson();
+    const person = this.persEditor.getPerson();
     const pId = person.id;
     if (!pId) return;
 
@@ -172,7 +179,7 @@ export default class Famtree {
       PersonList.remove(pId);
 
       // remove from person editor
-      this.pe.edit.removePerson(pId);
+      this.persEditor.removePerson(pId);
 
       // remove from table
       this.personTable.removePerson(pId);
@@ -186,7 +193,7 @@ export default class Famtree {
   removeMeta(mId) {
     this.client.deleteMetadata(mId).then(() => {
       // remove from html
-      this.pe.metadata.remove(mId);
+      this.metaEditor.remove(mId);
       this.message.success('Additional file removed');
     })
     .fail((request, statusText) => {
@@ -198,11 +205,11 @@ export default class Famtree {
   saveMeta(attachment) {
     const data = {
       mediaId: attachment.id,
-      refId: this.pe.metadata.getRefId(),
+      refId: this.metaEditor.getRefId(),
     };
 
     this.client.createMetadata(data).then((resultData) => {
-      this.pe.metadata.addItem(resultData);
+      this.metaEditor.addItem(resultData);
       this.message.success('Additional file saved');
     })
     .fail((request, statusText) => {
