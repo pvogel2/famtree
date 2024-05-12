@@ -58,16 +58,8 @@ export default class Famtree {
    * @returns [Promise]
    */
   saveRelations() {
-    const rls = this.persEditor.relations.getModified();
     const ps = [];
-
-    // replace current relation in array
-    const rIndex = rls.findIndex((rl) => rl.id === this.persEditor.relation?.id);
-    if (rIndex > -1) {
-      rls.splice(rIndex, 1, this.persEditor.relation.clone());
-    } else if (this.persEditor.relation) {
-      rls.push(this.persEditor.relation.clone());
-    }
+    const rls = this.persEditor.getModifiedRelations();
 
     rls.forEach((rl) => {
       if (rl.isObsolete()) {

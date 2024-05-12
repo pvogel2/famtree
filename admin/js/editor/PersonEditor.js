@@ -201,6 +201,20 @@ export default class PersonEditor {
       Relation.add(rl.serialize());
     }
 
+    getModifiedRelations() {
+      const rls = this.relations.getModified(); // returns cloned objects
+  
+      const rIndex = rls.findIndex((rl) => rl.id === this.relation?.id); // replace current relation in array
+
+      if (rIndex > -1) {
+        rls.splice(rIndex, 1, this.relation.clone()); // update array with currently edited relation
+      } else if (this.relation?.modified) {
+        rls.push(this.relation.clone()); // if not found add relation id modified
+      }
+
+      return rls;
+    }
+
     removeChild() {
       const cId = this.personForm.cSelect.value();
       const rId = this.personForm.rSelect.value();
