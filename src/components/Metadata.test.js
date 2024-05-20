@@ -1,7 +1,7 @@
 import U from '../lib/tests/utils';
 import Metadata from './Metadata';
 import { loadMetadata } from '../lib/Connect.js';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 
 async function renderWithActContext(conpoment, options) {

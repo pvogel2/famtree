@@ -8,7 +8,7 @@ import {
 import U from '../lib/tests/utils';
 import Intersector from './Intersector';
 import { getMesh, getDataGroup, addLabelText3D, focusNode } from '../lib/nodes/utils';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 jest.mock('../lib/Connect.js', () => {
   return {

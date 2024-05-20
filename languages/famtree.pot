@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-05T22:29:02+02:00\n"
+"POT-Creation-Date: 2024-05-19T18:34:12+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: famtree\n"
@@ -30,142 +30,142 @@ msgstr ""
 msgid "remove"
 msgstr ""
 
-#: includes/admin/layout.php:106
+#: includes/admin/layout.php:107
 msgid "On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public."
 msgstr ""
 
-#: includes/admin/layout.php:125
+#: includes/admin/layout.php:126
 msgid "Attributes"
 msgstr ""
 
-#: includes/admin/layout.php:128
+#: includes/admin/layout.php:129
 #: includes/admin/PersonsListTable.php:23
 msgid "First name"
 msgstr ""
 
-#: includes/admin/layout.php:129
+#: includes/admin/layout.php:130
 #: includes/admin/PersonsListTable.php:24
 msgid "Sur names"
 msgstr ""
 
-#: includes/admin/layout.php:130
+#: includes/admin/layout.php:131
 #: includes/admin/PersonsListTable.php:25
 msgid "Last name"
 msgstr ""
 
-#: includes/admin/layout.php:131
+#: includes/admin/layout.php:132
 #: includes/admin/PersonsListTable.php:26
 msgid "Birth name"
 msgstr ""
 
-#: includes/admin/layout.php:132
+#: includes/admin/layout.php:133
 #: includes/admin/PersonsListTable.php:27
 #: build/index.js:74
 #: build/view.js:74
 msgid "Birthday"
 msgstr ""
 
-#: includes/admin/layout.php:133
+#: includes/admin/layout.php:134
 #: includes/admin/PersonsListTable.php:28
 #: build/index.js:74
 #: build/view.js:74
 msgid "Date of death"
 msgstr ""
 
-#: includes/admin/layout.php:138
+#: includes/admin/layout.php:139
 #: includes/admin/PersonsListTable.php:29
 msgid "Relations"
 msgstr ""
 
-#: includes/admin/layout.php:141
+#: includes/admin/layout.php:142
 msgid "Partners"
 msgstr ""
 
-#: includes/admin/layout.php:144
+#: includes/admin/layout.php:145
 msgid "Children"
 msgstr ""
 
-#: includes/admin/layout.php:147
+#: includes/admin/layout.php:148
 msgid "Begin"
 msgstr ""
 
-#: includes/admin/layout.php:148
+#: includes/admin/layout.php:149
 msgid "End"
 msgstr ""
 
-#: includes/admin/layout.php:153
+#: includes/admin/layout.php:154
 msgid "marriage"
 msgstr ""
 
-#: includes/admin/layout.php:154
+#: includes/admin/layout.php:155
 msgid "partnership"
 msgstr ""
 
-#: includes/admin/layout.php:156
+#: includes/admin/layout.php:157
 msgid "Kind of"
 msgstr ""
 
-#: includes/admin/layout.php:163
+#: includes/admin/layout.php:164
 msgid "Add person"
 msgstr ""
 
-#: includes/admin/layout.php:169
+#: includes/admin/layout.php:171
 msgid "As child"
 msgstr ""
 
-#: includes/admin/layout.php:170
+#: includes/admin/layout.php:174
 msgid "As partner"
 msgstr ""
 
-#: includes/admin/layout.php:177
+#: includes/admin/layout.php:182
 msgid "Portrait foto"
 msgstr ""
 
-#: includes/admin/layout.php:189
+#: includes/admin/layout.php:194
 msgid "Select image"
 msgstr ""
 
-#: includes/admin/layout.php:196
+#: includes/admin/layout.php:201
 msgid "Reset person"
 msgstr ""
 
-#: includes/admin/layout.php:197
+#: includes/admin/layout.php:202
 msgid "Remove person"
 msgstr ""
 
-#: includes/admin/layout.php:198
+#: includes/admin/layout.php:203
 msgid "Save person"
 msgstr ""
 
-#: includes/admin/layout.php:203
+#: includes/admin/layout.php:208
 msgid "Additional files"
 msgstr ""
 
-#: includes/admin/layout.php:207
+#: includes/admin/layout.php:212
 msgid "Preview"
 msgstr ""
 
-#: includes/admin/layout.php:208
+#: includes/admin/layout.php:213
 msgid "Name"
 msgstr ""
 
-#: includes/admin/layout.php:209
+#: includes/admin/layout.php:214
 msgid "Description"
 msgstr ""
 
-#: includes/admin/layout.php:214
+#: includes/admin/layout.php:219
 msgid "No files found"
 msgstr ""
 
-#: includes/admin/layout.php:228
+#: includes/admin/layout.php:233
 msgid "Add metadata"
 msgstr ""
 
-#: includes/admin/layout.php:245
+#: includes/admin/layout.php:250
 msgid "Dismiss this notice."
 msgstr ""
 
-#: includes/admin/layout.php:262
+#: includes/admin/layout.php:267
 msgid "Error"
 msgstr ""
 
@@ -189,15 +189,15 @@ msgstr ""
 msgid "Visiblity of family data"
 msgstr ""
 
-#: includes/settings.php:126
+#: includes/settings.php:130
 msgid "FamTree configuration"
 msgstr ""
 
-#: includes/settings.php:134
+#: includes/settings.php:138
 msgid "Save global settings"
 msgstr ""
 
-#: includes/settings.php:138
+#: includes/settings.php:142
 msgid "Person configuration"
 msgstr ""
 

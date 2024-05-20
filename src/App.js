@@ -18,7 +18,7 @@ import Intersector from './components/Intersector';
 import PersonSelector from './components/PersonSelector';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 
 function App(props) {
   const {

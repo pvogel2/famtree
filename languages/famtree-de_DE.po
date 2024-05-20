@@ -30,126 +30,135 @@ msgstr ""
 msgid "remove"
 msgstr "löschen"
 
-#: includes/admin/layout.php:106
+#: includes/admin/layout.php:107
 #, fuzzy
 msgid "On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public."
 msgstr "Auf der veröffentlichten Seite können die Daten ohne Login gelesen werden. Nützlich für Stammbäume, die öffentlich sichtbar sein sollen."
 
-#: includes/admin/layout.php:125
+#: includes/admin/layout.php:126
 msgid "Attributes"
 msgstr "Eigenschaften"
 
-#: includes/admin/layout.php:128 includes/admin/PersonsListTable.php:23
+#: includes/admin/layout.php:129
+#: includes/admin/PersonsListTable.php:23
 msgid "First name"
 msgstr "Vorname"
 
-#: includes/admin/layout.php:129 includes/admin/PersonsListTable.php:24
+#: includes/admin/layout.php:130
+#: includes/admin/PersonsListTable.php:24
 msgid "Sur names"
 msgstr "Zunamen"
 
-#: includes/admin/layout.php:130 includes/admin/PersonsListTable.php:25
+#: includes/admin/layout.php:131
+#: includes/admin/PersonsListTable.php:25
 msgid "Last name"
 msgstr "Nachname"
 
-#: includes/admin/layout.php:131 includes/admin/PersonsListTable.php:26
+#: includes/admin/layout.php:132
+#: includes/admin/PersonsListTable.php:26
 msgid "Birth name"
 msgstr "Geburtsname"
 
-#: includes/admin/layout.php:132 includes/admin/PersonsListTable.php:27
-#: build/index.js:74 build/view.js:74
+#: includes/admin/layout.php:133
+#: includes/admin/PersonsListTable.php:27
+#: build/index.js:74
+#: build/view.js:74
 msgid "Birthday"
 msgstr "Geburtstag"
 
-#: includes/admin/layout.php:133 includes/admin/PersonsListTable.php:28
-#: build/index.js:74 build/view.js:74
+#: includes/admin/layout.php:134
+#: includes/admin/PersonsListTable.php:28
+#: build/index.js:74
+#: build/view.js:74
 msgid "Date of death"
 msgstr "Todestag"
 
-#: includes/admin/layout.php:138 includes/admin/PersonsListTable.php:29
+#: includes/admin/layout.php:139
+#: includes/admin/PersonsListTable.php:29
 msgid "Relations"
 msgstr "Beziehungen"
 
-#: includes/admin/layout.php:141
+#: includes/admin/layout.php:142
 msgid "Partners"
 msgstr "Partner"
 
-#: includes/admin/layout.php:144
+#: includes/admin/layout.php:145
 msgid "Children"
 msgstr "Kinder"
 
-#: includes/admin/layout.php:147
+#: includes/admin/layout.php:148
 msgid "Begin"
 msgstr "Anfang"
 
-#: includes/admin/layout.php:148
+#: includes/admin/layout.php:149
 msgid "End"
 msgstr "Ende"
 
-#: includes/admin/layout.php:156
+#: includes/admin/layout.php:157
 msgid "Kind of"
 msgstr "Art"
 
-#: includes/admin/layout.php:163
+#: includes/admin/layout.php:164
 msgid "Add person"
 msgstr "Person hinzufügen"
 
-#: includes/admin/layout.php:169
+#: includes/admin/layout.php:171
 msgid "As child"
 msgstr "Als Kind"
 
-#: includes/admin/layout.php:170
+#: includes/admin/layout.php:174
 msgid "As partner"
 msgstr "Als Partner"
 
-#: includes/admin/layout.php:177
+#: includes/admin/layout.php:182
 msgid "Portrait foto"
 msgstr "Portrait Foto"
 
-#: includes/admin/layout.php:189
+#: includes/admin/layout.php:194
 msgid "Select image"
 msgstr "Bild auswählen"
 
-#: includes/admin/layout.php:196
+#: includes/admin/layout.php:201
 msgid "Reset person"
 msgstr "Person zurücksetzen"
 
-#: includes/admin/layout.php:197
+#: includes/admin/layout.php:202
 msgid "Remove person"
 msgstr "Person löschen"
 
-#: includes/admin/layout.php:198
+#: includes/admin/layout.php:203
 msgid "Save person"
 msgstr "Person speichern"
 
-#: includes/admin/layout.php:203
+#: includes/admin/layout.php:208
 msgid "Additional files"
 msgstr "Weitere Dateien"
 
-#: includes/admin/layout.php:207
+#: includes/admin/layout.php:212
 msgid "Preview"
 msgstr "Vorschau"
 
-#: includes/admin/layout.php:208
+#: includes/admin/layout.php:213
 msgid "Name"
 msgstr "Name"
 
-#: includes/admin/layout.php:209
+#: includes/admin/layout.php:214
 msgid "Description"
 msgstr "Beschreibung"
 
-#: includes/admin/layout.php:214
+#: includes/admin/layout.php:219
 msgid "No files found"
 msgstr "Keine Dateien gefunden"
 
-#: includes/admin/layout.php:228
+#: includes/admin/layout.php:233
 msgid "Add metadata"
 msgstr "Weitere Dateien hinzufügen"
 
-#: includes/admin/layout.php:245
+#: includes/admin/layout.php:250
 msgid "Dismiss this notice."
 msgstr "Diese Nachricht entfernen."
 
-#: includes/admin/layout.php:262
+#: includes/admin/layout.php:267
 msgid "Error"
 msgstr "Fehler"
 
@@ -173,19 +182,21 @@ msgstr "Allgemeine Einstellungen"
 msgid "Visiblity of family data"
 msgstr "Sichtbarkeit der Familiendaten"
 
-#: includes/settings.php:134
+#: includes/settings.php:138
 msgid "Save global settings"
 msgstr "Allgemeine Einstellungen speichern"
 
-#: includes/settings.php:138
+#: includes/settings.php:142
 msgid "Person configuration"
 msgstr "Person konfigurieren"
 
-#: build/index.js:74 build/view.js:74
+#: build/index.js:74
+#: build/view.js:74
 msgid "previous"
 msgstr "vorheriges"
 
-#: build/index.js:74 build/view.js:74
+#: build/index.js:74
+#: build/view.js:74
 msgid "next"
 msgstr "nächstes"
 
@@ -225,7 +236,8 @@ msgstr "Highlight Farbe"
 msgid "Selection Color"
 msgstr "Auswahlfarbe"
 
-#: build/index.js:1 build/view.js:1
+#: build/index.js:1
+#: build/view.js:1
 msgid "no information"
 msgstr "keine Informationen"
 
@@ -239,14 +251,14 @@ msgctxt "block description"
 msgid "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool)."
 msgstr "[block description] Block zur Erstellung und Anzeige von Familienstammbäumen."
 
-#: includes/admin/layout.php:153
+#: includes/admin/layout.php:154
 msgid "marriage"
 msgstr "Heirat"
 
-#: includes/admin/layout.php:154
+#: includes/admin/layout.php:155
 msgid "partnership"
 msgstr "Partnerschaft"
 
-#: includes/settings.php:126
+#: includes/settings.php:130
 msgid "FamTree configuration"
 msgstr "FamTree Konfiguration"
