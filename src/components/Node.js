@@ -142,11 +142,19 @@ class Layout {
     };
   }
 
-  getPartnerChildTarget() {
+  getChildRelationTarget() {
     return {
       targetX: this.cTarget.x,
       targetY: this.cTarget.y,
       targetZ: this.cTarget.z,
+    };
+  }
+
+  getChildRelationSource() {
+    return {
+      sourceX: this.cSource.x,
+      sourceY: this.cSource.y,
+      sourceZ: this.cSource.z,
     };
   }
 
@@ -382,13 +390,14 @@ function Node(props) {
             <ChildRelation
               highlight={ childSelected ? selection : (childFocused ? highlight : undefined) }
               parent={ assetsGroup }
-              sourceX={ childSource.x  }
-              sourceY={ childSource.y  }
-              sourceZ={ childSource.z  }
-              { ...layout.getPartnerChildTarget() }
-              // targetX={ childTarget.x }
-              // targetY={ childTarget.y }
-              // targetZ={ childTarget.z }
+              // sourceX={ childSource.x  }
+              // sourceY={ childSource.y  }
+              // sourceZ={ childSource.z  }
+              { ...layout.getChildRelationSource() }
+              { ...layout.getChildRelationTarget() }
+              //targetX={ childTarget.x }
+              //targetY={ childTarget.y }
+              //targetZ={ childTarget.z }
             />
           </Fragment>
         );
