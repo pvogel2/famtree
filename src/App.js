@@ -114,6 +114,12 @@ function App(props) {
     }
   }, [selection]);
 
+  useEffect(() => {
+    if (treeLayout) {
+      setTreeLayout(treeLayout);
+    }
+  }, [treeLayout]);
+
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
       <ThemeProvider theme={theme}>

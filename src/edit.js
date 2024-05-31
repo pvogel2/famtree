@@ -111,6 +111,13 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
             onChange={ ( f ) => setAttributes({ treeLayout: f }) }
 				  	options={ getTreeLayoutOptions() }
 					/>
+				  <SelectControl
+  			        label={ __('Current tree layout', 'famtree') }
+	  				labelPosition= 'side'
+            value={ treeLayout }
+            onChange={ ( f ) => setAttributes({ treeLayout: f }) }
+				  	options={ getTreeLayoutOptions() }
+					/>
           <ToggleControl
   			    label={ __('Show founder menu button', 'famtree') }
 	  				labelPosition= 'side'
