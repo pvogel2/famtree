@@ -39,3 +39,10 @@ export function setSelection(selection) {
     selection,
   };
 }
+
+export function setTreeLayout(treeLayout) {
+  return {
+    type: 'SET_TREE_LAYOUT',
+    treeLayout,
+  };
+}

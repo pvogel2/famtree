@@ -17,6 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
       highlight={ root.dataset.highlightColor }
       selection={ root.dataset.selectionColor }
       instanceId= { instanceId }
+      treeLayout={ root.dataset.treeLayout }
+
     />);
   });
 });

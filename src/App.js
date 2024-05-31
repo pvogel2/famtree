@@ -33,6 +33,7 @@ function App(props) {
     foreground,
     highlight,
     selection,
+    treeLayout,
     instanceId ='famtree0',
   } = props;
 
@@ -44,7 +45,7 @@ function App(props) {
   }, []);
 
   const { setPersons, setFamilies, setFounder, setRelations } = registry.dispatch('famtree/families');
-  const { setForeground, setBackground, setText, setHighlight, setSelection } = registry.dispatch('famtree/runtime');
+  const { setForeground, setBackground, setText, setHighlight, setSelection, setTreeLayout } = registry.dispatch('famtree/runtime');
 
   const theme = createTheme({
     palette: {
@@ -112,21 +113,27 @@ function App(props) {
     }
   }, [selection]);
 
+  useEffect(() => {
+    if (treeLayout) {
+      setTreeLayout(treeLayout);
+    }
+  }, [treeLayout]);
+
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
       <ThemeProvider theme={theme}>
-      <StyledEngineProvider injectFirst>
-        <RegistryProvider value={ registry}>
-          <RenderProvider instanceId={ instanceId }>
-            <FamTreeRenderer />
-            <Intersector />
-            <PersonSelector />
-            { founderFAB && <LoadFamily readonly={ readonly } instanceId={ instanceId } /> }
-            { !readonly && <InfoDialog /> }
-            { !readonly && <DetailsDialog /> }
-          </RenderProvider>
-        </RegistryProvider>
-      </StyledEngineProvider>
+        <StyledEngineProvider injectFirst>
+          <RegistryProvider value={ registry}>
+            <RenderProvider instanceId={ instanceId }>
+              <FamTreeRenderer />
+              <Intersector />
+              <PersonSelector />
+              { founderFAB && <LoadFamily readonly={ readonly } instanceId={ instanceId } /> }
+              { !readonly && <InfoDialog /> }
+              { !readonly && <DetailsDialog /> }
+            </RenderProvider>
+          </RegistryProvider>
+        </StyledEngineProvider>
       </ThemeProvider>
     </LocalizationProvider>
   );

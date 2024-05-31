@@ -9,7 +9,17 @@ import { createTreeNode, createNavigationNode } from '../lib/nodes/utils';
 
 
 function Partner(props) {
-  const { person, parent, offsetY = 0, offsetZ = 0, parentId, toChildId, toLeftId, toRightId } = props;
+  const {
+    person,
+    parent,
+    offsetX = 0,
+    offsetY = 0,
+    offsetZ = 0,
+    parentId,
+    toChildId,
+    toLeftId,
+    toRightId,
+  } = props;
 
   const { text, foreground } = useSelect((select) => {
     const store = select('famtree/runtime');
@@ -38,7 +48,7 @@ function Partner(props) {
  
     const type = 'partner';
 
-    const offset = new Vector3(0, offsetY, offsetZ);
+    const offset = new Vector3(offsetX, offsetY, offsetZ);
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
 
     const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors });
@@ -49,7 +59,7 @@ function Partner(props) {
       partnerClean();
       naviClean();
     };
-  }, [renderer, person, parent, foreground, text, offsetY, offsetZ, navi]);
+  }, [renderer, person, parent, foreground, text, offsetX, offsetY, offsetZ, navi]);
 
   return ( 
     isSelected

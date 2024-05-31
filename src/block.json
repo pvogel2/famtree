@@ -46,6 +46,10 @@
 		"selectionColor": {
 			"type": "string",
 			"default": "#ffffff"
+		},
+		"treeLayout": {
+			"type": "string",
+			"default": "classic"
 		}
 	}
 }

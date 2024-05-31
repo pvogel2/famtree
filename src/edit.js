@@ -37,8 +37,8 @@ import { loadFamily } from './lib/Connect';
  * @return {WPElement} Element to render.
  */
 export default function Edit({ attributes, setAttributes, clientId  }) {
-	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor, selectionColor } = attributes;
-    const [families, setFamilies] = useState([]);
+	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor, selectionColor, treeLayout } = attributes;
+  const [families, setFamilies] = useState([]);
 	const [relations, setRelations] = useState([]);
 	const [persons, setPersons] = useState([]);
 
@@ -80,6 +80,11 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 	  return familyRoots.map((r) => ({ label: `${r.firstName} ${r.lastName}`, value: r.id })); 
 	}
 
+	function getTreeLayoutOptions() {
+	  const layouts = ['classic', 'rounded'];
+	  return layouts.map((r) => ({ label: `${r}`, value: r })); 
+	}
+
 	if (!persons || !families) {
 		return null;
 	}
@@ -98,6 +103,13 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
             onChange={ ( f ) => setAttributes({ founder: parseInt(f) }) }
 				  	options={ getFamiliesOptions() }
 						help={__('For selectable founders you need to set the \'Founder\' flag on at least one person on the FamTree settings page!', 'famtree') }
+					/>
+				  <SelectControl
+  			        label={ __('Current tree layout', 'famtree') }
+	  				labelPosition= 'side'
+            value={ treeLayout }
+            onChange={ ( f ) => setAttributes({ treeLayout: f }) }
+				  	options={ getTreeLayoutOptions() }
 					/>
           <ToggleControl
   			    label={ __('Show founder menu button', 'famtree') }

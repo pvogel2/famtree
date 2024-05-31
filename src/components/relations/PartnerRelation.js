@@ -31,7 +31,13 @@ function getRelationLines(s, t, config = { foreground, highstart, highend, offse
 }
 
 function PartnerRelation(props) {
-  const foreground = useSelect((select) => select('famtree/runtime').getForeground());
+  const { foreground, treeLayout } = useSelect((select) => {
+    const store = select('famtree/runtime');
+    return {
+      foreground: store.getForeground(),
+      treeLayout: store.getTreeLayout(),
+    }
+  });
 
   const { highstart = foreground, highend = foreground, targetX = 0, targetY = 0, targetZ = 0, parent, offsetX = 0, offsetY = 0, offsetZ = 0 } = props;
   const { renderer } = useContext(RenderContext);

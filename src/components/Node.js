@@ -78,12 +78,98 @@ function getParnterId(rl, pId) {
   return isValidId(id) ? id : null;
 }
 
+class Layout {
+  rTarget = new Vector3();
+  cTarget = new Vector3();
+  cSource = new Vector3();
+  currentCTarget = new Vector3();
+  childMinZ = 0;
+
+  updateRelationTarget(idx, length, childrenSize) {
+    this.rTarget.add(new Vector3(0, 0,  -NODE_DIST));
+
+    if (idx > 0 && length && this.childMinZ <= this.rTarget.z) { // childMin is right side from relation target
+      this.rTarget.setZ(this.childMinZ - (childrenSize + NODE_DIST) * 0.5);
+    }
+    this.childMinZ = this.rTarget.z - childrenSize * 0.5;
+  }
+
+  getChildSource(idx) {
+    const v = new Vector3(0, GEN_DIST / 3  - idx * 0.2, this.rTarget.z + NODE_DIST * 0.5);
+    this.cSource.set(v.x, v.y, v.z);
+    return this.cSource;
+  }
+
+  getCurrentChildTarget(childrenSize) {
+    this.currentCTarget = this.cSource.clone();
+    this.currentCTarget.setY(GEN_DIST);
+    this.currentCTarget.add(new Vector3(0, 0, childrenSize * 0.5));
+
+    return this.currentCTarget;
+  }
+
+  getChildTarget(relationsLength, childSize) {
+    const relationDistance = relationsLength ? relationsLength * 0.5 * NODE_SIZE : 0;
+
+    this.cTarget = this.currentCTarget.clone();
+    this.cTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
+    this.cTarget.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
+
+    this.currentCTarget.add(new Vector3(0, 0, -childSize)); // shift right to end of current childSize (prepare for next child)
+  }
+
+  getPartnerOffset() {
+    return {
+      offsetX: this.rTarget.x,
+      offsetY: this.rTarget.y,
+      offsetZ: this.rTarget.z,
+    };
+  }
+
+  getPartnerRelationOffset() {
+    return {
+      offsetX: 0,
+      offsetY: this.cSource.y,
+      offsetZ: 0,
+    };
+  }
+
+  getPartnerRelationTarget() {
+    return {
+      targetX: this.rTarget.x,
+      targetY: this.rTarget.y,
+      targetZ: this.rTarget.z,
+    };
+  }
+
+  getPartnerChildTarget() {
+    return {
+      targetX: this.cTarget.x,
+      targetY: this.cTarget.y,
+      targetZ: this.cTarget.z,
+    };
+  }
+
+  getPartnerChildOffset() {
+    return {
+      offsetX: 0,
+      offsetY: this.cTarget.y,
+      offsetZ: this.cTarget.z,
+    };
+  }
+}
+
+function createLayout() {
+  return new Layout();
+}
+
 function Node(props) {
   const {
     person,
     parent,
     parentId = null,
     sendSize,
+    offsetX = 0,
     offsetY = 0,
     offsetZ = 0,
     previousSiblingId = null,
@@ -194,14 +280,14 @@ function Node(props) {
   useEffect(() => {
     if (!renderer || !person?.id) return;
 
-    const offset = new Vector3(0, offsetY, offsetZ);
+    const offset = new Vector3(offsetX, offsetY, offsetZ);
     const colors = { foreground, text };
     const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors });
 
     setRoot(newRoot);
 
     return clean;
-  }, [renderer, person, foreground, offsetY, offsetZ, parent, text]);
+  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, parent, text]);
 
   if (!root) {
     return null;
@@ -215,10 +301,9 @@ function Node(props) {
     const relationsGroup = getRelationsGroup(root);
     const assetsGroup = getAssetsGroup(root);
 
-    const relationTarget = new Vector3();
-    let childMinZ = 0;
     let leftPartnerId = person.id;
     let rightPartnerId = null;
+    const layout = createLayout();
 
     return relations.map((r, idx) => {
       const partner = findPartner(r, person, persons);
@@ -231,16 +316,9 @@ function Node(props) {
       const children = findItems(r.children, persons);
       const childrenSize = getChildrenGroupSize(children, sizes);
 
-      relationTarget.add(new Vector3(0, 0,  -NODE_DIST));
+      layout.updateRelationTarget(idx, children.length, childrenSize);
 
-      if (idx === 0) {
-        childMinZ = relationTarget.z - childrenSize * 0.5; // getNormalizedDistance(childrenSize);
-      } else if (children.length && childMinZ <= relationTarget.z) { // childMin is right side from relation target
-        relationTarget.setZ(childMinZ - (childrenSize + NODE_DIST) * 0.5);
-        childMinZ = relationTarget.z - childrenSize * 0.5;
-      }
-      
-      const childSource = new Vector3(0, GEN_DIST / 3  - idx * 0.2, relationTarget.z + NODE_DIST * 0.5); // set start point for childSource
+      const childSource = layout.getChildSource(idx);
 
       const partnerFocused = partner.id === focusedPerson?.id;
       const partnerSelected = partner.id === selectedPerson?.id;
@@ -250,8 +328,7 @@ function Node(props) {
           <Partner
             person={ partner }
             parent={ relationsGroup }
-            offsetY={ relationTarget.y }
-            offsetZ={ relationTarget.z }
+            { ...layout.getPartnerOffset() }
             parentId={ parentId }
             toChildId={ children[0]?.id }
             toLeftId={ (isValidId(leftPartnerId) ? leftPartnerId : null) }
@@ -261,35 +338,33 @@ function Node(props) {
             highstart={ isSelected ? selection : (isFocused ? highlight : undefined) }
             highend={ partnerSelected ? selection : (partnerFocused ? highlight : undefined) }
             parent={ assetsGroup }
-            targetX={ relationTarget.x }
-            targetY={ relationTarget.y }
-            targetZ={ relationTarget.z }
-            offsetX={ 0 }
-            offsetY={ childSource.y }
-            offsetZ={ 0 }
-            />
+            { ...layout.getPartnerRelationOffset() }
+            { ...layout.getPartnerRelationTarget() }
+          />
         </>
       );
 
-      const currentChildTarget = childSource.clone();
-      currentChildTarget.setY(GEN_DIST);
-      currentChildTarget.add(new Vector3(0, 0, childrenSize * 0.5))
+      // const currentChildTarget = childSource.clone();
+      // currentChildTarget.setY(GEN_DIST);
+      // currentChildTarget.add(new Vector3(0, 0, childrenSize * 0.5));
+      const currentChildTarget = layout.getCurrentChildTarget(childrenSize);
 
       let previousNodeId = null;
 
       const childNode = children.map((c, idx) => {
         const childSize = getChildSize(c.id, sizes);
-        const relationDistance = c.relations.length ? c.relations.length * 0.5 * NODE_SIZE : 0;
+        // const relationDistance = c.relations.length ? c.relations.length * 0.5 * NODE_SIZE : 0;
 
-        const childTarget = currentChildTarget.clone();
-        childTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
-        childTarget.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
+        // const childTarget = currentChildTarget.clone();
+        // childTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
+        // childTarget.add(new Vector3(0, 0, relationDistance)); // shift left offset if relations defined
         
         const childFocused = c.id === focusedPerson?.id;
         const childSelected = c.id === selectedPerson?.id;
 
-        currentChildTarget.add(new Vector3(0, 0, -childSize)); // shift right to end of current childSize (prepare for next child)
-        
+        // currentChildTarget.add(new Vector3(0, 0, -childSize)); // shift right to end of current childSize (prepare for next child)
+        layout.getChildTarget(c.relations.length, childSize);
+
         const fragment = (
           <Fragment key={ `children${c.id}` }>
             <Node
@@ -297,8 +372,10 @@ function Node(props) {
               person={ c }
               parentId={ person.id }
               parent={ relationsGroup }
-              offsetY={ childTarget.y }
-              offsetZ={ childTarget.z }
+              // offsetX={ 0 }
+              // offsetY={ childTarget.y }
+              // offsetZ={ childTarget.z }
+              { ...layout.getPartnerChildOffset() }
               nextSiblingId={ getNextChild(children, idx) }
               previousSiblingId={ previousNodeId }
             />
@@ -308,9 +385,10 @@ function Node(props) {
               sourceX={ childSource.x  }
               sourceY={ childSource.y  }
               sourceZ={ childSource.z  }
-              targetX={ childTarget.x }
-              targetY={ childTarget.y }
-              targetZ={ childTarget.z }
+              { ...layout.getPartnerChildTarget() }
+              // targetX={ childTarget.x }
+              // targetY={ childTarget.y }
+              // targetZ={ childTarget.z }
             />
           </Fragment>
         );

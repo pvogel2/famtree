@@ -63,7 +63,7 @@ it('adds several groups to the mesh', async () => {
 
 it('adds an offset to the node', () => {
   const offset = new Vector3(0, 1, 2);
-  const { renderer } = U.renderWithContext(<Node person={ U.getPerson().serialize() } offsetY={ offset.y } offsetZ={ offset.z }/>);
+  const { renderer } = U.renderWithContext(<Node person={ U.getPerson().serialize() } offsetX={ 0 } offsetY={ offset.y } offsetZ={ offset.z }/>);
   const node = renderer.addObject.mock.calls[0][1];
   expect(node.position).toEqual(offset);
 });
