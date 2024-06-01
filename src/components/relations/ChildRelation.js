@@ -48,14 +48,6 @@ function ChildRelation(props) {
 
     const lines = getRelationLines(source, target, { foreground, highlight });
     parent.add(lines);
-    /* const relationNode = getMesh({ foreground: '#00ff00'});
-    const sourceNode = getMesh({ foreground: '#006600'});
-    sourceNode.position.set(sourceX, sourceY, sourceZ);
-    relationNode.position.x += 1.5;
-    parent.add(relationNode);
-    parent.add(sourceNode);
-    */
-
 
     return () => {
       parent.remove(lines);
