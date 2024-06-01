@@ -184,6 +184,7 @@ function Node(props) {
 
     let leftPartnerId = person.id;
     let rightPartnerId = null;
+
     const layout = createLayout();
 
     const layout = new Layout(root);
