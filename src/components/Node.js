@@ -196,7 +196,7 @@ function Node(props) {
 
       const children = findItems(r.children, persons);
 
-      layout.setRelation(children, sizes, idx);
+      layout.setRelation(children, sizes);
 
       const partnerFocused = partner.id === focusedPerson?.id;
       const partnerSelected = partner.id === selectedPerson?.id;

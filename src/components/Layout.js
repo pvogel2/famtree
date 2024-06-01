@@ -9,11 +9,12 @@ export default class Layout {
   rTarget = new Vector3();
   cTarget = new Vector3();
   cSource = new Vector3();
+  rCount = 0;
   currentCTarget = new Vector3();
   childMinZ = 0;
   nodeSize = NODE_SIZE;
-  childrenGroupSize = 0;
-  childrenGroupLength = 0;
+  childrenSize = 0;
+  childrenLength = 0;
 
   static getChildSize(id, szs) {
     const s = szs[id];
@@ -24,18 +25,18 @@ export default class Layout {
   }
   
     setChildrenGroupSize(cs, szs) {
-    this.childrenGroupSize = cs.reduce((total, c) => {
+    this.childrenSize = cs.reduce((total, c) => {
       return total += Layout.getChildSize(c.id, szs);
     }, 0);
-    this.childrenGroupLength = cs.lnegth;
+    this.childrenLength = cs.lnegth;
   }
 
   updateNodeSize(children, sizes) {
     this.setChildrenGroupSize(children, sizes);
 
     const oldTotalSize = this.nodeSize;
-    if (this.nodeSize < this.childrenGroupSize) {
-      this.nodeSize = this.childrenGroupSize;
+    if (this.nodeSize < this.childrenSize) {
+      this.nodeSize = this.childrenSize;
     }
 
     if (this.nodeSize < (oldTotalSize + NODE_SIZE)) { // minimum if relation existent
@@ -43,35 +44,36 @@ export default class Layout {
     }
   }
 
-  updateRelationTarget(idx) {
+  updateRelationTarget() {
     this.rTarget.add(new Vector3(0, 0,  -NODE_DIST));
-    const length = this.childrenGroupLength;
-    const childrenSize = this.childrenGroupSize;
+    const length = this.childrenLength;
+    const childrenSize = this.childrenSize;
 
-    if (idx > 0 && length && this.childMinZ <= this.rTarget.z) { // childMin is right side from relation target
+    if (this.rCount > 0 && length && this.childMinZ <= this.rTarget.z) { // childMin is right side from relation target
       this.rTarget.setZ(this.childMinZ - (childrenSize + NODE_DIST) * 0.5);
     }
     this.childMinZ = this.rTarget.z - childrenSize * 0.5;
   }
 
-  setChildSource(idx) {
-    const v = new Vector3(0, GEN_DIST / 3  - idx * 0.2, this.rTarget.z + NODE_DIST * 0.5);
+  setChildSource() {
+    const v = new Vector3(0, GEN_DIST / 3  - this.rCount * 0.2, this.rTarget.z + NODE_DIST * 0.5);
     this.cSource.set(v.x, v.y, v.z);
   }
 
   setCurrentChildTarget() {
-    const childrenSize = this.childrenGroupSize;
+    const childrenSize = this.childrenSize;
 
     this.currentCTarget = this.cSource.clone();
     this.currentCTarget.setY(GEN_DIST);
     this.currentCTarget.add(new Vector3(0, 0, childrenSize * 0.5));
   }
 
-  setRelation(children, sizes, idx) {
+  setRelation(children, sizes) {
     this.setChildrenGroupSize(children, sizes);
-    this.updateRelationTarget(idx);
-    this.setChildSource(idx);
+    this.updateRelationTarget();
+    this.setChildSource();
     this.setCurrentChildTarget();
+    this.rCount++;
   };
 
   setChild(child, sizes) {
