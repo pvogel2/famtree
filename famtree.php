@@ -43,6 +43,7 @@ function famtree_render_block($attributes) {
 		data-text-color="%5$s"
 		data-highlight-color="%6$s"
 		data-selection-color="%7$s"
+		data-tree-layout="%8$s"
 	></div>',
 	  esc_html( $attributes['founder'] ),
 	  esc_html( $attributes['founderFAB'] ),
@@ -50,7 +51,8 @@ function famtree_render_block($attributes) {
 	  esc_html( $attributes['foregroundColor'] ),
 	  esc_html( $attributes['textColor'] ),
 	  esc_html( $attributes['highlightColor'] ),
-	  esc_html( $attributes['selectionColor'] )
+	  esc_html( $attributes['selectionColor'] ),
+		esc_html( $attributes['treeLayout'] )
   );
 }
 

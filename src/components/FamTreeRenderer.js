@@ -23,14 +23,13 @@ function FamTreeRenderer() {
     [founderId]
   );
 
-  const { background } = useSelect(
-    (select) => {
-      const state = select( 'famtree/runtime' );
-      return {
-        background: state.getBackground(),
-      };
-    }, [],
-  );
+  const { background, treeLayout } = useSelect((select) => {
+    const store = select('famtree/runtime');
+    return {
+      background: store.getBackground(),
+      treeLayout: store.getTreeLayout(),
+    };
+  });
 
   useEffect(() => {
     setSelected();
@@ -51,15 +50,16 @@ function FamTreeRenderer() {
   }
 
   if (!renderer.running ) {
-    // const grid = renderer.addGrid(20, 20);
-    // grid.material.opacity = 0.1;
-    // grid.rotation.z = Math.PI * 0.5;
+    const grid = renderer.addGrid(20, 20);
+    grid.material.opacity = 0.1;
+    grid.rotation.z = Math.PI * 0.5;
+    renderer.addAxes(10);
     renderer.start();
   }
 
   return (
     <>
-      { !!root && <Node person={ root } /> }
+      { !!root && <Node person={ root } offsetX={ 10 } /> }
       { !root && <Placeholder /> }
       <Metadata />
     </>

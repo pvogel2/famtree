@@ -1,11 +1,12 @@
 import { useEffect, useContext, useState, useMemo, Fragment } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { Vector3 } from 'three';
+import { Vector3, Cylindrical } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import KNavigation from './KeyboardNavigation';
-import Layout from './Layout';
+import ClassicLayout from './layouts/ClassicLayout';
+import CylinderLayout from './layouts/CylinderLayout';
 import { isValidId, createTreeNode, getRelationsGroup, getAssetsGroup, createNavigationNode } from '../lib/nodes/utils';
 import Partner from './Partner';
 
@@ -60,8 +61,8 @@ function getParnterId(rl, pId) {
 }
 
 
-function createLayout() {
-  return new Layout();
+function createLayout(id) {
+  return id !== 'classic' ? new CylinderLayout() : new ClassicLayout();
 }
 
 function Node(props) {
@@ -95,13 +96,14 @@ function Node(props) {
     };
   }, []);
 
-  const { text, foreground, highlight, selection } = useSelect((select) => {
+  const { text, foreground, highlight, selection, treeLayout } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
       highlight: store.getHighlight(),
       selection: store.getSelection(),
+      treeLayout: store.getTreeLayout(),
     };
   });
 
@@ -135,7 +137,7 @@ function Node(props) {
 
   // calculate overall node size
   useEffect(() => {
-    const layout = new Layout();
+    const layout = createLayout(treeLayout);
 
     relations.forEach((r) => {
       const children = findItems(r.children, persons);
@@ -147,7 +149,7 @@ function Node(props) {
     if (totalSize !== newTotalSize) {
       setTotalSize(newTotalSize);
     }
-  }, [relations, sizes, totalSize, setTotalSize]);
+  }, [relations, sizes, totalSize, treeLayout, setTotalSize]);
 
   // send updated node size to parent
   useEffect(() => {
@@ -159,15 +161,15 @@ function Node(props) {
   // render visual node
   useEffect(() => {
     if (!renderer || !person?.id) return;
-
-    const offset = new Vector3(offsetX, offsetY, offsetZ);
+    console.log(treeLayout);
+    const offset = treeLayout === 'rounded' ? new Cylindrical(offsetX, offsetY, offsetZ) : new Vector3(offsetX, offsetY, offsetZ);
     const colors = { foreground, text };
     const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors });
 
     setRoot(newRoot);
 
     return clean;
-  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, parent, text]);
+  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, parent, text, treeLayout]);
 
   if (!root) {
     return null;
@@ -184,7 +186,7 @@ function Node(props) {
     let leftPartnerId = person.id;
     let rightPartnerId = null;
 
-    const layout = createLayout();
+    const layout = createLayout(treeLayout);
 
     return relations.map((r, idx) => {
       const partner = findPartner(r, person, persons);

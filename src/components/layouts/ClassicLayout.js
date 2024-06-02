@@ -28,7 +28,7 @@ export default class Layout {
     this.childrenSize = cs.reduce((total, c) => {
       return total += Layout.getChildSize(c.id, szs);
     }, 0);
-    this.childrenLength = cs.lnegth;
+    this.childrenLength = cs.length;
   }
 
   updateNodeSize(children, sizes) {

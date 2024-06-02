@@ -1,4 +1,4 @@
-import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils, SRGBColorSpace } from 'three';
+import { TextureLoader, Mesh, Group, SphereGeometry, MeshBasicMaterial, Vector3, Color, MathUtils, SRGBColorSpace, Cylindrical } from 'three';
 import { __ } from '@wordpress/i18n';
 import ThreeText3D from '../../lib/three/Text3D';
 import ThreePreparedMeshes from '../../lib/three/PreparedMeshes';
@@ -424,7 +424,14 @@ export function createTreeNode(person, meta, layout) {
       rg = getPlaceholderGroup();
   }
 
-  rg.position.add(offset);
+  if (offset instanceof Cylindrical) {
+    const v = new Vector3().setFromCylindrical( offset );
+    const vLocal = rg.worldToLocal(v);
+    console.log(vLocal);
+    rg.position.add(vLocal);
+  } else {
+    rg.position.add(offset);
+  }
 
   const rId = `person${id}`;
   const sId = `symbol${id}`;

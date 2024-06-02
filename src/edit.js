@@ -177,6 +177,7 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 				  foreground={ foregroundColor }
 				  highlight={ highlightColor }
 				  selection={ selectionColor }
+					treeLayout={ treeLayout }
 				  instanceId={ `famtree${ clientId }` }
 				/>
 		  </div>
