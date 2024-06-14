@@ -58,6 +58,7 @@ export default class Layout {
     if (this.rCount > 0 && length && this.childMinTheta <= this.rTarget.z) { // childMin is right side from relation target
       this.rTarget.theta = (this.childMinTheta + (childrenSize + NODE_DIST) * 0.5);
     }
+
     this.childMinTheta = this.rTarget.theta + childrenSize * 0.5;
   }
 
@@ -71,7 +72,7 @@ export default class Layout {
 
     this.currentCTarget = this.cSource.clone();
     this.currentCTarget.y = GEN_DIST;
-    this.currentCTarget.theta += childrenSize * 0.5;
+    this.currentCTarget.theta -= childrenSize * 0.5;
   }
 
   setRelation(children, sizes) {
@@ -89,10 +90,10 @@ export default class Layout {
     const relationDistance = relationsLength ? relationsLength * 0.5 * NODE_SIZE : 0;
 
     this.cTarget = this.currentCTarget.clone();
-    this.cTarget.theta += (-0.5 * childSize); // shift right half child size
+    this.cTarget.theta += (0.5 * childSize); // shift right half child size
     this.cTarget.theta += relationDistance; // shift left offset if relations defined
 
-    this.currentCTarget.theta += -childSize; // shift right to end of current childSize (prepare for next child)
+    this.currentCTarget.theta += childSize; // shift right to end of current childSize (prepare for next child)
   }
 
   getPartnerOffset() {
