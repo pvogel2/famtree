@@ -27,6 +27,7 @@ function Partner(props) {
       text: store.getText(),
       selection: store.getSelection(),
       foreground: store.getForeground(),
+      treeLayout: store.getTreeLayout(),
     };
   });
 
