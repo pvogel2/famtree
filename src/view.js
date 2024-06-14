@@ -8,7 +8,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const instanceId = `famtree${idx}`;
     root.setAttribute('id', instanceId);
 
-    console.log(root.dataset);
     createRoot(root).render(<App
       founder={ parseInt(root.dataset.founder) }
       founderFAB={ root.dataset.founderFab === '1' }

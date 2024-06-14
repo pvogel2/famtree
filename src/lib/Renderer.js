@@ -16,6 +16,7 @@ import { Vector2 ,Vector3, Color, Frustum, Scene, WebGLRenderer, OrthographicCam
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+import ThreeText3D from './three/Text3D';
 export class Renderer {
   constructor(config = {}) {
     this.stats = null;
@@ -392,6 +393,7 @@ export class Renderer {
 
     const positions = [];
     const colors = [];
+
     const vrts = [
       new Vector3(0,0,0), new Vector3(size,0,0),
       new Vector3(0,0,0), new Vector3(0,size,0),
@@ -404,6 +406,8 @@ export class Renderer {
       new Color( 0, 0, 1), new Color( 0, 0, 1),
 
     ];
+    
+    const labels = ['x', 'y', 'z'];
 
     for (let i = 0; i < vrts.length; i++) {
       positions.push(vrts[i].x); positions.push(vrts[i].y); positions.push(vrts[i].z);
@@ -412,7 +416,20 @@ export class Renderer {
     a_geometry.setAttribute( 'position', new BufferAttribute( new Float32Array( positions ), 3 ) );
     a_geometry.setAttribute( 'color', new BufferAttribute( new Float32Array( colors ), 3 ) );
 
-    this.addObject("axes", new LineSegments( a_geometry, a_material) );
+    const axes = new LineSegments( a_geometry, a_material);
+    this.addObject("axes", axes);
+
+    for (let i = 0; i < labels.length; i++) {
+      const p = vrts[i*2 + 1].clone().multiplyScalar(1.1);
+
+      new ThreeText3D({
+        text: labels[i],
+        position: p,
+        color: clrs[i*2 + 1],
+        id: `axesLabel${labels[i]}`,
+        scale: 2,
+      }).attach(null, axes);;
+    }
   }
 
   /* add base grid */

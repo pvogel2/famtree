@@ -60,9 +60,12 @@ function getParnterId(rl, pId) {
   return isValidId(id) ? id : null;
 }
 
+function getLayout(id) {
+  return id !== 'classic' ? CylinderLayout : ClassicLayout;
+}
 
 function createLayout(id) {
-  return id !== 'classic' ? new CylinderLayout() : new ClassicLayout();
+  return new (getLayout(id))();
 }
 
 function Node(props) {
@@ -161,8 +164,9 @@ function Node(props) {
   // render visual node
   useEffect(() => {
     if (!renderer || !person?.id) return;
-    console.log(treeLayout);
-    const offset = treeLayout === 'rounded' ? new Cylindrical(offsetX, offsetY, offsetZ) : new Vector3(offsetX, offsetY, offsetZ);
+    const Layout = getLayout(treeLayout);
+
+    const offset = Layout.calcOffset(offsetX, offsetY, offsetZ);
     const colors = { foreground, text };
     const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors });
 
@@ -181,6 +185,7 @@ function Node(props) {
     }
 
     const relationsGroup = getRelationsGroup(root);
+
     const assetsGroup = getAssetsGroup(root);
 
     let leftPartnerId = person.id;

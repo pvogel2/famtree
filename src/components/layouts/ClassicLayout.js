@@ -31,6 +31,10 @@ export default class Layout {
     this.childrenLength = cs.length;
   }
 
+  static calcOffset(x, y, z) {
+    return new Vector3(x, y, z);
+  }
+
   updateNodeSize(children, sizes) {
     this.setChildrenGroupSize(children, sizes);
 

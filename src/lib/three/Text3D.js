@@ -16,7 +16,7 @@ class ThreeText3D {
     this.debug = !!config.debug;
     this.position = config.position || new Vector3(0, 0, 0);
     this.rotation = config.rotation || new Vector3(0, 0, 0);
-    this.color = new Color(config.color || 0xffffff);
+    this.color = new Color(config.color || 0xff00ff);
     this.scale = config.scale || 1.0;
     this.alpha = config.alpha || 1.0;
     this.font = DEFAULT_FONT;
@@ -33,7 +33,7 @@ class ThreeText3D {
   getGeometry() {
     const geometry = new TextGeometry( this.text, {
       font: this.font,
-      size: 0.25,
+      size: 0.25 *  this.scale,
       depth: 0,
       curveSegments: 2,
       bevelEnabled: false,

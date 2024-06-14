@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { Color, Vector3 } from 'three';
+import { Color, Vector3, Cylindrical } from 'three';
 
 import RenderContext from './RenderContext.js';
 import KNavigation from './KeyboardNavigation';
@@ -21,11 +21,12 @@ function Partner(props) {
     toRightId,
   } = props;
 
-  const { text, foreground } = useSelect((select) => {
+  const { text, foreground, treeLayout } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
+      treeLayout: store.getTreeLayout(),
     };
   });
 
@@ -48,9 +49,13 @@ function Partner(props) {
  
     const type = 'partner';
 
-    const offset = new Vector3(offsetX, offsetY, offsetZ);
+    const offset = treeLayout === 'rounded' ? new Cylindrical(offsetX, offsetY, offsetZ) : new Vector3(offsetX, offsetY, offsetZ);
+
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
 
+    if (person.id === 14) {
+      console.log(parent, person, offset);
+    }
     const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors });
 
     const { clean: naviClean } = createNavigationNode(person, { renderer, parent: root, navi });
@@ -59,7 +64,7 @@ function Partner(props) {
       partnerClean();
       naviClean();
     };
-  }, [renderer, person, parent, foreground, text, offsetX, offsetY, offsetZ, navi]);
+  }, [renderer, person, parent, foreground, text, offsetX, offsetY, offsetZ, navi, treeLayout]);
 
   return ( 
     isSelected

@@ -59,7 +59,7 @@ function FamTreeRenderer() {
 
   return (
     <>
-      { !!root && <Node person={ root } offsetX={ 10 } /> }
+      { !!root && <Node person={ root }/> }
       { !root && <Placeholder /> }
       <Metadata />
     </>

@@ -191,7 +191,6 @@ export function addLabelText3D(p, label, color = null) {
     text: label,
     position: new Vector3(0.25, -1.25, 0),
     rotation: new Vector3(0, Math.PI * 0.5, 0),
-    scale: 0.4,
     color,
   });
 
@@ -424,11 +423,16 @@ export function createTreeNode(person, meta, layout) {
       rg = getPlaceholderGroup();
   }
 
-  if (offset instanceof Cylindrical) {
-    const v = new Vector3().setFromCylindrical( offset );
-    const vLocal = rg.worldToLocal(v);
-    console.log(vLocal);
-    rg.position.add(vLocal);
+   if (offset instanceof Cylindrical) {
+    const vOffset = new Vector3().setFromCylindrical(offset);
+
+    if (parent) {
+      const v2 = new Vector3();
+      parent.getWorldPosition(v2);
+      vOffset.sub(v2);
+    }
+
+    rg.position.copy(vOffset);
   } else {
     rg.position.add(offset);
   }

@@ -1,18 +1,18 @@
-import { Vector3, Cylindrical } from 'three';
+import { Cylindrical } from 'three';
 
 
-const NODE_DIST = 1.75; // radian
-const NODE_SIZE = 0.5; // radian
-const GEN_DIST = 4;
+const NODE_DIST = Math.PI * 0.25; // radian
+const NODE_SIZE = Math.PI * 0.25; // radian
+const GEN_DIST = 6;
 const RADIUS = 5;
 
 export default class Layout {
-  rTarget = new Cylindrical(RADIUS, NODE_DIST, 0);
-  cTarget = new Cylindrical(RADIUS, NODE_DIST, 0);
-  cSource = new Cylindrical(RADIUS, NODE_DIST, 0);
+  rTarget = new Cylindrical(RADIUS, 0, 0);
+  cTarget = new Cylindrical(RADIUS, 0, 0);
+  cSource = new Cylindrical(RADIUS, 0, 0);
   rCount = 0;
-  currentCTarget = new Cylindrical(RADIUS, NODE_DIST, 0);
-  childMinZ = 0;
+  currentCTarget = new Cylindrical(RADIUS, 0, 0);
+  childMinTheta = 0;
   nodeSize = NODE_SIZE;
   childrenSize = 0;
   childrenLength = 0;
@@ -24,8 +24,13 @@ export default class Layout {
     }
     return s;
   }
-  
-    setChildrenGroupSize(cs, szs) {
+
+
+  static calcOffset(_x, y, z) {
+    return new Cylindrical(RADIUS, y, z);
+  }
+
+  setChildrenGroupSize(cs, szs) {
     this.childrenSize = cs.reduce((total, c) => {
       return total += Layout.getChildSize(c.id, szs);
     }, 0);
@@ -46,18 +51,18 @@ export default class Layout {
   }
 
   updateRelationTarget() {
-    this.rTarget.theta += -NODE_DIST;
+    this.rTarget.theta += NODE_DIST;
     const length = this.childrenLength;
     const childrenSize = this.childrenSize;
 
-    if (this.rCount > 0 && length && this.childMinZ <= this.rTarget.z) { // childMin is right side from relation target
-      this.rTarget.theta = (this.childMinZ - (childrenSize + NODE_DIST) * 0.5);
+    if (this.rCount > 0 && length && this.childMinTheta <= this.rTarget.z) { // childMin is right side from relation target
+      this.rTarget.theta = (this.childMinTheta + (childrenSize + NODE_DIST) * 0.5);
     }
-    this.childMinZ = this.rTarget.theta - childrenSize * 0.5;
+    this.childMinTheta = this.rTarget.theta + childrenSize * 0.5;
   }
 
   setChildSource() {
-    const v = new Cylindrical(RADIUS, this.rTarget.theta + NODE_DIST * 0.5, GEN_DIST / 3  - this.rCount * 0.2);
+    const v = new Cylindrical(RADIUS, this.rTarget.theta - NODE_DIST * 0.5, GEN_DIST / 3  - this.rCount * 0.2);
     this.cSource.copy(v);
   }
 
@@ -84,57 +89,57 @@ export default class Layout {
     const relationDistance = relationsLength ? relationsLength * 0.5 * NODE_SIZE : 0;
 
     this.cTarget = this.currentCTarget.clone();
-    this.cTarget.thata += (-0.5 * childSize); // shift right half child size
-    this.cTarget.thata += relationDistance; // shift left offset if relations defined
+    this.cTarget.theta += (-0.5 * childSize); // shift right half child size
+    this.cTarget.theta += relationDistance; // shift left offset if relations defined
 
-    this.currentCTarget.thata += -childSize; // shift right to end of current childSize (prepare for next child)
+    this.currentCTarget.theta += -childSize; // shift right to end of current childSize (prepare for next child)
   }
 
   getPartnerOffset() {
     return {
-      offsetX: this.rTarget.radius,
-      offsetY: this.rTarget.y,
-      offsetZ: this.rTarget.theta,
+      offsetX: RADIUS,
+      offsetY: this.rTarget.theta,
+      offsetZ: this.rTarget.y,
     };
   }
 
   getPartnerRelationOffset() {
     return {
-      offsetX: 0,
-      offsetY: this.cSource.y,
-      offsetZ: 0,
+      offsetX: RADIUS,
+      offsetY: 0,
+      offsetZ: this.cSource.y,
     };
   }
 
   getPartnerRelationTarget() {
     return {
-      targetX: this.rTarget.radius,
-      targetY: this.rTarget.y,
-      targetZ: this.rTarget.theta,
+      targetX: RADIUS,
+      targetY: this.rTarget.theta,
+      targetZ: this.rTarget.y,
     };
   }
 
   getChildRelationTarget() {
     return {
-      targetX: this.cTarget.radius,
-      targetY: this.cTarget.y,
-      targetZ: this.cTarget.theta,
+      targetX: RADIUS,
+      targetY: this.cTarget.theta,
+      targetZ: this.cTarget.y,
     };
   }
 
   getChildRelationSource() {
     return {
-      sourceX: this.cSource.radius,
-      sourceY: this.cSource.y,
-      sourceZ: this.cSource.theta,
+      sourceX: RADIUS,
+      sourceY: this.cSource.theta,
+      sourceZ: this.cSource.y,
     };
   }
 
   getPartnerChildOffset() {
     return {
-      offsetX: 0,
-      offsetY: this.cTarget.y,
-      offsetZ: this.cTarget.theta,
+      offsetX: RADIUS,
+      offsetY: this.cTarget.theta,
+      offsetZ: this.cTarget.y,
     };
   }
 }
