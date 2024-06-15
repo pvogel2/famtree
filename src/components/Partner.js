@@ -53,9 +53,6 @@ function Partner(props) {
 
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
 
-    if (person.id === 14) {
-      console.log(parent, person, offset);
-    }
     const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors });
 
     const { clean: naviClean } = createNavigationNode(person, { renderer, parent: root, navi });

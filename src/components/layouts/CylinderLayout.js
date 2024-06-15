@@ -34,6 +34,7 @@ export default class Layout {
     this.childrenSize = cs.reduce((total, c) => {
       return total += Layout.getChildSize(c.id, szs);
     }, 0);
+
     this.childrenLength = cs.length;
   }
 
@@ -44,7 +45,7 @@ export default class Layout {
     if (this.nodeSize < this.childrenSize) {
       this.nodeSize = this.childrenSize;
     }
-
+  
     if (this.nodeSize < (oldTotalSize + NODE_SIZE)) { // minimum if relation existent
       this.nodeSize += NODE_SIZE;
     }
@@ -91,7 +92,7 @@ export default class Layout {
 
     this.cTarget = this.currentCTarget.clone();
     this.cTarget.theta += (0.5 * childSize); // shift right half child size
-    this.cTarget.theta += relationDistance; // shift left offset if relations defined
+    this.cTarget.theta -= relationDistance; // shift left offset if relations defined
 
     this.currentCTarget.theta += childSize; // shift right to end of current childSize (prepare for next child)
   }

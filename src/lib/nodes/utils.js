@@ -423,13 +423,16 @@ export function createTreeNode(person, meta, layout) {
       rg = getPlaceholderGroup();
   }
 
-   if (offset instanceof Cylindrical) {
+  if (offset instanceof Cylindrical) {
     const vOffset = new Vector3().setFromCylindrical(offset);
+
 
     if (parent) {
       const v2 = new Vector3();
       parent.getWorldPosition(v2);
-      vOffset.sub(v2);
+      // vOffset.sub(v2);
+      vOffset.x -= v2.x;
+      vOffset.z -= v2.z;
     }
 
     rg.position.copy(vOffset);
@@ -445,7 +448,6 @@ export function createTreeNode(person, meta, layout) {
   });
 
   renderer.addObject(rId, rg, false, parent);
-
   const dg = getDataGroup(rg);
   const lt = addLabelText3D(dg, `${p ? p.name : __('no information', 'famtree')}`, colors.text);
 

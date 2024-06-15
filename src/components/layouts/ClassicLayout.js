@@ -66,7 +66,6 @@ export default class Layout {
 
   setCurrentChildTarget() {
     const childrenSize = this.childrenSize;
-
     this.currentCTarget = this.cSource.clone();
     this.currentCTarget.setY(GEN_DIST);
     this.currentCTarget.add(new Vector3(0, 0, childrenSize * 0.5));
