@@ -186,7 +186,7 @@ function Node(props) {
     let leftPartnerId = person.id;
     let rightPartnerId = null;
 
-    const layout = createLayout(treeLayout);
+    const layout = createLayout(treeLayout, offsetX, offsetY, offsetZ);
 
     const layout = new Layout(root);
 
