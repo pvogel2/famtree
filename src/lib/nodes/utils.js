@@ -423,6 +423,9 @@ export function createTreeNode(person, meta, layout) {
       rg = getPlaceholderGroup();
   }
 
+  const rId = `person${id}`;
+  const sId = `symbol${id}`;
+
   if (offset instanceof Cylindrical) {
     const vOffset = new Vector3().setFromCylindrical(offset);
 
@@ -430,18 +433,24 @@ export function createTreeNode(person, meta, layout) {
     if (parent) {
       const v2 = new Vector3();
       parent.getWorldPosition(v2);
-      // vOffset.sub(v2);
+
       vOffset.x -= v2.x;
       vOffset.z -= v2.z;
     }
 
     rg.position.copy(vOffset);
+    
+    if (type === 'person') {
+      const geometry = new SphereGeometry( 0.27, 32, 16 );
+      const smaterial = new MeshBasicMaterial( { color: 0x0000ff } ); 
+      const sphere = new Mesh( geometry, smaterial );
+      sphere.position.copy(vOffset);
+      renderer.removeObject(rId + 'testSphere');
+      renderer.addObject(rId + 'testSphere', sphere, false, parent);
+    }
   } else {
     rg.position.add(offset);
   }
-
-  const rId = `person${id}`;
-  const sId = `symbol${id}`;
 
   getSymbolGroup(p, { foreground: colors.foreground }).then((sg) => {
     renderer.addObject(sId, sg, true, rg);

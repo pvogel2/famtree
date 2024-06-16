@@ -10,12 +10,17 @@ export default class Layout {
   rTarget = new Cylindrical(RADIUS, 0, 0);
   cTarget = new Cylindrical(RADIUS, 0, 0);
   cSource = new Cylindrical(RADIUS, 0, 0);
+  offset = new Cylindrical(RADIUS, 0, 0);
   rCount = 0;
   currentCTarget = new Cylindrical(RADIUS, 0, 0);
   childMinTheta = 0;
   nodeSize = NODE_SIZE;
   childrenSize = 0;
   childrenLength = 0;
+
+  constructor(radius = RADIUS, theta = 0, y = 0) {
+    this.offset = new Cylindrical(radius, theta, y);
+  }
 
   static getChildSize(id, szs) {
     const s = szs[id];
@@ -100,7 +105,7 @@ export default class Layout {
   getPartnerOffset() {
     return {
       offsetX: RADIUS,
-      offsetY: this.rTarget.theta,
+      offsetY: this.rTarget.theta + this.offset.theta,
       offsetZ: this.rTarget.y,
     };
   }
@@ -108,7 +113,7 @@ export default class Layout {
   getPartnerRelationOffset() {
     return {
       offsetX: RADIUS,
-      offsetY: 0,
+      offsetY: this.offset.theta,
       offsetZ: this.cSource.y,
     };
   }
@@ -116,7 +121,7 @@ export default class Layout {
   getPartnerRelationTarget() {
     return {
       targetX: RADIUS,
-      targetY: this.rTarget.theta,
+      targetY: this.rTarget.theta + this.offset.theta,
       targetZ: this.rTarget.y,
     };
   }
@@ -124,7 +129,7 @@ export default class Layout {
   getChildRelationTarget() {
     return {
       targetX: RADIUS,
-      targetY: this.cTarget.theta,
+      targetY: this.cTarget.theta + this.offset.theta,
       targetZ: this.cTarget.y,
     };
   }
@@ -132,7 +137,7 @@ export default class Layout {
   getChildRelationSource() {
     return {
       sourceX: RADIUS,
-      sourceY: this.cSource.theta,
+      sourceY: this.cSource.theta, //  + this.offset.theta,
       sourceZ: this.cSource.y,
     };
   }
@@ -140,7 +145,7 @@ export default class Layout {
   getPartnerChildOffset() {
     return {
       offsetX: RADIUS,
-      offsetY: this.cTarget.theta,
+      offsetY: this.cTarget.theta + this.offset.theta,
       offsetZ: this.cTarget.y,
     };
   }
