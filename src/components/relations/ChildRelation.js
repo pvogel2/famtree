@@ -75,13 +75,18 @@ function getRelationLinesCyl(s, t, config = { foreground, highlight, offset }) {
   // points.push(sV3.clone().add(new Vector3(0, 2, 0)));
   // colors.push(...foreColor.toArray());
   // colors.push(...highColor.toArray());
-  console.log(config.offset);
   const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
   const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, 0))).sub(vOffset);
   const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
 
-  points.push(start.clone());
-  points.push(end.clone());
+  points.push(start.clone().add(new Vector3(0, 2, 0)));
+  points.push(start.clone().add(new Vector3(0, 4, 0)));
+
+  points.push(start.clone().add(new Vector3(0, 4, 0)));
+  points.push(end.clone().add(new Vector3(0, 4, 0)));
+
+  points.push(end.clone().add(new Vector3(0, 4, 0)));
+  points.push(end.clone().add(new Vector3(0, 4.5, 0)));
 
   const lsGeometry = new BufferGeometry().setFromPoints( points );
   // lsGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
@@ -132,9 +137,9 @@ function ChildRelation(props) {
     if (treeLayout === 'rounded') {
       const v2 = new Vector3();
       parent.getWorldPosition(v2);  
-      const source = new Cylindrical().setFromVector3(v2);
+      const offset = new Cylindrical().setFromVector3(v2);
 
-      const offset = new Cylindrical(sourceX, sourceY, sourceZ);
+      const source = new Cylindrical(sourceX, sourceY, sourceZ);
       const target = new Cylindrical(targetX, targetY, targetZ);
       lines = getRelationLinesCyl(source, target, { foreground, highlight, offset });
       parent.add(lines);
