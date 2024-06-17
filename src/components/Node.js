@@ -64,8 +64,8 @@ function getLayout(id) {
   return id !== 'classic' ? CylinderLayout : ClassicLayout;
 }
 
-function createLayout(id, x, y, z) {
-  return new (getLayout(id))(x, y, z);
+function createLayout(id, root) {
+  return new (getLayout(id))(root);
 }
 
 function Node(props) {
@@ -191,7 +191,7 @@ function Node(props) {
     let leftPartnerId = person.id;
     let rightPartnerId = null;
 
-    const layout = createLayout(treeLayout, offsetX, offsetY, offsetZ);
+    const layout = createLayout(treeLayout, root);
 
     return relations.map((r, idx) => {
       const partner = findPartner(r, person, persons);

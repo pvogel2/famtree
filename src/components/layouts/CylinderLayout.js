@@ -1,4 +1,4 @@
-import { Cylindrical } from 'three';
+import { Cylindrical, Vector3 } from 'three';
 
 
 const NODE_DIST = Math.PI * 0.25; // radian
@@ -18,8 +18,13 @@ export default class Layout {
   childrenSize = 0;
   childrenLength = 0;
 
-  constructor(radius = RADIUS, theta = 0, y = 0) {
-    this.offset = new Cylindrical(radius, theta, y);
+  constructor(root) {
+    if (root) {
+      const v2 = new Vector3();
+      root.getWorldPosition(v2);
+      const v = new Cylindrical().setFromVector3(v2);
+      this.offset = new Cylindrical(RADIUS, v.theta, 0);
+    }
   }
 
   static getChildSize(id, szs) {
@@ -137,7 +142,7 @@ export default class Layout {
   getChildRelationSource() {
     return {
       sourceX: RADIUS,
-      sourceY: this.cSource.theta, //  + this.offset.theta,
+      sourceY: this.cSource.theta + this.offset.theta,
       sourceZ: this.cSource.y,
     };
   }
