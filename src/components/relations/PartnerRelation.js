@@ -26,11 +26,11 @@ function getRelationLinesCyl(s, t, config = { foreground, highstart, highend, of
 
   const curveGroup = new Group();
 
-  const groupRotation = new Euler();
-  groupRotation.x = Math.PI * -0.5;
-  groupRotation.z = Math.PI * -0.5;
-  curveGroup.rotation.copy(groupRotation);
-  curveGroup.position.copy(sV3).negate().add(new Vector3(0, 0 + config.offset.y, 0));
+  // const groupRotation = new Euler();
+  // groupRotation.x = Math.PI * -0.5;
+  // groupRotation.z = Math.PI * -0.5;
+  // curveGroup.rotation.copy(groupRotation);
+  // curveGroup.position.copy(sV3).negate().add(new Vector3(0, 0 + config.offset.y, 0));
 
   const curve = new EllipseCurve(
     sV3.x,  sV3.y,            // ax, aY
@@ -42,22 +42,27 @@ function getRelationLinesCyl(s, t, config = { foreground, highstart, highend, of
 
   const nPoints = Math.ceil((tCyl.theta - s.theta) / 0.25) * 8;
   const cPoints = curve.getPoints(nPoints);
-  const geometry = new BufferGeometry().setFromPoints( cPoints );
-  geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
-  curveGroup.add(new Line( geometry, material ));config.offset.y
+  // const geometry = new BufferGeometry().setFromPoints( cPoints );
+  // geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+  // curveGroup.add(new Line( geometry, material ));
+// 
+  const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
+  const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, 0))).sub(vOffset);
+  const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
 
-  const start = curve.getPoint(0);
-  const end = curve.getPoint(1);
+  const offsetBase = 1.2;
+  const offsetUp = 2;
+  points.push(new Vector3().copy(start).add(new Vector3(0, offsetBase, 0)));
+  points.push(new Vector3().copy(start).add(new Vector3(0, offsetUp, 0)));
 
-  const offsetBase = 1.2 - config.offset.y;
-  const offsetUp = config.offset.y - 1.2;
-  points.push(new Vector3(start.x, start.y, offsetBase));
-  points.push(new Vector3(start.x, start.y, offsetBase).add(new Vector3(0, 0, offsetUp)));
-  points.push(new Vector3(end.x, end.y, offsetBase).add(new Vector3(0, 0, offsetUp)));
-  points.push(new Vector3(end.x, end.y, offsetBase));
+  points.push(new Vector3().copy(end).add(new Vector3(0, offsetUp, 0)));
+  points.push(new Vector3().copy(end).add(new Vector3(0, offsetBase, 0)));
+
+  points.push(new Vector3().copy(start).add(new Vector3(0, offsetUp, 0)));
+  points.push(new Vector3().copy(end).add(new Vector3(0, offsetUp, 0)));
 
   const lGeometry = new BufferGeometry().setFromPoints( points );
-  lGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+  // lGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
   curveGroup.add(new LineSegments( lGeometry, material ));
 
   return curveGroup;
