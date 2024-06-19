@@ -39,59 +39,59 @@ function getRelationLinesCyl(s, t, config = { foreground, highstart, highend, of
   });
   const points = [];
   const colors = [];
-
-  const tCyl = s.clone();
-  tCyl.theta += t.theta;
-  tCyl.y += t.y;
-  const sV3 = new Vector3().setFromCylindrical(s);
-
+ 
   colors.push(...startColor.toArray());
   colors.push(...foreColor.toArray());
+
   colors.push(...foreColor.toArray());
   colors.push(...endColor.toArray());
 
-  const curveGroup = new Group();
+  // colors.push(...foreColor.toArray());
+  // colors.push(...foreColor.toArray());
 
-  // const groupRotation = new Euler();
-  // groupRotation.x = Math.PI * -0.5;
-  // groupRotation.z = Math.PI * -0.5;
-  // curveGroup.rotation.copy(groupRotation);
-  // curveGroup.position.copy(sV3).negate().add(new Vector3(0, 0 + config.offset.y, 0));
+  const group = new Group();
 
-  const curve = new EllipseCurve(
-    sV3.x,  sV3.y,            // ax, aY
-    5, 5,           // xRadius, yRadius
-    s.theta,  tCyl.theta,  // aStartAngle, aEndAngle
-    false,            // aClockwise
-    0               // aRotation
-  );
-
-  const nPoints = Math.ceil((tCyl.theta - s.theta) / 0.25) * 8;
-  const cPoints = curve.getPoints(nPoints);
-  // const geometry = new BufferGeometry().setFromPoints( cPoints );
-  // geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
-  // curveGroup.add(new Line( geometry, material ));
-// 
   const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
   const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, 0))).sub(vOffset);
   const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
 
   const offsetBase = 1.2;
-  const offsetUp = 2;
+  const offsetUp = config.offset.y;
   points.push(new Vector3().copy(start).add(new Vector3(0, offsetBase, 0)));
   points.push(new Vector3().copy(start).add(new Vector3(0, offsetUp, 0)));
 
   points.push(new Vector3().copy(end).add(new Vector3(0, offsetUp, 0)));
   points.push(new Vector3().copy(end).add(new Vector3(0, offsetBase, 0)));
 
-  points.push(new Vector3().copy(start).add(new Vector3(0, offsetUp, 0)));
-  points.push(new Vector3().copy(end).add(new Vector3(0, offsetUp, 0)));
+  // points.push(new Vector3().copy(start).add(new Vector3(0, offsetUp, 0)));
+  // points.push(new Vector3().copy(end).add(new Vector3(0, offsetUp, 0)));
 
   const lGeometry = new BufferGeometry().setFromPoints( points );
-  // lGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
-  curveGroup.add(new LineSegments( lGeometry, material ));
+  lGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+  group.add(new LineSegments( lGeometry, material ));
 
-  return curveGroup;
+  const cGroup = new Group();
+  cGroup.position.sub(vOffset).add(new Vector3(0, offsetUp, 0));
+  cGroup.rotateX(Math.PI * -0.5);
+  const startCyl = s.theta; //  - config.offset.theta;
+  const endCyl = t.theta; //  - config.offset.theta;
+  const curve = new EllipseCurve(
+    0,  0,             // ax, aY
+    5, 5,              // xRadius, yRadius
+    startCyl,  endCyl, // aStartAngle, aEndAngle
+    startCyl > endCyl, // aClockwise
+    -Math.PI * 0.5     // aRotation
+  );
+
+  const nPoints = Math.abs(Math.ceil((endCyl - startCyl) / 0.25)) * 8;
+
+  const cPoints = curve.getPoints(nPoints);
+  const cGeometry = new BufferGeometry().setFromPoints( cPoints );
+
+  cGroup.add(new Line( cGeometry, material ));
+  group.add(cGroup);
+
+  return group;
 }
 
 function PartnerRelation(props) {

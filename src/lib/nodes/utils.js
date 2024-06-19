@@ -440,14 +440,14 @@ export function createTreeNode(person, meta, layout) {
 
     rg.position.copy(vOffset);
     
-    if (type === 'person') {
+    /*if (type === 'person') {
       const geometry = new SphereGeometry( 0.27, 32, 16 );
       const smaterial = new MeshBasicMaterial( { color: 0x0000ff } ); 
       const sphere = new Mesh( geometry, smaterial );
       sphere.position.copy(vOffset);
       renderer.removeObject(rId + 'testSphere');
       renderer.addObject(rId + 'testSphere', sphere, false, parent);
-    }
+    }*/
   } else {
     rg.position.add(offset);
   }

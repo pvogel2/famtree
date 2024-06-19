@@ -1,7 +1,6 @@
 import { useEffect, useContext } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { Vector3, Cylindrical, Euler, EllipseCurve, LineSegments,
-  SphereGeometry, Mesh, MeshBasicMaterial,
   Group, Line, BufferGeometry, BufferAttribute, LineBasicMaterial, Color } from 'three';
 import RenderContext from '../RenderContext.js';
 
@@ -44,77 +43,51 @@ function getRelationLinesCyl(s, t, config = { foreground, highlight, offset }) {
     vertexColors: true,
   });    
 
-  const sV3 = new Vector3().setFromCylindrical(s);
-  sV3.z -= 5;
-  
-  const tV3 = new Vector3().setFromCylindrical(t);
-  tV3.z -= 5;
-
   const group = new Group();
-  /* const geometry = new SphereGeometry( 0.25, 32, 16 ); 
-  const smaterial = new MeshBasicMaterial( { color: 0xff0000 } ); 
-  const ematerial = new MeshBasicMaterial( { color: 0x00ff00 } ); 
-  const startSphere = new Mesh( geometry, smaterial );
-  startSphere.position.copy(sV3);
-  
-  group.add(startSphere);
-
-  const endSphere = new Mesh( geometry, ematerial );
-  endSphere.position.copy(tV3);
-  group.add(endSphere); */
 
   const points = [];
   const colors = [];
 
-  // points.push(tV3.clone().add(new Vector3(0, -1.5, 0)));
-  // points.push(tV3.clone().add(new Vector3(0, -2, 0)));
-  // colors.push(...foreColor.toArray());
-  // colors.push(...foreColor.toArray());
+  colors.push(...foreColor.toArray());
+  colors.push(...foreColor.toArray());
 
-  // points.push(sV3.clone());
-  // points.push(sV3.clone().add(new Vector3(0, 2, 0)));
-  // colors.push(...foreColor.toArray());
-  // colors.push(...highColor.toArray());
+  colors.push(...foreColor.toArray());
+  colors.push(...highColor.toArray());
+
   const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
-  const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, 0))).sub(vOffset);
+  const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, s.y))).sub(vOffset);
   const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
 
-  points.push(start.clone().add(new Vector3(0, 2, 0)));
-  points.push(start.clone().add(new Vector3(0, 4, 0)));
-
-  points.push(start.clone().add(new Vector3(0, 4, 0)));
-  points.push(end.clone().add(new Vector3(0, 4, 0)));
+  points.push(start.clone()); // .add(new Vector3(0, s.y, 0)));
+  points.push(start.clone().add(new Vector3(0, 6 - 2 - s.y, 0)));
 
   points.push(end.clone().add(new Vector3(0, 4, 0)));
   points.push(end.clone().add(new Vector3(0, 4.5, 0)));
 
   const lsGeometry = new BufferGeometry().setFromPoints( points );
-  // lsGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+  lsGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
   group.add(new LineSegments( lsGeometry, material ));
 
-  /* const cGroup = new Group();
-  const groupRotation = new Euler();
-  groupRotation.x = Math.PI * -0.5;
-  groupRotation.z = Math.PI * -0.5;
-  cGroup.rotation.copy(groupRotation);
-  cGroup.position.copy(sV3).negate();//.add(new Vector3(0, dy, 0));
-  cGroup.position.y = 4;
-  cGroup.position.z = -5;
-
+  const cGroup = new Group();
+  cGroup.position.sub(vOffset).add(new Vector3(0, 4, 0));
+  cGroup.rotateX(Math.PI * -0.5);
+  const startCyl = s.theta; //  - config.offset.theta;
+  const endCyl = t.theta; //  - config.offset.theta;
   const curve = new EllipseCurve(
-    0,  0,            // ax, aY
-    5, 5,           // xRadius, yRadius
-    s.theta,  t.theta,  // aStartAngle, aEndAngle
-    s.theta > t.theta,            // aClockwise
-    0               // aRotation
+    0,  0,             // ax, aY
+    5, 5,              // xRadius, yRadius
+    startCyl,  endCyl, // aStartAngle, aEndAngle
+    startCyl > endCyl, // aClockwise
+    -Math.PI * 0.5     // aRotation
   );
-  const nPoints = Math.abs(Math.ceil((t.theta - s.theta) / 0.25)) * 8;
 
-  // const cPoints = curve.getPoints(nPoints);
+  const nPoints = Math.abs(Math.ceil((endCyl - startCyl) / 0.25)) * 8;
+
+  const cPoints = curve.getPoints(nPoints);
   const lGeometry = new BufferGeometry().setFromPoints( cPoints );
 
   cGroup.add(new Line( lGeometry, material ));
-  group.add(cGroup); */
+  group.add(cGroup);
   return group;
 }
 

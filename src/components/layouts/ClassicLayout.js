@@ -54,7 +54,7 @@ export default class Layout {
     const childrenSize = this.childrenSize;
 
     if (this.rCount > 0 && length && this.childMinZ <= this.rTarget.z) { // childMin is right side from relation target
-      this.rTarget.setZ(this.childMinZ - (childrenSize + NODE_DIST) * 0.5);
+      this.rTarget.setZ(this.childMinZ - (childrenSize) * 0.5);
     }
     this.childMinZ = this.rTarget.z - childrenSize * 0.5;
   }

@@ -66,8 +66,8 @@ export default class Layout {
     const length = this.childrenLength;
     const childrenSize = this.childrenSize;
 
-    if (this.rCount > 0 && length && this.childMinTheta <= this.rTarget.z) { // childMin is right side from relation target
-      this.rTarget.theta = (this.childMinTheta + (childrenSize + NODE_DIST) * 0.5);
+    if (this.rCount > 0 && length && this.childMinTheta >= this.rTarget.theta) { // childMin is right side from relation target
+      this.rTarget.theta = (this.childMinTheta + (childrenSize) * 0.5);
     }
 
     this.childMinTheta = this.rTarget.theta + childrenSize * 0.5;
