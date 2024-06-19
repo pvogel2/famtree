@@ -453,7 +453,7 @@ export function createTreeNode(person, config) {
   const dg = getDataGroup(rg);
   const lt = addLabelText3D(dg, `${p ? p.name : __('no information', 'famtree')}`, colors.text);
 
-  getAssetsGroup(lg);
+  getAssetsGroup(rg);
 
   return {
     root: rg,
