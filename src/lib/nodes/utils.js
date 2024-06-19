@@ -18,7 +18,7 @@ export function isValidId(id) {
 
 export function getRootNode(m) {
   if (isValidNode(m) && !m?.name.match(/^(person|partner)$/)) {
-    return m?.parent?.parent;
+    return m?.parent?.parent?.parent;
   }
   return m;
 }
@@ -135,6 +135,7 @@ export function getPersonGroup(person = {}) {
   const p = new Group();
   p.name = 'person';
   p.userData.refId = person.id;
+  createNamedGroup(p, 'local');
   return p;
 }
 
@@ -142,6 +143,7 @@ export function getPlaceholderGroup() {
   const p = new Group();
   p.name = 'placeholder';
   p.userData.refId = -1;
+  createNamedGroup(p, 'local');
   return p;
 }
 
@@ -149,6 +151,7 @@ export function getPartnerGroup(person = {}) {
   const p = new Group();
   p.name = 'partner';
   p.userData.refId = person.id;
+  createNamedGroup(p, 'local');
   return p;
 }
 
@@ -423,6 +426,9 @@ export function createTreeNode(person, meta, layout) {
       rg = getPlaceholderGroup();
   }
 
+  const lg = rg.children[0];
+  lg.rotateY(-Math.PI * 0.5);
+
   const rId = `person${id}`;
   const sId = `symbol${id}`;
 
@@ -439,28 +445,20 @@ export function createTreeNode(person, meta, layout) {
     }
 
     rg.position.copy(vOffset);
-    
-    /*if (type === 'person') {
-      const geometry = new SphereGeometry( 0.27, 32, 16 );
-      const smaterial = new MeshBasicMaterial( { color: 0x0000ff } ); 
-      const sphere = new Mesh( geometry, smaterial );
-      sphere.position.copy(vOffset);
-      renderer.removeObject(rId + 'testSphere');
-      renderer.addObject(rId + 'testSphere', sphere, false, parent);
-    }*/
   } else {
     rg.position.add(offset);
   }
 
   getSymbolGroup(p, { foreground: colors.foreground }).then((sg) => {
-    renderer.addObject(sId, sg, true, rg);
+    renderer.addObject(sId, sg, true, lg);
   });
 
   renderer.addObject(rId, rg, false, parent);
-  const dg = getDataGroup(rg);
+
+  const dg = getDataGroup(lg);
   const lt = addLabelText3D(dg, `${p ? p.name : __('no information', 'famtree')}`, colors.text);
 
-  getAssetsGroup(rg);
+  getAssetsGroup(lg);
 
   return {
     root: rg,
