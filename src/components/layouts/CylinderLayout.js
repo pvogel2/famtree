@@ -40,6 +40,13 @@ export default class Layout {
     return new Cylindrical(RADIUS, y, z);
   }
 
+  static getCameraPosition(target) {
+    const cameraPosition = target.clone();
+    const positionCyl = new Cylindrical().setFromVector3(cameraPosition);
+    positionCyl.radius = 19;
+    return new Vector3().setFromCylindrical(positionCyl);
+  }
+
   setChildrenGroupSize(cs, szs) {
     this.childrenSize = cs.reduce((total, c) => {
       return total += Layout.getChildSize(c.id, szs);

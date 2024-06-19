@@ -5,6 +5,8 @@ const NODE_DIST = 6;
 const NODE_SIZE = 6;
 const GEN_DIST = 6;
 
+const CAMERA_OFFSET = new Vector3(14, 0, 0);
+
 export default class Layout {
   rTarget = new Vector3();
   cTarget = new Vector3();
@@ -33,6 +35,13 @@ export default class Layout {
 
   static calcOffset(x, y, z) {
     return new Vector3(x, y, z);
+  }
+
+  static getCameraPosition(target) {
+    const cameraPosition = target.clone();
+    cameraPosition.add(CAMERA_OFFSET);
+
+    return cameraPosition;
   }
 
   updateNodeSize(children, sizes) {

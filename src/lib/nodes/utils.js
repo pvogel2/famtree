@@ -353,6 +353,7 @@ export function selectNode(m, config = {}) {
   const {
     color = '#ffffff',
     renderer,
+    layout,
     scale = 1,
   } = config;
 
@@ -392,12 +393,10 @@ export function selectNode(m, config = {}) {
       selectTransition.forward();
     }
 
-    if (renderer) {
+    if (renderer && layout) {
       const targetPosition = new Vector3();
       root.getWorldPosition(targetPosition);
-      const cameraPosition = targetPosition.clone();
-      cameraPosition.add(new Vector3(14, 0, 0));
-      renderer.transition(targetPosition, 1, cameraPosition);
+      renderer.transition(targetPosition, 1, layout.getCameraPosition(targetPosition));
     }
   }
 }
@@ -429,7 +428,6 @@ export function createTreeNode(person, meta, layout) {
   }
 
   const lg = rg.children[0];
-  lg.rotateY(-Math.PI * 0.5);
 
   const rId = `person${id}`;
   const sId = `symbol${id}`;
@@ -437,6 +435,7 @@ export function createTreeNode(person, meta, layout) {
   if (offset instanceof Cylindrical) {
     const vOffset = new Vector3().setFromCylindrical(offset);
 
+    lg.rotateY(-Math.PI * 0.5 + offset.theta);
 
     if (parent) {
       const v2 = new Vector3();

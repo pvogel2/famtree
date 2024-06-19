@@ -1,35 +1,44 @@
 import { useContext, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
+import ClassicLayout from './layouts/ClassicLayout';
+import CylinderLayout from './layouts/CylinderLayout';
 import { selectNode, deselectNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
+
+function getLayout(id) {
+  return id !== 'classic' ? CylinderLayout : ClassicLayout;
+}
 
 function PersonSelector() {
   const { renderer } = useContext(RenderContext);
 
   const selectedPerson = useSelect((select) => select('famtree/families').getSelected(), []);
 
-  const { foreground, selection } = useSelect(
+  const { foreground, selection, treeLayout } = useSelect(
     (select) => {
-      const state = select( 'famtree/runtime' );
+      const store = select( 'famtree/runtime' );
       return {
-        foreground: state.getForeground(),
-        selection: state.getSelection(),
+        foreground: store.getForeground(),
+        selection: store.getSelection(),
+        treeLayout: store.getTreeLayout(),
       };
     }, []);
     
   useEffect(() => {
     const rootGroup = selectedPerson && renderer.getObject(`person${selectedPerson.id}`);
 
+    const Layout = getLayout(treeLayout);
+
     if (rootGroup) {
-      selectNode(rootGroup.obj, { color: selection, renderer });
+      selectNode(rootGroup.obj, { color: selection, renderer, layout: Layout });
     }
     return () => {
       if (rootGroup) {
         deselectNode(rootGroup.obj, { foreground, renderer });
       }
     }
-  }, [renderer, selectedPerson, foreground, selection]);
+  }, [renderer, selectedPerson, foreground, selection, treeLayout]);
 
   return null;
 }
