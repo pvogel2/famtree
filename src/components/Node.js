@@ -133,7 +133,7 @@ function Node(props) {
   useEffect(() => {
     if (!renderer || !person?.id || !root) return;
     
-    const { clean } = createNavigationNode(person, { renderer, parent: root, navi });
+    const { clean } = createNavigationNode(person, { renderer, root, navi });
 
     return clean;
   }, [renderer, person, root, navi]);

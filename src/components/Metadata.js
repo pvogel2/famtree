@@ -4,7 +4,7 @@ import { Vector3 } from 'three';
 import RenderContext from './RenderContext.js';
 import MetaThumb from './MetaThumb.js';
 import MetadataRelation from './relations/MetadataRelation';
-import {getAssetsGroup } from './../lib/nodes/utils.js';
+import {getDataGroup } from './../lib/nodes/utils.js';
 import { loadMetadata } from '../lib/Connect.js';
 
 
@@ -46,8 +46,7 @@ function Metadata() {
 
   const node = renderer.getObject(`person${currentId}`);
 
-  const assetsGroup = getAssetsGroup(node.obj);
-
+  const dataGroup = getDataGroup(node.obj);
   const thumbSize = 1;
   const offsetZ = -1.7;
 
@@ -63,7 +62,7 @@ function Metadata() {
       key={ md.id }
       size={ thumbSize }
       position={ new Vector3(0.5, (rowsOffset - row) * 1.1, offsetZ - thumbSize * 0.5 - col * 1.1) }
-      parent={ assetsGroup }
+      parent={ dataGroup }
       metadata={ md }
     />);
   });
@@ -72,7 +71,7 @@ function Metadata() {
     <>
       { metaImages }
       <MetadataRelation
-        parent={ assetsGroup }
+        parent={ dataGroup }
         width={ width }
         height={ height }
       />

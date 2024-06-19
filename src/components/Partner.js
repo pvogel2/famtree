@@ -55,7 +55,7 @@ function Partner(props) {
 
     const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors });
 
-    const { clean: naviClean } = createNavigationNode(person, { renderer, parent: root, navi });
+    const { clean: naviClean } = createNavigationNode(person, { renderer, root, navi });
 
     return () => {
       partnerClean();

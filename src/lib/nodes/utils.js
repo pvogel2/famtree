@@ -23,12 +23,13 @@ export function getRootNode(m) {
   return m;
 }
 
-export function findNamedGroup(m, name) {
+function findNamedGroup(m, name) {
   return m?.children?.find(c => c.name === name);
 }
 
 function getPersonBaseMesh(root) {
-  const symbols = findNamedGroup(root, 'symbols');
+  const lg = findNamedGroup(root, 'local');
+  const symbols = findNamedGroup(lg, 'symbols');
   return symbols?.children.find((m) => m.material?.name === 'personMeshBase');
 }
 
@@ -64,12 +65,14 @@ export function createNamedGroup(m, name) {
   return g;
 }
 
+// direct under root node
 export function getAssetsGroup(m) {
   return getNamedGroup(m, 'assets');
 }
 
 export function getDataGroup(m) {
-  return getNamedGroup(m, 'data');
+  const lg = findNamedGroup(m, 'local');
+  return getNamedGroup(lg, 'data');
 }
 
 export function getNavigationGroup(m, layout = { pos: [ARROW_OFFSET, NAVI_OFFSET, -NAVI_OFFSET], visible: false }) {
@@ -202,7 +205,8 @@ export function addLabelText3D(p, label, color = null) {
 }
 
 export function findLabelText(m) {
-  const dg = findNamedGroup(m, 'data');
+  const lg = findNamedGroup(root, 'local');
+  const dg = findNamedGroup(lg, 'data');
 
   if (dg && dg.children.length) {
     return dg.children[0];
@@ -261,9 +265,6 @@ export function focusNode(m, config = {}) {
       });
       renderer.registerEventCallback('render', focusTransition.update);
       focusTransition.forward();
-
-      // m2.material.color = m2.material.map ? new Color('#ffcccc') : new Color(highlight);
-      // m2.material.needsUpdate = true;
     }
   }
 }
@@ -303,7 +304,6 @@ export function defocusNode(m, config = {}) {
       });
       renderer.registerEventCallback('render', focusTransition.update);
       focusTransition.forward();
-      // m2.material.needsUpdate = true;
     }
   }
 
@@ -334,14 +334,16 @@ export function defocusNode(m, config = {}) {
 let currentTransition = null;
 
 function showNavigationGroup(m) {
-  const ng = findNamedGroup(m, 'navigation');
+  const lg = findNamedGroup(m, 'local');
+  const ng = findNamedGroup(lg, 'navigation');
   if (ng) {
     ng.visible = true;
   }
 }
 
 function hideNavigationGroup(m) {
-  const ng = findNamedGroup(m, 'navigation');
+  const lg = findNamedGroup(m, 'local');
+  const ng = findNamedGroup(lg, 'navigation');
   if (ng) {
     ng.visible = false;
   }
@@ -455,10 +457,10 @@ export function createTreeNode(person, meta, layout) {
 
   renderer.addObject(rId, rg, false, parent);
 
-  const dg = getDataGroup(lg);
+  const dg = getDataGroup(rg);
   const lt = addLabelText3D(dg, `${p ? p.name : __('no information', 'famtree')}`, colors.text);
 
-  getAssetsGroup(lg);
+  getAssetsGroup(rg);
 
   return {
     root: rg,
@@ -472,8 +474,9 @@ export function createTreeNode(person, meta, layout) {
 }
 
 export function createNavigationNode(person, meta) {
-  const { parent, renderer, navi } = meta;
-  const ng = getNavigationGroup(parent);
+  const { root, renderer, navi } = meta;
+  const lg = findNamedGroup(root, 'local');
+  const ng = getNavigationGroup(lg);
 
   const arrowLayout = {
     parent: { pos: [0, -ARROW_OFFSET, 0], rot: Math.PI * -0.5 },
@@ -488,7 +491,7 @@ export function createNavigationNode(person, meta) {
 
     if (isValidId(refId)) {
       const nId = `${target}Navi${person.id}`;
-      getNaviArrowMesh({ rot }).then((m) => {
+     getNaviArrowMesh({ rot }).then((m) => {
         renderer.addObject(nId, m, true, ng);
         m.position.fromArray(pos);
         m.userData.refId = refId;
