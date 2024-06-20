@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Vector3, Color, Line, LineBasicMaterial, BufferGeometry, BufferAttribute } from 'three';
 
 
 const NODE_DIST = 6;
@@ -37,6 +37,10 @@ export default class Layout {
     return new Vector3(x, y, z);
   }
 
+  static setOffset(rg, offset) {
+    rg.position.add(offset);
+  }
+
   static getCameraPosition(target) {
     const cameraPosition = target.clone();
     cameraPosition.add(CAMERA_OFFSET);
@@ -44,6 +48,64 @@ export default class Layout {
     return cameraPosition;
   }
 
+  static getChildLines(s, t, config = { foreground, highlight }) {
+    const foreColor = new Color(config.foreground);
+    const highColor = new Color(config.highlight);
+    const material = new LineBasicMaterial({
+      vertexColors: true,
+    });    
+  
+    const points = [];
+    const colors= [];
+  
+    const dy = t.y - s.y;
+    const dz = t.z - s.z;
+  
+    points.push(s.clone());
+    colors.push(...foreColor.toArray());
+    if (dz !== 0) {
+      points.push(s.clone().add(new Vector3(0, dy * 0.5, 0)));
+      points.push(t.clone().sub(new Vector3(0, dy * 0.5, 0)));
+      colors.push(...foreColor.toArray());
+      colors.push(...foreColor.toArray());
+    } else {
+      points.push(t.clone().sub(new Vector3(0, dy * 0.5, 0)));
+      colors.push(...foreColor.toArray());
+    }
+    points.push(t.clone().sub(new Vector3(0, 1.5, 0)));
+    colors.push(...highColor.toArray());
+  
+    const geometry = new BufferGeometry().setFromPoints( points );
+    geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+    return new Line( geometry, material );
+  }
+  
+  static getPartnerLines(s, t, config = { foreground, highstart, highend, offset: new Vector3() }) {
+    const foreColor = new Color(config.foreground);
+    const startColor = new Color(config.highstart);
+    const endColor = new Color(config.highend);
+  
+    const material = new LineBasicMaterial({
+      vertexColors: true,
+    });
+    const points = [];
+    const colors = [];
+  
+    points.push(s.clone().add(new Vector3(0, 1.2, 0)));
+    points.push(s.clone().add(config.offset));
+    points.push(t.clone().add(config.offset));
+    points.push(t.clone().add(new Vector3(0, 1.2, 0)));
+  
+    colors.push(...startColor.toArray());
+    colors.push(...foreColor.toArray());
+    colors.push(...foreColor.toArray());
+    colors.push(...endColor.toArray());
+  
+    const geometry = new BufferGeometry().setFromPoints( points );
+    geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+    return new Line( geometry, material );
+  }
+  
   updateNodeSize(children, sizes) {
     this.setChildrenGroupSize(children, sizes);
 

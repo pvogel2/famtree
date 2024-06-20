@@ -1,5 +1,4 @@
-import { Cylindrical, Vector3 } from 'three';
-
+import { Cylindrical, Vector3, Color, Line, Group, LineSegments, EllipseCurve, LineBasicMaterial, BufferGeometry, BufferAttribute } from 'three';
 
 const NODE_DIST = Math.PI * 0.25; // radian
 const NODE_SIZE = Math.PI * 0.25; // radian
@@ -35,6 +34,20 @@ export default class Layout {
     return s;
   }
 
+  static setOffset(rg, offset) {
+    const vOffset = new Vector3().setFromCylindrical(offset);
+    const lg = rg.children[0];
+
+    lg.rotateY(-Math.PI * 0.5 + offset.theta);
+
+    const v2 = new Vector3();
+    rg.parent.getWorldPosition(v2);
+
+    vOffset.x -= v2.x;
+    vOffset.z -= v2.z;
+
+    rg.position.copy(vOffset);
+  }
 
   static calcOffset(_x, y, z) {
     return new Cylindrical(RADIUS, y, z);
@@ -47,6 +60,120 @@ export default class Layout {
     return new Vector3().setFromCylindrical(positionCyl);
   }
 
+  static getChildLines(s, t, config = { foreground, highlight, offset }) {
+    const foreColor = new Color(config.foreground);
+    const highColor = new Color(config.highlight);
+    const material = new LineBasicMaterial({
+      vertexColors: true,
+    });    
+  
+    const group = new Group();
+  
+    const points = [];
+    const colors = [];
+  
+    colors.push(...foreColor.toArray());
+    colors.push(...foreColor.toArray());
+  
+    colors.push(...foreColor.toArray());
+    colors.push(...highColor.toArray());
+  
+    const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
+    const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, s.y))).sub(vOffset);
+    const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
+  
+    points.push(start.clone());
+    points.push(start.clone().add(new Vector3(0, GEN_DIST - 2 - s.y, 0)));
+  
+    points.push(end.clone().add(new Vector3(0, 4, 0)));
+    points.push(end.clone().add(new Vector3(0, 4.5, 0)));
+  
+    const lsGeometry = new BufferGeometry().setFromPoints( points );
+    lsGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+    group.add(new LineSegments( lsGeometry, material ));
+  
+    const cGroup = new Group();
+    cGroup.position.sub(vOffset).add(new Vector3(0, 4, 0));
+    cGroup.rotateX(Math.PI * -0.5);
+    const startCyl = s.theta;
+    const endCyl = t.theta;
+    const curve = new EllipseCurve(
+      0,  0,             // ax, aY
+      RADIUS, RADIUS,    // xRadius, yRadius
+      startCyl,  endCyl, // aStartAngle, aEndAngle
+      startCyl > endCyl, // aClockwise
+      -Math.PI * 0.5     // aRotation
+    );
+  
+    const nPoints = Math.abs(Math.ceil((endCyl - startCyl) / 0.25)) * 8;
+  
+    const cPoints = curve.getPoints(nPoints);
+    const lGeometry = new BufferGeometry().setFromPoints( cPoints );
+  
+    cGroup.add(new Line( lGeometry, material ));
+    group.add(cGroup);
+    return group;
+  }
+
+  static getPartnerLines(s, t, config = { foreground, highstart, highend, offset: new Cylindrical() }) {
+    const foreColor = new Color(config.foreground);
+    const startColor = new Color(config.highstart);
+    const endColor = new Color(config.highend);
+  
+    const material = new LineBasicMaterial({
+      vertexColors: true,
+    });
+    const points = [];
+    const colors = [];
+   
+    colors.push(...startColor.toArray());
+    colors.push(...foreColor.toArray());
+  
+    colors.push(...foreColor.toArray());
+    colors.push(...endColor.toArray());
+  
+    const group = new Group();
+  
+    const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
+    const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, 0))).sub(vOffset);
+    const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
+  
+    const offsetBase = 1.2;
+    const offsetUp = config.offset.y;
+    points.push(new Vector3().copy(start).add(new Vector3(0, offsetBase, 0)));
+    points.push(new Vector3().copy(start).add(new Vector3(0, offsetUp, 0)));
+  
+    points.push(new Vector3().copy(end).add(new Vector3(0, offsetUp, 0)));
+    points.push(new Vector3().copy(end).add(new Vector3(0, offsetBase, 0)));
+  
+    const lGeometry = new BufferGeometry().setFromPoints( points );
+    lGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+    group.add(new LineSegments( lGeometry, material ));
+  
+    const cGroup = new Group();
+    cGroup.position.sub(vOffset).add(new Vector3(0, offsetUp, 0));
+    cGroup.rotateX(Math.PI * -0.5);
+    const startCyl = s.theta; //  - config.offset.theta;
+    const endCyl = t.theta; //  - config.offset.theta;
+    const curve = new EllipseCurve(
+      0,  0,             // ax, aY
+      RADIUS, RADIUS,              // xRadius, yRadius
+      startCyl,  endCyl, // aStartAngle, aEndAngle
+      startCyl > endCyl, // aClockwise
+      -Math.PI * 0.5     // aRotation
+    );
+  
+    const nPoints = Math.abs(Math.ceil((endCyl - startCyl) / 0.25)) * 8;
+  
+    const cPoints = curve.getPoints(nPoints);
+    const cGeometry = new BufferGeometry().setFromPoints( cPoints );
+  
+    cGroup.add(new Line( cGeometry, material ));
+    group.add(cGroup);
+  
+    return group;
+  }
+  
   setChildrenGroupSize(cs, szs) {
     this.childrenSize = cs.reduce((total, c) => {
       return total += Layout.getChildSize(c.id, szs);

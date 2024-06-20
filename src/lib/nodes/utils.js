@@ -6,7 +6,16 @@ import Transition from '../../lib/Transition';
 import avatarImage from '../../assets/images/avatar.png';
 import Person from '../../../public/js/Person';
 
-
+/*
+node setup:
+- group person|partner
+ - group relations
+ - group assets
+ - group local
+   - group data
+   - group navigation
+   - group symbols
+*/
 const textureLoader = new TextureLoader();
 
 const ARROW_OFFSET = 0.2;
@@ -125,11 +134,13 @@ async function getNaviArrowMesh(layout = {}) {
   };
 
   const m = new MeshBasicMaterial(options);
+  newArrowMesh.material = m;
 
   newArrowMesh.scale.set(0.75, 0.75, 0.75);
   newArrowMesh.rotateX(rot);
   newArrowMesh.rotateZ(Math.PI * 0.5);
   newArrowMesh.name = 'naviArrow';
+
   return newArrowMesh;
 }
 
@@ -405,9 +416,8 @@ export function deselectNode(m, config = {}) {
   defocusNode(m, config);
 }
 
-export function createTreeNode(person, meta, layout) {
-  const { renderer, parent, type = 'person' } = meta;
-  const { offset, colors } = layout;
+export function createTreeNode(person, config) {
+  const { renderer, parent, type = 'person', offset, colors, layout } = config;
 
   const p = person ? new Person(person) : null;
   const id = person ? p.id : 'Generic';
@@ -432,29 +442,15 @@ export function createTreeNode(person, meta, layout) {
   const rId = `person${id}`;
   const sId = `symbol${id}`;
 
-  if (offset instanceof Cylindrical) {
-    const vOffset = new Vector3().setFromCylindrical(offset);
+  renderer.addObject(rId, rg, false, parent);
 
-    lg.rotateY(-Math.PI * 0.5 + offset.theta);
-
-    if (parent) {
-      const v2 = new Vector3();
-      parent.getWorldPosition(v2);
-
-      vOffset.x -= v2.x;
-      vOffset.z -= v2.z;
-    }
-
-    rg.position.copy(vOffset);
-  } else {
-    rg.position.add(offset);
-  }
+  layout.setOffset(rg, offset);
 
   getSymbolGroup(p, { foreground: colors.foreground }).then((sg) => {
     renderer.addObject(sId, sg, true, lg);
   });
 
-  renderer.addObject(rId, rg, false, parent);
+  // renderer.addObject(rId, rg, false, parent);
 
   const dg = getDataGroup(rg);
   const lt = addLabelText3D(dg, `${p ? p.name : __('no information', 'famtree')}`, colors.text);

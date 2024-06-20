@@ -1,6 +1,5 @@
 import { useEffect, useContext, useState, useMemo, Fragment } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { Vector3, Cylindrical } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
@@ -168,7 +167,7 @@ function Node(props) {
 
     const offset = Layout.calcOffset(offsetX, offsetY, offsetZ);
     const colors = { foreground, text };
-    const { root: newRoot, clean } = createTreeNode(person, { renderer, parent }, { offset, colors });
+    const { root: newRoot, clean } = createTreeNode(person, { renderer, parent, offset, colors, layout: Layout });
 
     setRoot(newRoot);
 

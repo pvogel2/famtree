@@ -50,10 +50,10 @@ function FamTreeRenderer() {
   }
 
   if (!renderer.running ) {
-    const grid = renderer.addGrid(20, 20);
-    grid.material.opacity = 0.1;
-    grid.rotation.z = Math.PI * 0.5;
-    renderer.addAxes(10);
+    // const grid = renderer.addGrid(20, 20);
+    // grid.material.opacity = 0.1;
+    // grid.rotation.z = Math.PI * 0.5;
+    // renderer.addAxes(10);
     renderer.start();
   }
 

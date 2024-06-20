@@ -1,12 +1,17 @@
 import { useContext, useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { Color, Vector3, Cylindrical } from 'three';
+import { Color } from 'three';
+import ClassicLayout from './layouts/ClassicLayout';
+import CylinderLayout from './layouts/CylinderLayout';
 
 import RenderContext from './RenderContext.js';
 import KNavigation from './KeyboardNavigation';
 
 import { createTreeNode, createNavigationNode } from '../lib/nodes/utils';
 
+function getLayout(id) {
+  return id !== 'classic' ? CylinderLayout : ClassicLayout;
+}
 
 function Partner(props) {
   const {
@@ -46,14 +51,13 @@ function Partner(props) {
   useEffect(() => {
     if (!renderer || !person?.id) return;
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
- 
     const type = 'partner';
-
-    const offset = treeLayout === 'rounded' ? new Cylindrical(offsetX, offsetY, offsetZ) : new Vector3(offsetX, offsetY, offsetZ);
+    const Layout = getLayout(treeLayout);
+    const offset = Layout.calcOffset(offsetX, offsetY, offsetZ);
 
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
 
-    const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type }, { offset, colors });
+    const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type, offset, colors, layout: Layout });
 
     const { clean: naviClean } = createNavigationNode(person, { renderer, root, navi });
 
