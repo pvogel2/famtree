@@ -96,14 +96,13 @@ function Node(props) {
     };
   }, []);
 
-  const { text, foreground, highlight, selection, treeLayout } = useSelect((select) => {
+  const { text, foreground, highlight, selection } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
       highlight: store.getHighlight(),
       selection: store.getSelection(),
-      treeLayout: store.getTreeLayout(),
     };
   });
 
@@ -137,7 +136,7 @@ function Node(props) {
 
   // calculate overall node size
   useEffect(() => {
-    const layout = createLayout(treeLayout);
+    const layout = new Layout();
 
     relations.forEach((r) => {
       const children = findItems(r.children, persons);
@@ -186,7 +185,7 @@ function Node(props) {
     let leftPartnerId = person.id;
     let rightPartnerId = null;
 
-    const layout = createLayout(treeLayout, root);
+    const layout = new Layout(root);
 
     const layout = new Layout(root);
 

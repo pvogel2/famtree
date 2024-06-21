@@ -5,7 +5,6 @@ const DEFAULT_STATE = {
   text: '#333333',
   highlight: '#770000',
   selection: '#ffffff',
-  treeLAyout: 'classic',
 };
 
 export default function reducer( state = DEFAULT_STATE, action ) {
@@ -39,11 +38,6 @@ export default function reducer( state = DEFAULT_STATE, action ) {
       return {
         ...state,
         selection: action.selection,
-      };
-    case 'SET_TREE_LAYOUT':
-      return {
-        ...state,
-        treeLayout: action.treeLayout,
       };
     default:
       return { ...state };

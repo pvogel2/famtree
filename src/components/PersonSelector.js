@@ -1,7 +1,5 @@
 import { useContext, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import ClassicLayout from './layouts/ClassicLayout';
-import CylinderLayout from './layouts/CylinderLayout';
 import { selectNode, deselectNode } from '../lib/nodes/utils';
 
 import RenderContext from './RenderContext.js';
@@ -17,7 +15,7 @@ function PersonSelector() {
 
   const selectedPerson = useSelect((select) => select('famtree/families').getSelected(), []);
 
-  const { foreground, selection, treeLayout } = useSelect(
+  const { foreground, selection } = useSelect(
     (select) => {
       const store = select( 'famtree/runtime' );
       return {
@@ -28,8 +26,6 @@ function PersonSelector() {
     
   useEffect(() => {
     const rootGroup = selectedPerson && renderer.getObject(`person${selectedPerson.id}`);
-
-    const Layout = getLayout(treeLayout);
 
     if (rootGroup) {
       selectNode(rootGroup.obj, { color: selection, renderer, layout: Layout });

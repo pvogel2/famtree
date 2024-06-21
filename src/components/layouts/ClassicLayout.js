@@ -18,6 +18,8 @@ export default class Layout {
   childrenSize = 0;
   childrenLength = 0;
 
+  static id = 'classic';
+
   static getChildSize(id, szs) {
     const s = szs[id];
     if (!s) {

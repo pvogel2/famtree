@@ -12,12 +12,11 @@ function Placeholder(config) {
   const { renderer } = useContext(RenderContext);
   const Layout = useContext(LayoutContext);
 
-  const { text, foreground, treeLayout } = useSelect((select) => {
+  const { text, foreground } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
-      treeLayout: store.getTreeLayout(),
     };
   });
     
