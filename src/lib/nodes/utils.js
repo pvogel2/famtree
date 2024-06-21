@@ -471,8 +471,7 @@ export function createTreeNode(person, config) {
 
 export function createNavigationNode(person, meta) {
   const { root, renderer, navi } = meta;
-  const lg = getNamedGroup(root, 'local');
-  const ng = getNavigationGroup(lg);
+  const ng = getNavigationGroup(root);
 
   const arrowLayout = {
     parent: { pos: [0, -ARROW_OFFSET, 0], rot: Math.PI * -0.5 },
