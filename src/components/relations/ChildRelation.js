@@ -19,24 +19,10 @@ function ChildRelation(props) {
   useEffect(() => {
     if (!renderer || !parent) return;
 
-    let lines;
-
-    if (Layout.id === 'rounded') {
-      const v2 = new Vector3();
-      parent.getWorldPosition(v2);  
-      const offset = new Cylindrical().setFromVector3(v2);
-
-      const source = new Cylindrical(sourceX, sourceY, sourceZ);
-      const target = new Cylindrical(targetX, targetY, targetZ);
-      lines = Layout.getChildLines(source, target, { foreground, highlight, offset });
-      parent.add(lines);
-    } else {
-      const target = new Vector3(targetX, targetY, targetZ);
-      const source = new Vector3(sourceX, sourceY, sourceZ);
-
-      lines = Layout.getChildLines(source, target, { foreground, highlight });
-      parent.add(lines);
-    }
+    const source = Layout.getVector(sourceX, sourceY, sourceZ);
+    const target = Layout.getVector(targetX, targetY, targetZ);
+    const lines = Layout.getChildLines(source, target, { foreground, highlight, parent });
+    parent.add(lines);
 
     return () => {
       parent.remove(lines);

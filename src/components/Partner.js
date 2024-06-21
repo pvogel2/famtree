@@ -47,7 +47,7 @@ function Partner(props) {
     if (!renderer || !person?.id) return;
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
     const type = 'partner';
-    const offset = Layout.calcOffset(offsetX, offsetY, offsetZ);
+    const offset = Layout.getVector(offsetX, offsetY, offsetZ);
 
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
 

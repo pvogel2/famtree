@@ -25,7 +25,7 @@ function Placeholder(config) {
     if (!renderer) return;
 
     const colors = { foreground, text };
-    const offset = Layout.calcOffset(0, 0, 0);
+    const offset = Layout.getVector(0, 0, 0);
 
     const { clean, root } = createTreeNode(null, { renderer, parent, type: 'placeholder', offset, colors, layout: Layout });
 

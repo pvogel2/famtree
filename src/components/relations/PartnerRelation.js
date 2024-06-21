@@ -1,6 +1,5 @@
 import { useEffect, useContext } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { Vector3, Cylindrical } from 'three';
 import RenderContext from './../RenderContext.js';
 import LayoutContext from './../LayoutContext.js';
 
@@ -19,21 +18,11 @@ function PartnerRelation(props) {
   useEffect(() => {
     if (!renderer || !parent) return;
 
-    let lines;
-    if (Layout.id === 'rounded') {
-      const v2 = new Vector3();
-      parent.getWorldPosition(v2);  
-      const source = new Cylindrical().setFromVector3(v2);
-      const target = new Cylindrical(targetX, targetY, targetZ);
-      const offset = new Cylindrical(offsetX, offsetY, offsetZ);
-      lines = Layout.getPartnerLines(source, target, { foreground, highstart, highend, offset });
-      parent.add(lines);
-    } else {
-      const target = new Vector3(targetX, targetY, targetZ);
-      const offset = new Vector3(offsetX, offsetY, offsetZ);
-      lines = Layout.getPartnerLines(new Vector3(), target, { foreground, highstart, highend, offset });
-      parent.add(lines);
-    }
+    const offset = Layout.getVector(offsetX, offsetY, offsetZ);
+    const target = Layout.getVector(targetX, targetY, targetZ);
+    const lines = Layout.getPartnerLines(offset, target, { foreground, highstart, highend });
+
+    parent.add(lines);
 
     return () => {
       parent.remove(lines);

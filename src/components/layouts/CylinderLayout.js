@@ -46,8 +46,6 @@ export default class Layout {
     }
   }
 
-  static id = 'rounded';
-
   static getChildSize(id, szs) {
     const s = szs[id];
     if (!s) {
@@ -71,7 +69,7 @@ export default class Layout {
     rg.position.copy(vOffset);
   }
 
-  static calcOffset(_x, y, z) {
+  static getVector(_x, y, z) {
     return new Cylindrical(RADIUS, y, z);
   }
 
@@ -82,7 +80,7 @@ export default class Layout {
     return new Vector3().setFromCylindrical(positionCyl);
   }
 
-  static getChildLines(s, t, config = { foreground, highlight, offset }) {
+  static getChildLines(s, t, config = { foreground, highlight, parent }) {
     const foreColor = new Color(config.foreground);
     const highColor = new Color(config.highlight);
     const material = new LineBasicMaterial({
@@ -99,9 +97,13 @@ export default class Layout {
     colors.push(...foreColor.toArray());
     colors.push(...highColor.toArray());
   
-    const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
-    const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, s.y))).sub(vOffset);
-    const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
+    const v2 = new Vector3();
+    config.parent.getWorldPosition(v2);  
+    const offset = new Cylindrical().setFromVector3(v2);
+
+    const vOffset = new Vector3().setFromCylindrical(new Cylindrical(RADIUS, offset.theta, 0));
+    const start = (new Vector3().setFromCylindrical(new Cylindrical(RADIUS, s.theta, s.y))).sub(vOffset);
+    const end = (new Vector3().setFromCylindrical(new Cylindrical(RADIUS, t.theta, 0))).sub(vOffset);
   
     points.push(start.clone());
     points.push(start.clone().add(new Vector3(0, CHILD_LINE_BASE - s.y, 0)));
@@ -122,7 +124,7 @@ export default class Layout {
     return group;
   }
 
-  static getPartnerLines(s, t, config = { foreground, highstart, highend, offset: new Cylindrical() }) {
+  static getPartnerLines(s, t, config = { foreground, highstart, highend }) {
     const foreColor = new Color(config.foreground);
     const startColor = new Color(config.highstart);
     const endColor = new Color(config.highend);
@@ -139,17 +141,16 @@ export default class Layout {
     colors.push(...endColor.toArray());
   
     const group = new Group();
-  
-    const vOffset = new Vector3().setFromCylindrical(new Cylindrical(config.offset.radius, config.offset.theta, 0));
-    const start = (new Vector3().setFromCylindrical(new Cylindrical(s.radius, s.theta, 0))).sub(vOffset);
-    const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
-  
+
+    const offset = new Vector3().setFromCylindrical(new Cylindrical(RADIUS, s.theta, 0));
+    const start = new Vector3();
+    const end = (new Vector3().setFromCylindrical(new Cylindrical(RADIUS, t.theta, 0))).sub(offset);
+
     const offsetBase = 1.2;
-    const offsetUp = config.offset.y;
 
     points.push(start.clone().add(new Vector3(0, offsetBase, 0)));
-    points.push(start.clone().add(new Vector3(0, offsetUp, 0)));
-    points.push(end.clone().add(new Vector3(0, offsetUp, 0)));
+    points.push(start.clone().add(new Vector3(0, s.y, 0)));
+    points.push(end.clone().add(new Vector3(0, s.y, 0)));
     points.push(end.clone().add(new Vector3(0, offsetBase, 0)));
   
     const geometry = new BufferGeometry().setFromPoints( points );
@@ -157,7 +158,7 @@ export default class Layout {
     group.add(new LineSegments( geometry, material ));
   
     const cGroup = new Group();
-    cGroup.position.sub(vOffset).add(new Vector3(0, offsetUp, 0));
+    cGroup.position.sub(offset).add(new Vector3(0, s.y, 0));
     cGroup.rotateX(THETA_OFFSET);
 
     cGroup.add(getEllipticCurve(s.theta, t.theta, foreColor));
@@ -182,7 +183,7 @@ export default class Layout {
       this.nodeSize = this.childrenSize;
     }
   
-    if (this.nodeSize < (oldTotalSize + NODE_SIZE)) { // minimum if relation existent
+    if (this.nodeSize < oldTotalSize) { // minimum if relation existent
       this.nodeSize += NODE_SIZE;
     }
   }

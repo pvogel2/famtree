@@ -160,7 +160,7 @@ function Node(props) {
   // render visual node
   useEffect(() => {
     if (!renderer || !person?.id) return;
-    const offset = Layout.calcOffset(offsetX, offsetY, offsetZ);
+    const offset = Layout.getVector(offsetX, offsetY, offsetZ);
     const colors = { foreground, text };
     const { root: newRoot, clean } = createTreeNode(person, { renderer, parent, offset, colors, layout: Layout });
 

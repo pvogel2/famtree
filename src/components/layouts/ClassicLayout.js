@@ -18,8 +18,6 @@ export default class Layout {
   childrenSize = 0;
   childrenLength = 0;
 
-  static id = 'classic';
-
   static getChildSize(id, szs) {
     const s = szs[id];
     if (!s) {
@@ -35,7 +33,7 @@ export default class Layout {
     this.childrenLength = cs.length;
   }
 
-  static calcOffset(x, y, z) {
+  static getVector(x, y, z) {
     return new Vector3(x, y, z);
   }
 
@@ -82,7 +80,7 @@ export default class Layout {
     return new Line( geometry, material );
   }
   
-  static getPartnerLines(s, t, config = { foreground, highstart, highend, offset: new Vector3() }) {
+  static getPartnerLines(s, t, config = { foreground, highstart, highend }) {
     const foreColor = new Color(config.foreground);
     const startColor = new Color(config.highstart);
     const endColor = new Color(config.highend);
@@ -93,9 +91,11 @@ export default class Layout {
     const points = [];
     const colors = [];
   
-    points.push(s.clone().add(new Vector3(0, 1.2, 0)));
-    points.push(s.clone().add(config.offset));
-    points.push(t.clone().add(config.offset));
+    const start = new Vector3();
+
+    points.push(start.clone().add(new Vector3(0, 1.2, 0)));
+    points.push(s.clone());
+    points.push(t.clone().add(s));
     points.push(t.clone().add(new Vector3(0, 1.2, 0)));
   
     colors.push(...startColor.toArray());
@@ -116,18 +116,18 @@ export default class Layout {
       this.nodeSize = this.childrenSize;
     }
 
-    if (this.nodeSize < (oldTotalSize + NODE_SIZE)) { // minimum if relation existent
+    if (this.nodeSize < oldTotalSize) { // minimum if relation existent
       this.nodeSize += NODE_SIZE;
     }
   }
 
   updateRelationTarget() {
-    this.rTarget.add(new Vector3(0, 0,  -NODE_DIST));
+    this.rTarget.add(new Vector3(0, 0, -NODE_DIST));
     const length = this.childrenLength;
     const childrenSize = this.childrenSize;
 
     if (this.rCount > 0 && length && this.childMinZ <= this.rTarget.z) { // childMin is right side from relation target
-      this.rTarget.setZ(this.childMinZ - (childrenSize) * 0.5);
+      this.rTarget.setZ(this.childMinZ - childrenSize * 0.5);
     }
     this.childMinZ = this.rTarget.z - childrenSize * 0.5;
   }
@@ -156,7 +156,7 @@ export default class Layout {
     const childSize = Layout.getChildSize(child.id, sizes);
     const relationsLength = child.relations.length;
 
-    const relationDistance = relationsLength ? relationsLength * 0.5 * NODE_SIZE : 0;
+    const relationDistance = relationsLength ? relationsLength * NODE_SIZE * 0.5 : 0;
 
     this.cTarget = this.currentCTarget.clone();
     this.cTarget.add(new Vector3(0, 0, -0.5 * childSize)); // shift right half child size
