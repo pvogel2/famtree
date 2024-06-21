@@ -3,7 +3,27 @@ import { Cylindrical, Vector3, Color, Line, Group, LineSegments, EllipseCurve, L
 const NODE_DIST = Math.PI * 0.25; // radian
 const NODE_SIZE = Math.PI * 0.25; // radian
 const GEN_DIST = 6;
+const CHILD_LINE_BASE = 4;
 const RADIUS = 5;
+const THETA_OFFSET = Math.PI * -0.5;
+
+function getEllipticCurve(start, end, color) {
+  const material = new LineBasicMaterial({ color });
+
+  const curve = new EllipseCurve(
+    0,  0,          // ax, aY
+    RADIUS, RADIUS, // xRadius, yRadius
+    start,  end,    // aStartAngle, aEndAngle
+    start > end,    // aClockwise
+    THETA_OFFSET,   // aRotation
+  );
+
+  const nPoints = Math.abs(Math.ceil((end - start) / 0.25)) * 8;
+
+  const points = curve.getPoints(nPoints);
+  const geometry = new BufferGeometry().setFromPoints( points );
+  return new Line( geometry, material );
+}
 
 export default class Layout {
   rTarget = new Cylindrical(RADIUS, 0, 0);
@@ -56,7 +76,7 @@ export default class Layout {
   static getCameraPosition(target) {
     const cameraPosition = target.clone();
     const positionCyl = new Cylindrical().setFromVector3(cameraPosition);
-    positionCyl.radius = 19;
+    positionCyl.radius = RADIUS + 14;
     return new Vector3().setFromCylindrical(positionCyl);
   }
 
@@ -74,7 +94,6 @@ export default class Layout {
   
     colors.push(...foreColor.toArray());
     colors.push(...foreColor.toArray());
-  
     colors.push(...foreColor.toArray());
     colors.push(...highColor.toArray());
   
@@ -83,35 +102,21 @@ export default class Layout {
     const end = (new Vector3().setFromCylindrical(new Cylindrical(t.radius, t.theta, 0))).sub(vOffset);
   
     points.push(start.clone());
-    points.push(start.clone().add(new Vector3(0, GEN_DIST - 2 - s.y, 0)));
+    points.push(start.clone().add(new Vector3(0, CHILD_LINE_BASE - s.y, 0)));
+    points.push(end.clone().add(new Vector3(0, CHILD_LINE_BASE, 0)));
+    points.push(end.clone().add(new Vector3(0, CHILD_LINE_BASE + 0.5, 0)));
   
-    points.push(end.clone().add(new Vector3(0, 4, 0)));
-    points.push(end.clone().add(new Vector3(0, 4.5, 0)));
-  
-    const lsGeometry = new BufferGeometry().setFromPoints( points );
-    lsGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
-    group.add(new LineSegments( lsGeometry, material ));
+    const geometry = new BufferGeometry().setFromPoints( points );
+    geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+    group.add(new LineSegments( geometry, material ));
   
     const cGroup = new Group();
-    cGroup.position.sub(vOffset).add(new Vector3(0, 4, 0));
-    cGroup.rotateX(Math.PI * -0.5);
-    const startCyl = s.theta;
-    const endCyl = t.theta;
-    const curve = new EllipseCurve(
-      0,  0,             // ax, aY
-      RADIUS, RADIUS,    // xRadius, yRadius
-      startCyl,  endCyl, // aStartAngle, aEndAngle
-      startCyl > endCyl, // aClockwise
-      -Math.PI * 0.5     // aRotation
-    );
-  
-    const nPoints = Math.abs(Math.ceil((endCyl - startCyl) / 0.25)) * 8;
-  
-    const cPoints = curve.getPoints(nPoints);
-    const lGeometry = new BufferGeometry().setFromPoints( cPoints );
-  
-    cGroup.add(new Line( lGeometry, material ));
+    cGroup.position.sub(vOffset).add(new Vector3(0, CHILD_LINE_BASE, 0));
+    cGroup.rotateX(THETA_OFFSET);
+
+    cGroup.add(getEllipticCurve(s.theta, t.theta, foreColor));
     group.add(cGroup);
+
     return group;
   }
 
@@ -128,7 +133,6 @@ export default class Layout {
    
     colors.push(...startColor.toArray());
     colors.push(...foreColor.toArray());
-  
     colors.push(...foreColor.toArray());
     colors.push(...endColor.toArray());
   
@@ -140,35 +144,21 @@ export default class Layout {
   
     const offsetBase = 1.2;
     const offsetUp = config.offset.y;
-    points.push(new Vector3().copy(start).add(new Vector3(0, offsetBase, 0)));
-    points.push(new Vector3().copy(start).add(new Vector3(0, offsetUp, 0)));
+
+    points.push(start.clone().add(new Vector3(0, offsetBase, 0)));
+    points.push(start.clone().add(new Vector3(0, offsetUp, 0)));
+    points.push(end.clone().add(new Vector3(0, offsetUp, 0)));
+    points.push(end.clone().add(new Vector3(0, offsetBase, 0)));
   
-    points.push(new Vector3().copy(end).add(new Vector3(0, offsetUp, 0)));
-    points.push(new Vector3().copy(end).add(new Vector3(0, offsetBase, 0)));
-  
-    const lGeometry = new BufferGeometry().setFromPoints( points );
-    lGeometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
-    group.add(new LineSegments( lGeometry, material ));
+    const geometry = new BufferGeometry().setFromPoints( points );
+    geometry.setAttribute( 'color', new BufferAttribute( new Float32Array(colors), 3 ) );
+    group.add(new LineSegments( geometry, material ));
   
     const cGroup = new Group();
     cGroup.position.sub(vOffset).add(new Vector3(0, offsetUp, 0));
-    cGroup.rotateX(Math.PI * -0.5);
-    const startCyl = s.theta; //  - config.offset.theta;
-    const endCyl = t.theta; //  - config.offset.theta;
-    const curve = new EllipseCurve(
-      0,  0,             // ax, aY
-      RADIUS, RADIUS,              // xRadius, yRadius
-      startCyl,  endCyl, // aStartAngle, aEndAngle
-      startCyl > endCyl, // aClockwise
-      -Math.PI * 0.5     // aRotation
-    );
-  
-    const nPoints = Math.abs(Math.ceil((endCyl - startCyl) / 0.25)) * 8;
-  
-    const cPoints = curve.getPoints(nPoints);
-    const cGeometry = new BufferGeometry().setFromPoints( cPoints );
-  
-    cGroup.add(new Line( cGeometry, material ));
+    cGroup.rotateX(THETA_OFFSET);
+
+    cGroup.add(getEllipticCurve(s.theta, t.theta, foreColor));
     group.add(cGroup);
   
     return group;
