@@ -185,7 +185,7 @@ export default class Layout {
       this.nodeSize = this.childrenSize;
     }
   
-    if (this.nodeSize < oldTotalSize) { // minimum if relation existent
+    if (this.nodeSize < oldTotalSize + NODE_SIZE) { // minimum if relation existent
       this.nodeSize += NODE_SIZE;
     }
   }

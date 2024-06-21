@@ -124,19 +124,16 @@ export function getMesh(layout = {}) {
 }
 
 async function getNaviArrowMesh(layout = {}) {
-  const { rot = 0, foreground = '#888888' } =  layout;
-
-  const color = new Color(foreground);
+  const { rot = 0, color = '#888888', opacity } =  layout;
   const options = { color };
   const newArrowMesh = (await ThreePreparedMeshes.getNavigationArrow()).clone();
-  if (typeof layout.opacity === 'number') {
-    options.opacity = layout.opacity;
+
+  if (typeof opacity === 'number') {
+    options.opacity = opacity;
     options.transparent = true;
   };
 
-  const m = new MeshBasicMaterial(options);
-  newArrowMesh.material = m;
-
+  newArrowMesh.material = new MeshBasicMaterial(options);
   newArrowMesh.scale.set(0.75, 0.75, 0.75);
   newArrowMesh.rotateX(rot);
   newArrowMesh.rotateZ(Math.PI * 0.5);
@@ -470,7 +467,7 @@ export function createTreeNode(person, config) {
 }
 
 export function createNavigationNode(person, meta) {
-  const { root, renderer, navi } = meta;
+  const { root, renderer, navi, color } = meta;
   const ng = getNavigationGroup(root);
 
   const arrowLayout = {
@@ -486,7 +483,7 @@ export function createNavigationNode(person, meta) {
 
     if (isValidId(refId)) {
       const nId = `${target}Navi${person.id}`;
-     getNaviArrowMesh({ rot }).then((m) => {
+     getNaviArrowMesh({ rot, color }).then((m) => {
         renderer.addObject(nId, m, true, ng);
         m.position.fromArray(pos);
         m.userData.refId = refId;

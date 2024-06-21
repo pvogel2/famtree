@@ -129,10 +129,10 @@ function Node(props) {
   useEffect(() => {
     if (!renderer || !person?.id || !root) return;
     
-    const { clean } = createNavigationNode(person, { renderer, root, navi });
+    const { clean } = createNavigationNode(person, { renderer, root, navi, color: selection });
 
     return clean;
-  }, [renderer, person, root, navi]);
+  }, [renderer, person, root, navi, selection]);
 
   // calculate overall node size
   useEffect(() => {

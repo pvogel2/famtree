@@ -21,10 +21,11 @@ function Partner(props) {
     toRightId,
   } = props;
 
-  const { text, foreground } = useSelect((select) => {
+  const { text, foreground, selection } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
+      selection: store.getSelection(),
       foreground: store.getForeground(),
     };
   });
@@ -53,13 +54,13 @@ function Partner(props) {
 
     const { root, clean: partnerClean } = createTreeNode(person, { renderer, parent, type, offset, colors, layout: Layout });
 
-    const { clean: naviClean } = createNavigationNode(person, { renderer, root, navi });
+    const { clean: naviClean } = createNavigationNode(person, { renderer, root, navi, color: selection });
 
     return () => {
       partnerClean();
       naviClean();
     };
-  }, [renderer, person, parent, foreground, text, offsetX, offsetY, offsetZ, navi, Layout]);
+  }, [renderer, person, parent, foreground, selection, text, offsetX, offsetY, offsetZ, navi, Layout]);
 
   return ( 
     isSelected
