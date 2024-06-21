@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { RegistryProvider, createRegistry } from '@wordpress/data';
 
 import RenderProvider from './components/RenderProvider';
+import LayoutProvider from './components/LayoutProvider';
 import FamTreeRenderer from './components/FamTreeRenderer';
 
 import registerFamiliesStore from './store/families';
@@ -113,25 +114,21 @@ function App(props) {
     }
   }, [selection]);
 
-  useEffect(() => {
-    if (treeLayout) {
-      setTreeLayout(treeLayout);
-    }
-  }, [treeLayout]);
-
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
           <RegistryProvider value={ registry}>
-            <RenderProvider instanceId={ instanceId }>
-              <FamTreeRenderer />
-              <Intersector />
-              <PersonSelector />
-              { founderFAB && <LoadFamily readonly={ readonly } instanceId={ instanceId } /> }
-              { !readonly && <InfoDialog /> }
-              { !readonly && <DetailsDialog /> }
-            </RenderProvider>
+            <LayoutProvider treeLayout={ treeLayout }>
+              <RenderProvider instanceId={ instanceId }>
+                <FamTreeRenderer />
+                <Intersector />
+                <PersonSelector />
+                { founderFAB && <LoadFamily readonly={ readonly } instanceId={ instanceId } /> }
+                { !readonly && <InfoDialog /> }
+                { !readonly && <DetailsDialog /> }
+              </RenderProvider>
+            </LayoutProvider>
           </RegistryProvider>
         </StyledEngineProvider>
       </ThemeProvider>

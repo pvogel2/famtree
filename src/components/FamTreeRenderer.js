@@ -23,11 +23,10 @@ function FamTreeRenderer() {
     [founderId]
   );
 
-  const { background, treeLayout } = useSelect((select) => {
+  const { background } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       background: store.getBackground(),
-      treeLayout: store.getTreeLayout(),
     };
   });
 

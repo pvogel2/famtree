@@ -1,17 +1,12 @@
 import { useContext, useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { Color } from 'three';
-import ClassicLayout from './layouts/ClassicLayout';
-import CylinderLayout from './layouts/CylinderLayout';
 
 import RenderContext from './RenderContext.js';
+import LayoutContext from './LayoutContext.js';
 import KNavigation from './KeyboardNavigation';
 
 import { createTreeNode, createNavigationNode } from '../lib/nodes/utils';
-
-function getLayout(id) {
-  return id !== 'classic' ? CylinderLayout : ClassicLayout;
-}
 
 function Partner(props) {
   const {
@@ -26,12 +21,11 @@ function Partner(props) {
     toRightId,
   } = props;
 
-  const { text, foreground, treeLayout } = useSelect((select) => {
+  const { text, foreground } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
-      treeLayout: store.getTreeLayout(),
     };
   });
 
@@ -40,6 +34,7 @@ function Partner(props) {
   const isSelected = selectedPerson && selectedPerson?.id === person?.id;
  
   const { renderer } = useContext(RenderContext);
+  const Layout = useContext(LayoutContext);
 
   const navi = useMemo(() => ({
     parent: { refId: parentId },
@@ -52,7 +47,6 @@ function Partner(props) {
     if (!renderer || !person?.id) return;
     const partnerColor = new Color(foreground).multiplyScalar(0.75);
     const type = 'partner';
-    const Layout = getLayout(treeLayout);
     const offset = Layout.calcOffset(offsetX, offsetY, offsetZ);
 
     const colors = { foreground: `#${partnerColor.getHexString()}`, text };
@@ -65,7 +59,7 @@ function Partner(props) {
       partnerClean();
       naviClean();
     };
-  }, [renderer, person, parent, foreground, text, offsetX, offsetY, offsetZ, navi, treeLayout]);
+  }, [renderer, person, parent, foreground, text, offsetX, offsetY, offsetZ, navi, Layout]);
 
   return ( 
     isSelected

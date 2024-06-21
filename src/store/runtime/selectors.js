@@ -21,7 +21,3 @@ export function getHighlight( state ) {
 export function getSelection( state ) {
   return state.selection;
 }
-
-export function getTreeLayout( state ) {
-  return state.treeLayout;
-}

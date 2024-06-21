@@ -1,32 +1,27 @@
 import { useEffect, useContext } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { Vector3, Cylindrical } from 'three';
-import ClassicLayout from '../layouts/ClassicLayout';
-import CylinderLayout from '../layouts/CylinderLayout';
-import RenderContext from '../RenderContext.js';
-
-function getLayout(id) {
-  return id !== 'classic' ? CylinderLayout : ClassicLayout;
-}
+import RenderContext from './../RenderContext.js';
+import LayoutContext from './../LayoutContext.js';
 
 function ChildRelation(props) {
-  const { foreground, treeLayout } = useSelect((select) => {
+  const { foreground } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       foreground: store.getForeground(),
-      treeLayout: store.getTreeLayout(),
     }
   });
 
   const { highlight = foreground, sourceX = 0, sourceY = 0, sourceZ = 0, targetX = 0, targetY = 0, targetZ = 0, parent } = props;
   const { renderer } = useContext(RenderContext);
+  const Layout = useContext(LayoutContext);
 
   useEffect(() => {
     if (!renderer || !parent) return;
 
-    const Layout = getLayout(treeLayout);
     let lines;
-    if (treeLayout === 'rounded') {
+
+    if (Layout.id === 'rounded') {
       const v2 = new Vector3();
       parent.getWorldPosition(v2);  
       const offset = new Cylindrical().setFromVector3(v2);
@@ -46,7 +41,7 @@ function ChildRelation(props) {
     return () => {
       parent.remove(lines);
     };
-  }, [renderer, sourceX, sourceY, sourceZ, targetX, targetY, targetZ, parent, foreground, highlight, treeLayout]);
+  }, [renderer, sourceX, sourceY, sourceZ, targetX, targetY, targetZ, parent, foreground, highlight, Layout]);
 
   return null;
 };

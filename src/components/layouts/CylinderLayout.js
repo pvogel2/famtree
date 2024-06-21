@@ -46,6 +46,8 @@ export default class Layout {
     }
   }
 
+  static id = 'rounded';
+
   static getChildSize(id, szs) {
     const s = szs[id];
     if (!s) {

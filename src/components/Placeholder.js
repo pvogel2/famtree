@@ -1,14 +1,8 @@
 import { useEffect, useContext } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import ClassicLayout from './layouts/ClassicLayout';
-import CylinderLayout from './layouts/CylinderLayout';
 import RenderContext from './RenderContext.js';
+import LayoutContext from './LayoutContext.js';
 import { createTreeNode } from '../lib/nodes/utils';
-
-
-function getLayout(id) {
-  return id !== 'classic' ? CylinderLayout : ClassicLayout;
-}
 
 function Placeholder(config) {
   const {
@@ -16,13 +10,13 @@ function Placeholder(config) {
   } = config;
 
   const { renderer } = useContext(RenderContext);
+  const Layout = useContext(LayoutContext);
 
-  const { text, foreground, treeLayout } = useSelect((select) => {
+  const { text, foreground } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
-      treeLayout: store.getTreeLayout(),
     };
   });
     
@@ -31,7 +25,6 @@ function Placeholder(config) {
     if (!renderer) return;
 
     const colors = { foreground, text };
-    const Layout = getLayout(treeLayout);
     const offset = Layout.calcOffset(0, 0, 0);
 
     const { clean, root } = createTreeNode(null, { renderer, parent, type: 'placeholder', offset, colors, layout: Layout });
@@ -41,7 +34,7 @@ function Placeholder(config) {
     });
 
     return clean;
-  }, [renderer, foreground, text, treeLayout]);
+  }, [renderer, foreground, text, Layout]);
 
   return null;
 }

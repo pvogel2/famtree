@@ -1,6 +1,7 @@
 import { useEffect, useContext, useState, useMemo, Fragment } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import RenderContext from './RenderContext.js';
+import LayoutContext from './LayoutContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import KNavigation from './KeyboardNavigation';
@@ -63,10 +64,6 @@ function getLayout(id) {
   return id !== 'classic' ? CylinderLayout : ClassicLayout;
 }
 
-function createLayout(id, root) {
-  return new (getLayout(id))(root);
-}
-
 function Node(props) {
   const {
     person,
@@ -85,6 +82,7 @@ function Node(props) {
   const [sizes, setSizes] = useState({});
 
   const { renderer } = useContext(RenderContext);
+  const Layout = useContext(LayoutContext);
 
   const personId = person?.id;
 
@@ -98,14 +96,13 @@ function Node(props) {
     };
   }, []);
 
-  const { text, foreground, highlight, selection, treeLayout } = useSelect((select) => {
+  const { text, foreground, highlight, selection } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
       highlight: store.getHighlight(),
       selection: store.getSelection(),
-      treeLayout: store.getTreeLayout(),
     };
   });
 
@@ -139,7 +136,7 @@ function Node(props) {
 
   // calculate overall node size
   useEffect(() => {
-    const layout = createLayout(treeLayout);
+    const layout = new Layout();
 
     relations.forEach((r) => {
       const children = findItems(r.children, persons);
@@ -151,7 +148,7 @@ function Node(props) {
     if (totalSize !== newTotalSize) {
       setTotalSize(newTotalSize);
     }
-  }, [relations, sizes, totalSize, treeLayout, setTotalSize]);
+  }, [relations, sizes, totalSize, setTotalSize, Layout]);
 
   // send updated node size to parent
   useEffect(() => {
@@ -163,8 +160,6 @@ function Node(props) {
   // render visual node
   useEffect(() => {
     if (!renderer || !person?.id) return;
-    const Layout = getLayout(treeLayout);
-
     const offset = Layout.calcOffset(offsetX, offsetY, offsetZ);
     const colors = { foreground, text };
     const { root: newRoot, clean } = createTreeNode(person, { renderer, parent, offset, colors, layout: Layout });
@@ -172,7 +167,7 @@ function Node(props) {
     setRoot(newRoot);
 
     return clean;
-  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, parent, text, treeLayout]);
+  }, [renderer, person, foreground, offsetX, offsetY, offsetZ, parent, text, Layout]);
 
   if (!root) {
     return null;
@@ -190,7 +185,7 @@ function Node(props) {
     let leftPartnerId = person.id;
     let rightPartnerId = null;
 
-    const layout = createLayout(treeLayout, root);
+    const layout = new Layout(root);
 
     return relations.map((r, idx) => {
       const partner = findPartner(r, person, persons);

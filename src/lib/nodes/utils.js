@@ -85,7 +85,8 @@ export function getDataGroup(m) {
 }
 
 export function getNavigationGroup(m, layout = { pos: [ARROW_OFFSET, NAVI_OFFSET, -NAVI_OFFSET], visible: false }) {
-  const ng = getNamedGroup(m, 'navigation');
+  const lg = getNamedGroup(m, 'local');
+  const ng = getNamedGroup(lg, 'navigation');
   ng.position.fromArray(layout.pos);
   ng.visible = layout.visible;
 
@@ -470,7 +471,7 @@ export function createTreeNode(person, config) {
 
 export function createNavigationNode(person, meta) {
   const { root, renderer, navi } = meta;
-  const lg = findNamedGroup(root, 'local');
+  const lg = getNamedGroup(root, 'local');
   const ng = getNavigationGroup(lg);
 
   const arrowLayout = {
