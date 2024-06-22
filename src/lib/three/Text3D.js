@@ -34,7 +34,7 @@ class ThreeText3D {
     const geometry = new TextGeometry( this.text, {
       font: this.font,
       size: 0.25,
-      height: 0,
+      depth: 0,
       curveSegments: 2,
       bevelEnabled: false,
       bevelThickness: 0.01,
