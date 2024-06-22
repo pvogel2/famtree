@@ -81,8 +81,10 @@ export default class Layout {
   }
 
   static getChildLines(s, t, config = { foreground, highlight, parent }) {
-    const foreColor = new Color(config.foreground);
-    const highColor = new Color(config.highlight);
+    const { foreground, highlight, parent} = config;
+
+    const foreColor = new Color(foreground);
+    const highColor = new Color(highlight);
     const material = new LineBasicMaterial({
       vertexColors: true,
     });    
@@ -97,9 +99,9 @@ export default class Layout {
     colors.push(...foreColor.toArray());
     colors.push(...highColor.toArray());
   
-    const v2 = new Vector3();
-    config.parent.getWorldPosition(v2);  
-    const offset = new Cylindrical().setFromVector3(v2);
+    const v = new Vector3();
+    parent.getWorldPosition(v);
+    const offset = new Cylindrical().setFromVector3(v);
 
     const vOffset = new Vector3().setFromCylindrical(new Cylindrical(RADIUS, offset.theta, 0));
     const start = (new Vector3().setFromCylindrical(new Cylindrical(RADIUS, s.theta, s.y))).sub(vOffset);
