@@ -2,6 +2,7 @@ export default class Transition {
   constructor(config = {}) {
     this.duration = config.duration ? config.duration : 0.5;
     this.finished = false;
+    this.torndown = false; // add flag to identify interupted transition
     this.start = -1;
     this.from_ = 0;
     this.to_ = 0;
@@ -24,6 +25,7 @@ export default class Transition {
     this.from_ = Math.min(1, Math.max(from, 0));
     this.to_ = 1;
     this.finished = false;
+    this.torndown = false;
     this.onStart(this.current);
   }
 
@@ -31,6 +33,7 @@ export default class Transition {
     this.from_ = Math.min(1, Math.max(from, 0));;
     this.to_ = 0;
     this.finished = false;
+    this.torndown = false;
     this.onStart(this.current);
   }
 
@@ -68,6 +71,7 @@ export default class Transition {
 
   teardown() {
     this.finished = true;
+    this.torndown = true;
     this.start = -1;
     this.onFinish(this.current);
   }

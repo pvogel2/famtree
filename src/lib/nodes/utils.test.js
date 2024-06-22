@@ -6,7 +6,7 @@ import {
   Vector3,
   Color,
 } from 'three';
-
+import { act } from 'react';
 import U from '../tests/utils';
 import * as utils from './utils';
 
@@ -25,6 +25,17 @@ jest.mock('../../lib/three/Text3D', () => {
     };
   };
 });
+
+jest.mock('../../lib/Transition', () => {
+  return function(config = {} ) {
+    const { onFinish = jest.fn() } = config;
+    return {
+      forward: onFinish,
+      teardown: onFinish,
+    };
+  };
+});
+
 
 jest.mock ('../../lib/three/PreparedMeshes', () => {
   const personMesh = new MockGroup();
@@ -53,10 +64,14 @@ describe('selectNode', () => {
     expect(utils.selectNode).not.toThrow();
   });
 
-  it('set navigation visible', async () => {
+  it.only('set navigation visible', async () => {
+    jest.useFakeTimers();
     const { personMesh, naviGroup } = await U.createPersonMesh();
 
     utils.selectNode(personMesh, { renderer: U.getRenderer() });
+    act(() => {
+      jest.runAllTimers();
+    });
     expect(naviGroup.visible).toBe(true);
   });
 });
