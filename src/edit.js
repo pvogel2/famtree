@@ -92,7 +92,7 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
           <ToggleControl
   			    label={ __('Show founder FAB', 'famtree') }
 	  				labelPosition= 'side'
-            checked={ founderFAB }
+            checked={ founderFAB ? 'checked' : '' }
             onChange={ () => setAttributes({ founderFAB: !founderFAB }) }
 					/>
 				</PanelBody>
