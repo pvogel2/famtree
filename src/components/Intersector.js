@@ -38,7 +38,6 @@ function Intersector() {
 
   useEffect(() => {
     const rootNode = getRootNode(intersectedObj);
-    
     const currentPerson = findPerson(rootNode?.userData?.refId);
     const defaultOpacity = intersectedObj?.material?.opacity;
 
@@ -46,7 +45,7 @@ function Intersector() {
     const selectFocusedPerson = () => {
       renderer.unregisterEventCallback('click', selectFocusedPerson);
 
-      if (currentPerson && !isNavigationNode(intersectedObj)) {
+      if (currentPerson) {
         setFocused();
         setSelected(new Person(currentPerson).serialize());
     
@@ -60,12 +59,11 @@ function Intersector() {
     };
 
     const onNavigationClick = () => {
-      renderer.unregisterEventCallback('click', onNavigationClick);
+      const targetPerson = findPerson(intersectedObj.userData?.refId);
+      setSelected(new Person(targetPerson).serialize());
 
       renderer.parent.style.cursor = 'default';
-      const targetPerson = findPerson(intersectedObj.userData?.refId);
-
-      setSelected(new Person(targetPerson).serialize());
+      renderer.unregisterEventCallback('click', onNavigationClick);
     };
 
     if (isPersonNode(intersectedObj) && !isSelected) {
@@ -93,22 +91,19 @@ function Intersector() {
 
     return () => {
       if (isPersonNode(intersectedObj) && !isSelected) {
-        renderer.unregisterEventCallback('click', selectFocusedPerson);
-
         defocusNode(intersectedObj, { foreground, renderer });
         setFocused();
+        renderer.unregisterEventCallback('click', selectFocusedPerson);
       }
 
       if (isMetaResourceNode(intersectedObj)) {
-        renderer.unregisterEventCallback('click', selectFocusedMetaResource);
-
         defocusNode(intersectedObj, { renderer, opacity: defaultOpacity });
+        renderer.unregisterEventCallback('click', selectFocusedMetaResource);
       }
 
       if (isNavigationNode(intersectedObj)) {
-        renderer.unregisterEventCallback('click', onNavigationClick);
-
         renderer.parent.style.cursor = 'default';
+        renderer.unregisterEventCallback('click', onNavigationClick);
       }
     };
    }, [renderer, intersectedObj, foreground, highlight, selected, findPerson, setFocused, setSelected]);

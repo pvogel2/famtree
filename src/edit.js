@@ -121,7 +121,7 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
           <ToggleControl
   			    label={ __('Show founder menu button', 'famtree') }
 	  				labelPosition= 'side'
-            checked={ founderFAB ? 'checked' : '' }
+            checked={ founderFAB }
             onChange={ () => setAttributes({ founderFAB: !founderFAB }) }
 						help={__('For multiple founders available adds a menu to change the displayed family tree on the published page.', 'famtree') }
 					/>

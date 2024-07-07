@@ -380,26 +380,25 @@ export function selectNode(m, config = {}) {
       const startColor = m2.material.color.clone();
       const endColor = m2.material.map ? new Color('#ccffcc') : new Color(color);
 
+      showNavigationGroup(m);
+
       if (currentTransition) {
         currentTransition.teardown();
         renderer.transitioning = false;
       }
 
-      const selectTransition = new Transition({
+      const focusTransition = new Transition({
         duration: 0.25,
         callback: (current) => {
           m2.material.color.lerpColors(startColor, endColor, current);
         },
         onFinish: () => {
-          if (!currentTransition.torndown) {
-            setTimeout(() => showNavigationGroup(m), 300);
-          }
-          renderer.unregisterEventCallback('render', selectTransition.update);
+          renderer.unregisterEventCallback('render', focusTransition.update);
         },
       });
-      currentTransition = selectTransition;
-      renderer.registerEventCallback('render', selectTransition.update);
-      selectTransition.forward();
+      currentTransition = focusTransition;
+      renderer.registerEventCallback('render', focusTransition.update);
+      focusTransition.forward();
     }
 
     if (renderer && layout) {
