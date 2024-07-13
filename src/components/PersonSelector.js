@@ -5,10 +5,6 @@ import { selectNode, deselectNode } from '../lib/nodes/utils';
 import RenderContext from './RenderContext.js';
 import LayoutContext from './LayoutContext.js';
 
-function getLayout(id) {
-  return id !== 'classic' ? CylinderLayout : ClassicLayout;
-}
-
 function PersonSelector() {
   const { renderer } = useContext(RenderContext);
   const Layout = useContext(LayoutContext);

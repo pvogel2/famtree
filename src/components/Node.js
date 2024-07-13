@@ -5,8 +5,6 @@ import LayoutContext from './LayoutContext.js';
 import PartnerRelation from './relations/PartnerRelation';
 import ChildRelation from './relations/ChildRelation';
 import KNavigation from './KeyboardNavigation';
-import ClassicLayout from './layouts/ClassicLayout';
-import CylinderLayout from './layouts/CylinderLayout';
 import { isValidId, createTreeNode, getRelationsGroup, getAssetsGroup, createNavigationNode } from '../lib/nodes/utils';
 import Partner from './Partner';
 
@@ -58,10 +56,6 @@ function getNextChild(cs, idx) {
 function getParnterId(rl, pId) {
   const id =  rl?.members.find((id) => id !== pId);
   return isValidId(id) ? id : null;
-}
-
-function getLayout(id) {
-  return id !== 'classic' ? CylinderLayout : ClassicLayout;
 }
 
 function Node(props) {
@@ -184,8 +178,6 @@ function Node(props) {
 
     let leftPartnerId = person.id;
     let rightPartnerId = null;
-
-    const layout = new Layout(root);
 
     const layout = new Layout(root);
 

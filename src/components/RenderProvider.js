@@ -23,7 +23,7 @@ function RenderProvider(props) {
     newRenderer.setupLightsDone = true;
 
     const ambientLight = new AmbientLight( 0xFFFFFF, 3 );
-    newRenderer.three.scene.add( ambientLight );
+    newRenderer.addObject('ambientLight', ambientLight);
 
     setRenderer(newRenderer);
   }, [renderer, rendererId]);
