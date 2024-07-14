@@ -1,5 +1,6 @@
 import GedcomParser from './index';
 
+// https://gedcom.io/specifications/ged551.pdf
 const RAW = `0 HEAD
 1 GEDC
 2 VERS 5.5.5
@@ -121,9 +122,25 @@ describe('The Gedcom Parser', () => {
       const gp = new GedcomParser(RAW);
       const json = gp.parse();
 
-      console.log(json);
       expect(json.head).toBeDefined();
-      expect(json.head.gedc).toEqual({ version: '5.5.5' });
+      expect(json.head.gedc).toEqual(expect.objectContaining({ version: '5.5.5' }));
+    });
+
+    it('returns an individuals array object', () => {
+      const gp = new GedcomParser(RAW);
+      const json = gp.parse();
+
+      expect(json.individuals).toBeDefined();
+      expect(json.individuals).toHaveLength(3);
+    });
+
+    it('individual contain fields', () => {
+      const gp = new GedcomParser(RAW);
+      const json = gp.parse();
+
+      const indiv = json.individuals[0];
+// console.log(indiv);
+      expect(indiv).toEqual(expect.objectContaining({ name: 'Robert Eugene /Williams/', surn: 'Williams' }));
     });
   });
 });
