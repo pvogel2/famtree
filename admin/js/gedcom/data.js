@@ -1,7 +1,5 @@
-import GedcomParser from './index';
-
 // https://gedcom.io/specifications/ged551.pdf
-const RAW = `0 HEAD
+export const RAW = `0 HEAD
 1 GEDC
 2 VERS 5.5.5
 2 FORM LINEAGE-LINKED
@@ -98,49 +96,3 @@ const RAW = `0 HEAD
 2 POST 84150
 2 CTRY United States of America
 0 TRLR`;
-
-describe('The Gedcom Parser', () => {
-  it('is defined', () => {
-    expect(GedcomParser).toBeDefined();
-  });
-
-  it('is initialized correctly', () => {
-    expect(() => {process.nextTick
-      new GedcomParser();
-    }).not.toThrow();
-  });
-
-  describe('parse',() => {
-    it('returns a json object', () => {
-      const gp = new GedcomParser();
-      const json = gp.parse();
-
-      expect(json).toBeDefined();
-    });
-
-    it('returns a head object', () => {
-      const gp = new GedcomParser(RAW);
-      const json = gp.parse();
-
-      expect(json.head).toBeDefined();
-      expect(json.head.gedc).toEqual(expect.objectContaining({ version: '5.5.5' }));
-    });
-
-    it('returns an individuals array object', () => {
-      const gp = new GedcomParser(RAW);
-      const json = gp.parse();
-
-      expect(json.individuals).toBeDefined();
-      expect(json.individuals).toHaveLength(3);
-    });
-
-    it('individual contain fields', () => {
-      const gp = new GedcomParser(RAW);
-      const json = gp.parse();
-
-      const indiv = json.individuals[0];
-// console.log(indiv);
-      expect(indiv).toEqual(expect.objectContaining({ name: 'Robert Eugene /Williams/', surn: 'Williams' }));
-    });
-  });
-});
