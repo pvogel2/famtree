@@ -4,7 +4,8 @@ import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
 import UIMessage from './UIMessage.js'
 import PersonTable from './PersonTable.js';
-import FamtreeClient from './FamtreeClient.js'
+import FamtreeClient from './FamtreeClient.js';
+import GedcomImporter from './gedcom/importer.js';
 
 export default class Famtree {
   /**
@@ -14,6 +15,7 @@ export default class Famtree {
   constructor(wp) {
     this.persEditor = new PersonEditor();
     this.metaEditor = new MetadataEditor();
+    this.gedcomImporter = new GedcomImporter();
 
     this.wkEditMedia = wp.media({
       title: 'Edit media',

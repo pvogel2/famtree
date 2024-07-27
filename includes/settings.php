@@ -139,6 +139,10 @@ function famtree_options_page_html() {
     ?>
     </form>
     <?php
+      famtree_render_section_title(__('Import gedcom data', 'famtree'));
+      famtree_render_gedcom_import();
+    ?>
+    <?php
       famtree_render_section_title(__('Person configuration', 'famtree'));
 
       famtree_render_edit_person_form();

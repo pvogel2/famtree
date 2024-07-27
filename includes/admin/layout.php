@@ -112,6 +112,12 @@ function famtree_render_global_settings() {
   // currently nothing to render
 }
 
+function famtree_render_gedcom_import() {
+  ?>
+    <input name="famtree_gedcom_import" type="file" id="famtree_gedcom_import">
+  <?php
+}
+
 function famtree_render_edit_person_form() {
   ?>
   <div style="display: flex;">
