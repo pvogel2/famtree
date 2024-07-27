@@ -1,6 +1,6 @@
-import Person from '../../../public/js/Person';
-import Relation from '../../../admin/js/Relation';
-import { TAGS } from './parser';
+import Person from '../../../public/js/Person.js';
+import Relation from '../../../admin/js/Relation.js';
+import { TAGS } from './parser.js';
 
 export default class GedcomMapper {
   constructor(json = { individuals: [] }) {
@@ -31,7 +31,6 @@ export default class GedcomMapper {
   relations() {
     const rs = [];
 
-    console.log(this.idMap);
     this.json.relations.forEach((rela) => {
       const config = {
         members: [],

@@ -19,11 +19,12 @@ const re = new RegExp(/^(?<level>^\d+)(\s(?<id>\@[a-zA-Z0-9]+\@))?\s(?<tag>[a-zA
 
 export default class GedcomParser {
   parse(raw = '') {
-    const tags = raw.split('\n');
+    const tags = raw.split(/[\r\n]+/);
     const result = {
       individuals: [],
       relations: [],
     };
+
     let current;
 
     tags.forEach((line) => {
