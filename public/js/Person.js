@@ -41,6 +41,15 @@ export default class Person {
     return ((typeof id === 'string' && !!id) || (typeof id === 'number' && !isNaN(id)));
   }
     
+  /**
+   * Valid name has to be non empty string.
+   * @param {*} name 
+   * @returns boolean
+   */
+  static isValidName(name) {
+    return ((typeof name === 'string' && !!name));
+  }
+    
   constructor(config = defaultConfig) {
     this.pFirstName = config.firstName ? config.firstName.trim() : defaultConfig.firstName;
     this.pLastName = config.lastName ? config.lastName.trim() : defaultConfig.lastName;

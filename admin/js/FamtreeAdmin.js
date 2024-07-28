@@ -2,10 +2,12 @@ import PersonEditor from './editor/PersonEditor.js';
 import MetadataEditor from './editor/MetadataEditor.js';
 import PersonList from '../../public/js/PersonList.js';
 import Relation from './Relation.js';
-import UIMessage from './UIMessage.js'
+import UIMessage from './UIMessage.js';
 import PersonTable from './PersonTable.js';
 import FamtreeClient from './FamtreeClient.js';
 import GedcomImporter from './gedcom/importer.js';
+import UIImportDialog from './UIImportDialog.js';
+
 
 export default class Famtree {
   /**
@@ -223,5 +225,33 @@ export default class Famtree {
       console.log('error', statusText);
       this.message.error('Updating roots failed');
     });
+  }
+
+  async importGedcom() {
+    try {
+      const result = await this.gedcomImporter.import();
+      const { persons, relations } = result;
+      
+      do {
+        const p = persons.shift();
+        const known = PersonList.findByName(p.name);
+        if (!known) {
+          p.id = null; // TODO find other solution
+          const result = this.savePerson(p); // TODO react on error
+        } else {
+          const action = await this.gedcomImporter.comparePersons(known, p);
+          if (action === UIImportDialog.RETURN_CODE_ADD) {
+            p.id = null; // TODO find other solution
+            const result = this.savePerson(p); // TODO react on error
+          }
+          if (action === UIImportDialog.RETURN_CODE_REPLACE) {
+            p.id = known.id; // TODO find other solution
+            const result = this.savePerson(p); // TODO react on error
+          }
+        }
+      } while (persons.length);
+    } catch(err) {
+      console.log('Error, import faild:', err);
+    }
   }
 }
