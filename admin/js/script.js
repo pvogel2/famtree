@@ -128,5 +128,27 @@ jQuery(async function($) {
     // Open the upload dialog
     wkMedia.open();
   });
+
+  const defaultInfo = $('#famtree-modal-dialog');
+  defaultInfo.dialog({                   
+    'dialogClass'   : 'wp-dialog',           
+    'modal'         : true,
+    'autoOpen'      : false, 
+    'closeOnEscape' : true,      
+    'buttons'       : {
+      'Close': function() {
+        $(this).dialog('close');
+      }
+    }
+  });
+
+  const importInfo = $('#famtree-import-dialog');
+  importInfo.dialog({                   
+    'dialogClass'   : 'wp-dialog',           
+    'modal'         : true,
+    'autoOpen'      : false, 
+    'closeOnEscape' : true,
+    'width'         : 640,    
+  });
 });
 

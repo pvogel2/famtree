@@ -19,6 +19,22 @@ export default {
     const p = all[id];
     return (p ? new Person(p) : null);
   },
+
+  /**
+   * Find a person by id in all available data
+   * @param {string} id
+   * @returns Person | null
+   */
+  findByName(name) {
+    if (!Person.isValidName(name)) {
+      return null;
+    }
+    const filter = (p) => {
+      return (new Person(p)).name === name;
+    }
+    const candidates = this.filter(filter);
+    return candidates.length ? candidates[0] : null;
+  },
   
   /**
    * Filter persons on provided filter

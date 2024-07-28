@@ -70,6 +70,7 @@ function famtree_admin_scripts() {
   wp_enqueue_script( 'famtree-admin-script-e' );
   wp_enqueue_script( 'famtree-admin-script-s' );
   wp_enqueue_script( 'wp-api-request' ); // include backbone wp api
+  wp_enqueue_script( 'jquery-ui-dialog' ); // include modal dialog support
   wp_enqueue_media();
 }
 
@@ -77,6 +78,7 @@ function famtree_admin_styles() {
   /*
    * It will be called only on your plugin admin page, enqueue our script here
    */
+  wp_enqueue_style( 'wp-jquery-ui-dialog' );
   wp_enqueue_style( 'famtree-admin-style' );
 }
 
@@ -129,7 +131,8 @@ function famtree_options_page_html() {
     <?php
       famtree_render_page_title(__('FamTree configuration', 'famtree'));
       famtree_render_runtime_message();
-
+      famtree_render_modal_dialog();
+      famtree_render_import_dialog();
     ?>
     <form method="POST" action="options.php">
     <?php
