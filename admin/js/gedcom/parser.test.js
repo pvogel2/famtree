@@ -28,6 +28,21 @@ describe('The Gedcom Parser', () => {
       expect(json.head.gedc).toEqual(expect.objectContaining({ version: '5.5.5' }));
     });
 
+    it('returns a trlr object', () => {
+      const gp = new GedcomParser();
+      const json = gp.parse(RAW);
+
+      expect(json.trlr).toBeDefined();
+    });
+
+    it('for header found returns reuqired fields', () => {
+      const gp = new GedcomParser();
+      const json = gp.parse(RAW);
+
+      expect(json.head).toBeDefined();
+      expect(json.head.gedc).toEqual(expect.objectContaining({ form: 'LINEAGE-LINKED' }));
+    });
+
     describe('returns individuals', () => {
       it('array object', () => {
         const gp = new GedcomParser();
@@ -43,7 +58,7 @@ describe('The Gedcom Parser', () => {
   
         const indiv = json.individuals[0];
   
-        expect(indiv).toEqual(expect.objectContaining({ name: 'Robert Eugene /Williams/', surn: 'Williams' }));
+        expect(indiv).toEqual(expect.objectContaining({ id: expect.any(String), name: 'Robert Eugene /Williams/', surn: 'Williams' }));
       });
     });
 

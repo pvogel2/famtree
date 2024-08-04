@@ -1,5 +1,5 @@
-// https://gedcom.io/specifications/ged551.pdf
-export const RAW = `0 HEAD
+export const RAW = `
+0 HEAD
 1 GEDC
 2 VERS 5.5.5
 2 FORM LINEAGE-LINKED
@@ -95,4 +95,5 @@ export const RAW = `0 HEAD
 2 STAE Utah
 2 POST 84150
 2 CTRY United States of America
-0 TRLR`;
+0 TRLR
+`;
