@@ -26,6 +26,18 @@ export default class Relation {
     return Object.values(Relation.all).filter(filter);
   }
 
+  // realy expensive
+  static findByMembers(members) {
+    return Object.values(Relation.all).filter((r) => {
+      const ro = new Relation(r);
+      let found = true;
+      members.forEach((m) => {
+        found = found &&  ro.hasMember(m);
+      });
+      return found;
+    });
+  }
+
   constructor(r) {
     this._id = parseInt(r.id) || null;
     this._members = r.members.map((m) => parseInt(m));
