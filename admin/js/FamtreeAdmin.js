@@ -231,25 +231,71 @@ export default class Famtree {
     try {
       const result = await this.gedcomImporter.import();
       const { persons, relations } = result;
-      
+
+      const idMap = {};
+
       do {
         const p = persons.shift();
+
+        idMap[p.id] = null;
+
         const known = PersonList.findByName(p.name);
         if (!known) {
           p.id = null; // TODO find other solution
-          const result = this.savePerson(p); // TODO react on error
+          const result = await this.savePerson(p); // TODO react on error
+          idMap[p.id] = result.id;
         } else {
           const action = await this.gedcomImporter.comparePersons(known, p);
           if (action === UIImportDialog.RETURN_CODE_ADD) {
             p.id = null; // TODO find other solution
-            const result = this.savePerson(p); // TODO react on error
+            const result = await this.savePerson(p); // TODO react on error
+            idMap[p.id] = result.id;
           }
           if (action === UIImportDialog.RETURN_CODE_REPLACE) {
             p.id = known.id; // TODO find other solution
-            const result = this.savePerson(p); // TODO react on error
+            const result = await this.savePerson(p); // TODO react on error
+            idMap[p.id] = result.id;
+          }
+          if (action === UIImportDialog.RETURN_CODE_SKIP) {
+            idMap[p.id] = known.id;
           }
         }
       } while (persons.length);
+
+      console.log(idMap);
+
+      do {
+        const r = relations.shift().serialize();
+        console.log('imported relation:', r);
+        const known = Relation.findByMembers(r.members);
+        let newRelId = 0;
+
+        // for now only import unknown relation
+        if (!known.length) {
+          const ms = [];
+          const cs = [];
+          r.members.forEach((m) => {
+            ms.push(idMap[m]);
+          });
+          r.members = ms;
+
+          r.children.forEach((c) => {
+            cs.push(idMap[c]);
+          });
+          r.children = cs;
+
+          if (r.id === null) {
+            r.id = --newRelId;
+          }
+
+          if (r.members.length > 1) {
+            // const result = await this.saveRelations(p); // TODO react on error
+          }
+
+          console.log('mapped relation:', r);
+        }
+      } while (relations.length);
+      console.log('finished');
     } catch(err) {
       console.log('Error, import faild:', err);
     }

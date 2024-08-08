@@ -37,11 +37,17 @@ export default class GedcomMapper {
         children: [],
       };
 
+      console.log('rela', rela);
       if (rela[TAGS.WIFE]) {
         config.members.push(this.idMap[rela[TAGS.WIFE]]);
       }
+
       if (rela[TAGS.HUSB]) {
         config.members.push(this.idMap[rela[TAGS.HUSB]]);
+      }
+
+      if (rela[TAGS.CHIL]) {
+        config.children.push(this.idMap[rela[TAGS.CHIL]]);
       }
 
       const r = new Relation(config);
