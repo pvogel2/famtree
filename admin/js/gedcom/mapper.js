@@ -16,7 +16,7 @@ export default class GedcomMapper {
       const config = {
         id: id--,
         lastName: indi.surn || '',
-        firstName: indi.name.replace(/\/.+\//g, '').trim() || '',
+        firstName: indi.name.replace(/\/.*\//g, '').trim() || '',
       };
 
       this.idMap[indi.id] = config.id;

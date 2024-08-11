@@ -1,6 +1,7 @@
 import PersonEditor from './editor/PersonEditor.js';
 import MetadataEditor from './editor/MetadataEditor.js';
 import PersonList from '../../public/js/PersonList.js';
+import Person from '../../public/js/Person.js';
 import Relation from './Relation.js';
 import UIMessage from './UIMessage.js';
 import PersonTable from './PersonTable.js';
@@ -50,7 +51,7 @@ export default class Famtree {
     };
   
     Promise.allSettled([
-      this.saveRelations(),
+      this.saveModifiedRelations(),
       this.savePerson(person)],
     ).then(() => {
       document.location.reload();
@@ -64,6 +65,46 @@ export default class Famtree {
   saveRelations() {
     const ps = [];
     const rls = this.persEditor.getModifiedRelations();
+
+    rls.forEach((rl) => {
+      if (rl.isObsolete()) {
+        return;
+      }
+      
+      if (rl.deleted) {
+        ps.push(this.client.deleteRelation(rl.id));
+        return;
+      }
+
+      const data = rl.serialize();
+
+      if (rl.isNew()) {
+        delete data.id;
+        ps.push(this.client.createRelation(data));
+      } else {
+        ps.push(this.client.updateRelation(rl.id, data));
+      }
+    });
+
+    return ps;
+  }
+
+  /**
+   * Saves all modified relations.
+   * @returns [Promise]
+   */
+  saveModifiedRelations() {
+    const rls = this.persEditor.getModifiedRelations();
+    this.saveRelations(rls);
+  }
+
+  /**
+   * Saves relations.
+   * @param rls [Relation] A list of relations to save.
+   * @returns [Promise]
+   */
+  saveRelations(rls) {
+    const ps = [];
 
     rls.forEach((rl) => {
       if (rl.isObsolete()) {
@@ -241,21 +282,30 @@ export default class Famtree {
 
         const known = PersonList.findByName(p.name);
         if (!known) {
-          p.id = null; // TODO find other solution
-          const result = await this.savePerson(p); // TODO react on error
-          idMap[p.id] = result.id;
+          const result = await this.savePerson(new Person({ ...(p.serialize()), id: null })); // TODO react on error
+          if (Person.isValidId(result)) {
+            idMap[p.id] = result;
+          } else { // TODO react on error
+            console.log('warning, skipping person', p);
+          }
         } else {
           const action = await this.gedcomImporter.comparePersons(known, p);
           if (action === UIImportDialog.RETURN_CODE_ADD) {
-            p.id = null; // TODO find other solution
-            const result = await this.savePerson(p); // TODO react on error
-            idMap[p.id] = result.id;
-          }
+            const result = await this.savePerson(new Person({ ...(p.serialize()), id: null })); // TODO react on error
+            if (Person.isValidId(result)) {
+              idMap[p.id] = result;
+            } else { // TODO react on error
+              console.log('warning, skipping person', p);
+            }
+            }
           if (action === UIImportDialog.RETURN_CODE_REPLACE) {
-            p.id = known.id; // TODO find other solution
-            const result = await this.savePerson(p); // TODO react on error
-            idMap[p.id] = result.id;
-          }
+            const result = await this.savePerson(new Person({ ...(p.serialize()), id: known.id })); // TODO react on error
+            if (Person.isValidId(result)) {
+              idMap[p.id] = result;
+            } else { // TODO react on error
+              console.log('warning, skipping person', p);
+            }
+            }
           if (action === UIImportDialog.RETURN_CODE_SKIP) {
             idMap[p.id] = known.id;
           }
@@ -264,11 +314,13 @@ export default class Famtree {
 
       console.log(idMap);
 
+      let newRelId = 0;
+      const rlsToSave = [];
+
       do {
         const r = relations.shift().serialize();
         console.log('imported relation:', r);
         const known = Relation.findByMembers(r.members);
-        let newRelId = 0;
 
         // for now only import unknown relation
         if (!known.length) {
@@ -289,13 +341,16 @@ export default class Famtree {
           }
 
           if (r.members.length > 1) {
+            rlsToSave.push(new Relation(r));
             // const result = await this.saveRelations(p); // TODO react on error
           }
 
           console.log('mapped relation:', r);
         }
       } while (relations.length);
-      console.log('finished');
+      console.log('result:', rlsToSave);
+      await this.saveRelations(rlsToSave);
+      this.message.success('Import finished');
     } catch(err) {
       console.log('Error, import faild:', err);
     }
