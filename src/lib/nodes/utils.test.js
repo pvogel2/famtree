@@ -64,7 +64,7 @@ describe('selectNode', () => {
     expect(utils.selectNode).not.toThrow();
   });
 
-  it.only('set navigation visible', async () => {
+  it('set navigation visible', async () => {
     jest.useFakeTimers();
     const { personMesh, naviGroup } = await U.createPersonMesh();
 

@@ -55,6 +55,12 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 
 				const founders = data.persons.filter((p)=> p.root).map((p) => p.id);
 				setFamilies(founders);
+
+				// handle outdated founder information
+				if (founder >= 0 && !founders.includes(founder)) {
+					setAttributes({ founder: -1 });
+				}
+
 				if (founder < 0 && founders.length) {
 				  setAttributes({ founder: parseInt(founders[0]) })
 				}
@@ -68,6 +74,9 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 
 	function getFamiliesOptions() {
 	  const familyRoots = persons.filter((p) => p.root === true);
+		if (!familyRoots.length) {
+			return [{ disabled: 'disabled', label: __('No founders') }];
+		}
 	  return familyRoots.map((r) => ({ label: `${r.firstName} ${r.lastName}`, value: r.id })); 
 	}
 
@@ -83,17 +92,19 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 					initialOpen={ true }
 				>
 				  <SelectControl
-  			        label={ __('Current founder', 'famtree') }
+  			    label={ __('Current founder', 'famtree') }
 	  				labelPosition= 'side'
             value={ parseInt(founder) }
             onChange={ ( f ) => setAttributes({ founder: parseInt(f) }) }
 				  	options={ getFamiliesOptions() }
+						help={__('For selectable founders you need to set the \'Founder\' flag on at least one person on the FamTree settings page!', 'famtree') }
 					/>
           <ToggleControl
-  			    label={ __('Show founder FAB', 'famtree') }
+  			    label={ __('Show founder menu button', 'famtree') }
 	  				labelPosition= 'side'
             checked={ founderFAB ? 'checked' : '' }
             onChange={ () => setAttributes({ founderFAB: !founderFAB }) }
+						help={__('For multiple founders available adds a menu to change the displayed family tree on the published page.', 'famtree') }
 					/>
 				</PanelBody>
 				<PanelColorSettings 

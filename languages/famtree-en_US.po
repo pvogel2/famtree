@@ -19,7 +19,7 @@ msgid "FamTree"
 msgstr ""
 
 #. Description of the plugin
-msgid "This plugin provides a block to manage and visualize family trees (Scaffolded with Create Block tool)."
+msgid "This plugin provides a block to manage and visualize family trees."
 msgstr ""
 
 #. Author of the plugin
@@ -167,7 +167,7 @@ msgstr ""
 
 #: includes/admin/PersonsListTable.php:22
 msgid "Is root"
-msgstr ""
+msgstr "Founder"
 
 #: includes/admin/PersonsListTable.php:73
 msgid "edit"
@@ -205,10 +205,6 @@ msgstr ""
 
 #: build/index.js:74
 msgid "Current founder"
-msgstr ""
-
-#: build/index.js:74
-msgid "Show founder FAB"
 msgstr ""
 
 #: build/index.js:74
@@ -260,4 +256,16 @@ msgstr ""
 
 #: includes/settings.php:130
 msgid "FamTree configuration"
+msgstr ""
+
+#: build/index.js:74
+msgid "For selectable founders you need to set the 'Founder' flag on at least one person on the FamTree settings page!"
+msgstr ""
+
+#: build/index.js:74
+msgid "Show founder menu button"
+msgstr ""
+
+#: build/index.js:74
+msgid "For multiple founders available adds a menu to change the displayed family tree on the published page."
 msgstr ""
