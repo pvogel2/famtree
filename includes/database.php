@@ -268,6 +268,10 @@ function famtree_database_create_person($person) {
     famtree_prefix_tablename('persons'), 
     famtree_person_fields($person)
   );
+  if ($result == true) {
+    return $wpdb->insert_id;
+  }
+
   return $result;
 }
 
