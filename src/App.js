@@ -58,8 +58,6 @@ function App(props) {
   useEffect(() => {
     async function switchFounder() {
       if (founder) {
-        await setFounder(founder);
-
         async function updateData(data) {
           const founders = data.persons.filter((p) => p.root).map((p) => p.id);
 
@@ -67,6 +65,9 @@ function App(props) {
             await setPersons(data.persons);
             await setRelations(data.relations);
             await setFamilies(founders);
+            if (founder >= 0 && founders.includes(founder)) {
+              await setFounder(founder);
+            };
           });
         }
 

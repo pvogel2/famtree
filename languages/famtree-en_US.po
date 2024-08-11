@@ -167,7 +167,7 @@ msgstr ""
 
 #: includes/admin/PersonsListTable.php:22
 msgid "Is root"
-msgstr ""
+msgstr "Founder"
 
 #: includes/admin/PersonsListTable.php:73
 msgid "edit"
