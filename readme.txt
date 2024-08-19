@@ -4,7 +4,7 @@ Tags:              family tree, family history, block
 Requires at least: 6.3
 Requires PHP:      7.0 
 Tested up to:      6.5.4
-Stable tag:        1.5.0
+Stable tag:        1.5.1
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,7 +52,7 @@ Currently no asked questions are known.
 
 == Changelog ==
 
-Version 1.5.0
+Version 1.5.1
 
 Initial version deployed to WordPress.
 
