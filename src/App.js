@@ -35,6 +35,7 @@ function App(props) {
     highlight,
     selection,
     treeLayout,
+    roundedBending = 1,
     instanceId ='famtree0',
   } = props;
 
@@ -119,7 +120,7 @@ function App(props) {
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
           <RegistryProvider value={ registry}>
-            <LayoutProvider treeLayout={ treeLayout }>
+            <LayoutProvider treeLayout={ treeLayout } roundedBending={ roundedBending }>
               <RenderProvider instanceId={ instanceId }>
                 <FamTreeRenderer />
                 <Intersector />

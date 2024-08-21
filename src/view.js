@@ -5,6 +5,7 @@ import App from './App';
 window.addEventListener('DOMContentLoaded', () => {
   const nodes = document.querySelectorAll('.famtree-block-container');
   nodes.forEach((root, idx) => {
+    console.log(root.dataset);
     const instanceId = `famtree${idx}`;
     root.setAttribute('id', instanceId);
 
@@ -18,6 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
       selection={ root.dataset.selectionColor }
       instanceId= { instanceId }
       treeLayout={ root.dataset.treeLayout }
+      roundedBending={ root.dataset.roundedBending }
 
     />);
   });

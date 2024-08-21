@@ -1,15 +1,18 @@
 import { Cylindrical, Vector3, Color, Line, Group, LineSegments, EllipseCurve, LineBasicMaterial, BufferGeometry, BufferAttribute } from 'three';
 
-const NODE_DIST = Math.PI * 0.25; // radian
-const NODE_SIZE = Math.PI * 0.25; // radian
 const GEN_DIST = 6;
 const CHILD_LINE_BASE = 4;
-const RADIUS = 5;
-const THETA_OFFSET = Math.PI * -0.5;
+const BASE_RADIUS = 5;
+let RADIUS = BASE_RADIUS;
+const NODE_DIST_BASE = Math.PI * 0.25; // radian
+const NODE_SIZE_BASE = Math.PI * 0.25; // radian
+const THETA_OFFSET_BASE = Math.PI * -0.5;
+let NODE_DIST = NODE_DIST_BASE;
+let NODE_SIZE = NODE_SIZE_BASE;
+let THETA_OFFSET = THETA_OFFSET_BASE;
 
 function getEllipticCurve(start, end, color) {
   const material = new LineBasicMaterial({ color });
-
   const curve = new EllipseCurve(
     0,  0,          // ax, aY
     RADIUS, RADIUS, // xRadius, yRadius
@@ -18,7 +21,7 @@ function getEllipticCurve(start, end, color) {
     THETA_OFFSET,   // aRotation
   );
 
-  const nPoints = Math.abs(Math.ceil((end - start) / 0.25)) * 8;
+  const nPoints = Math.max(1, Math.abs(Math.ceil((end - start) / 0.25))) * 8;
 
   const points = curve.getPoints(nPoints);
   const geometry = new BufferGeometry().setFromPoints( points );
@@ -38,7 +41,13 @@ export default class Layout {
   childrenLength = 0;
 
   constructor(root) {
-    if (root) {
+    this.rTarget = new Cylindrical(RADIUS, 0, 0);
+    this.cTarget = new Cylindrical(RADIUS, 0, 0);
+    this.cSource = new Cylindrical(RADIUS, 0, 0);
+    this.offset = new Cylindrical(RADIUS, 0, 0);
+    this.currentCTarget = new Cylindrical(RADIUS, 0, 0);
+
+    if (root) {    
       const v2 = new Vector3();
       root.getWorldPosition(v2);
       const v = new Cylindrical().setFromVector3(v2);
@@ -283,4 +292,14 @@ export default class Layout {
       offsetZ: this.cTarget.y,
     };
   }
+}
+
+export function getCylindricalLayout(config = {}) {
+  const { roundedBending = 1 } = config;
+  RADIUS = BASE_RADIUS * roundedBending;
+  NODE_DIST = NODE_DIST_BASE / roundedBending;
+  NODE_SIZE = NODE_SIZE_BASE / roundedBending;
+  THETA_OFFSET = THETA_OFFSET_BASE;
+
+  return Layout;
 }

@@ -50,6 +50,10 @@
 		"treeLayout": {
 			"type": "string",
 			"default": "classic"
+		},
+		"roundedBending": {
+			"type": "number",
+			"default": 1
 		}
 	}
 }

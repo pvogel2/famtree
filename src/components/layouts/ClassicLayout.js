@@ -213,3 +213,7 @@ export default class Layout {
     };
   }
 }
+
+export function getClassicLayout(config) {
+  return Layout;
+}
