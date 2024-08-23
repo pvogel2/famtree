@@ -124,17 +124,20 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
               onChange={ ( f ) => setAttributes({ treeLayout: f }) }
               options={ getTreeLayoutOptions() }
             />
-             <NumberControl
+             { treeLayout === 'rounded' && <NumberControl
+              label={ __('Bending', 'famtree') }
+              labelPosition= 'side'
               isShiftStepEnabled={ true }
               onChange={ ( f ) => {
-                setAttributes({ roundedBending: Number(f) });
+                const bend = Math.max(1, Number(f));
+                setAttributes({ roundedBending: bend });
                } }
                min={ 1 }
                max={ 10 }
               step={ 1 }
               shiftStep={ 4 }
               value={ roundedBending }
-            />
+            /> }
           </PanelBody>
           <PanelColorSettings 
             title={__('Color settings', 'famtree')}

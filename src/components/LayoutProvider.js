@@ -1,11 +1,11 @@
 import LayoutContext from './LayoutContext.js';
-import ClassicLayout, { getClassicLayout } from './layouts/ClassicLayout';
-import CylinderLayout, { getCylindricalLayout } from './layouts/CylinderLayout';
+import { getClassicLayout } from './layouts/ClassicLayout';
+import { getCylindricalLayout } from './layouts/cylinder/TreeLayout';
 
 function LayoutProvider(props) {
   const { treeLayout = 'classic', roundedBending, children } = props;
 
-  const Layout = treeLayout !== 'classic' ? getCylindricalLayout({ roundedBending }) : getClassicLayout();
+  const Layout = treeLayout !== 'classic' ? getCylindricalLayout({ bending: roundedBending }) : getClassicLayout();
 
   return (
     <LayoutContext.Provider value={ Layout }>

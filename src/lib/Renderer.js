@@ -58,11 +58,21 @@ export class Renderer {
       return;
     }
     this.three.scene = new Scene();
-    this._calcDimensions();
+
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === this.parent) {
+          this._calcOffset();
+          this._calcDimensions(entry.contentRect);
+        }
+      }
+    });
+
+    this.resizeObserver.observe(this.parent);
 
     // setup the used three renderer
     this.three.renderer = new WebGLRenderer({antialias: true});
-    this.three.renderer.setSize( this.width, this.height );
+    this.three.renderer.setSize(this.width, this.height);
 
 
     if (config.cameraType === 'orhtogonal') {
@@ -115,21 +125,19 @@ export class Renderer {
       this.onContainerMousemove(event);
     }.bind(this));
 
-    window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
+    window.addEventListener( 'resize', this._calcOffset.bind(this), false );
     window.addEventListener( 'keydown', this.onKeydown.bind(this), false );
   }
 
-  _calcDimensions() {
+  _calcOffset() {
     const rect = this.parent.getBoundingClientRect();
-
-    this.width = rect.width;
-    this.height = rect.height;
     this.left = rect.left;
     this.top = rect.top;
   }
 
-  onWindowResize() {
-    this._calcDimensions();
+  _calcDimensions(dimensions) {
+    this.width = dimensions.width;
+    this.height = dimensions.height;
     this.three.renderer.setSize( this.width, this.height );
     this.three.camera.aspect = this.width / this.height;
     this.three.camera.updateProjectionMatrix();
@@ -212,11 +220,9 @@ export class Renderer {
   }
 
   _setIntersection(event){
-    this._calcDimensions();
-
+    this._calcOffset();
     this.mouse.x = ( (event.clientX - this.left) / this.width ) * 2 - 1;
     this.mouse.y = - ( (event.clientY - this.top) / this.height ) * 2 + 1;
-    // console.log(event.clientX, event.clientY, scrollLeft, scrollTop, this.mouse.x, this.mouse.y);
 
     this.three.raycaster.setFromCamera( this.mouse, this.three.camera );
 

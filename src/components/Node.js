@@ -130,7 +130,8 @@ function Node(props) {
 
   // calculate overall node size
   useEffect(() => {
-    const layout = new Layout();
+    if (!root) return;
+    const layout = Layout.getNodeLayout(root);
 
     relations.forEach((r) => {
       const children = findItems(r.children, persons);
@@ -142,7 +143,7 @@ function Node(props) {
     if (totalSize !== newTotalSize) {
       setTotalSize(newTotalSize);
     }
-  }, [relations, sizes, totalSize, setTotalSize, Layout]);
+  }, [relations, sizes, totalSize, setTotalSize, Layout, root]);
 
   // send updated node size to parent
   useEffect(() => {
@@ -179,7 +180,7 @@ function Node(props) {
     let leftPartnerId = person.id;
     let rightPartnerId = null;
 
-    const layout = new Layout(root);
+    const layout = Layout.getNodeLayout(root);
 
     return relations.map((r, idx) => {
       const partner = findPartner(r, person, persons);

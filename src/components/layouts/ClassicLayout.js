@@ -7,7 +7,9 @@ const GEN_DIST = 6;
 
 const CAMERA_OFFSET = new Vector3(14, 0, 0);
 
-export default class Layout {
+export function getClassicLayout(config) {
+
+  return class Layout {
   rTarget = new Vector3();
   cTarget = new Vector3();
   cSource = new Vector3();
@@ -212,8 +214,5 @@ export default class Layout {
       offsetZ: this.cTarget.z,
     };
   }
-}
-
-export function getClassicLayout(config) {
-  return Layout;
+ }
 }
