@@ -82,6 +82,7 @@ export default class FamtreeClient {
 
   createPerson(data) {
     const nonce = this.nonces.person();
+    delete data.id;
     return this.restClient.post('/person/', nonce, data);
   }
 
