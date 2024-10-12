@@ -20,7 +20,7 @@ describe('The Gedcom Parser', () => {
       expect(json).toBeDefined();
     });
 
-    it('returns a head object', () => {
+    it.only('returns a head object', () => {
       const gp = new GedcomParser();
       const json = gp.parse(RAW);
 
@@ -52,13 +52,22 @@ describe('The Gedcom Parser', () => {
         expect(json.individuals).toHaveLength(3);
       });
   
-      it('individual contain fields', () => {
+      it('individual contains name and surname', () => {
         const gp = new GedcomParser();
         const json = gp.parse(RAW);
   
         const indiv = json.individuals[0];
   
         expect(indiv).toEqual(expect.objectContaining({ id: expect.any(String), name: 'Robert Eugene /Williams/', surn: 'Williams' }));
+      });
+
+      it('individual contains birthday', () => {
+        const gp = new GedcomParser();
+        const json = gp.parse(RAW);
+  
+        const indiv = json.individuals[0];
+  
+        expect(indiv).toEqual(expect.objectContaining({ id: expect.any(String), birth: expect.anything() }));
       });
     });
 

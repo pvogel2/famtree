@@ -28,8 +28,8 @@ export default class GedcomImporter {
         fr.addEventListener('load', () => {
           const gc = this.parser.parse(fr.result);
           const mpr = new Mapper(gc);
-          result.persons = mpr.persons();
-          result.relations = mpr.relations();
+          result.persons = mpr.getPersons();
+          result.relations = mpr.getRelations();
           resolve(result);
         });
 
