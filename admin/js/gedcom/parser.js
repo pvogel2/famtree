@@ -33,7 +33,8 @@ export default class GedcomParser {
     const tokens = [];
 
     input.split(/[\r\n]+/).forEach((line) => {
-      const match = line.match(re);
+      const match = line.trim().match(re);
+
       if (match) {
         tokens.push({
           tag: match.groups.tag,
@@ -62,104 +63,12 @@ export default class GedcomParser {
       const node = tokens.shift();
       parents[node.level] = node;
       if (node.level > 0) {
-        // node.parent = parents[node.level - 1];
-        // node.parent.children.push(node);
         parents[node.level - 1].children.push(node);
       } else {
-        // node.parent = null;
         tree.children.push(node);
       }
     } while (tokens.length > 0);
 
-    // console.log(tree);
     return tree;
-  }
-
-  /**
-   * @param {*} r 
-   * required for LINEAGE-LINKED
-   * requires SOUR, DEST, SUBM, GEDC, CHAR
-   */
-  head(r) { // required
-    if (r.current.level === 0) {
-      r.head = {};
-    }
-    r.current.target = r.head;
-  }
-
-  trlr(r) { // required
-    if (r.current.level === 0) {
-      r.trlr = {};
-    }
-    r.current.target = r.head;
-  }
-
-  indi(r) {
-    const indi = { id: r.current.id };
-    if (r.current.level === 0) {
-      r.individuals.push(indi);
-    }
-    r.current.target = indi;
-  }
-
-  /**
-   * @param {*} r
-   * requires VERS, FORM
-   */
-  gedc(r) {
-    const target = {};
-    r.current.target[TAGS.GEDC] = target;
-    r.current.target = target;
-  }
-
-  version(r) {
-    this.addValue(r.current, TAGS.VERS);
-  }
-
-  name(r) {
-    this.addValue(r.current, TAGS.NAME);
-  }
-
-  surn(r) {
-    this.addValue(r.current, TAGS.SURN);
-  }
-
-  birth(r) {
-    // console.log(r.current.tag, r.current.value, r.current.level, r.current.target);
-  }
-
-  date(r) {
-    console.log(r.current.tag, r.current.value, r.current.level, r.current.target);
-  }
-
-  fam(r) {
-    const fam = { id: r.current.id };
-    if (r.current.level === 0) {
-      r.relations.push(fam);
-    }
-    r.current.target = fam;
-  }
-
-  wife(r) {
-    this.addValue(r.current, TAGS.WIFE);
-  }
-
-  husb(r) {
-    this.addValue(r.current, TAGS.HUSB);
-  }
-
-  chil(r) {
-    this.addValue(r.current, TAGS.CHIL);
-  }
-
-  /**
-   * @param {*} r
-   * requires value 'LINEAGE-LINKED'
-   */
-  form(r) {
-    this.addValue(r.current, TAGS.FORM);
-  }
-  addValue(c, tg) {
-    c.target[tg] = c.value;
   }
 }
