@@ -108,10 +108,37 @@ describe('The Gedcom Mapper', () => {
       ]));
     });
 
-    it('set idMap correctly', () => {
-      const mpr = new GedcomMapper(json);
-  
-      expect(mpr.idMap).toEqual(expect.objectContaining({'@I1@': -1, '@I2@': -2, '@I3@': -3}));
+    it('person seprates surname from name correctly', () => {
+      const raw = `
+        0 @I1@ INDI
+        1 NAME Robert Eugene /Williams/
+        2 SURN Williams
+      `;
+      const tree = gp.parse(raw);
+
+      const mpr = new GedcomMapper(tree);
+      const ps = mpr.getPersons();
+      
+      const p = ps.filter((e) => e.id === -1).pop();
+        
+      expect(p.firstName).toEqual('Robert Eugene');
+      expect(p.lastName).toEqual('Williams');
+    });
+
+    it('person removes nicknames correctly', () => {
+      const raw = `
+        0 @I1@ INDI
+        1 NAME Robert Eugene "Eugy" /Williams/
+        2 SURN Williams
+      `;
+      const tree = gp.parse(raw);
+      const mpr = new GedcomMapper(tree);
+      const ps = mpr.getPersons();
+      
+      const p = ps.filter((e) => e.id === -1).pop();
+        
+      expect(p.firstName).toEqual('Robert Eugene');
+      expect(p.lastName).toEqual('Williams');
     });
   });
 
