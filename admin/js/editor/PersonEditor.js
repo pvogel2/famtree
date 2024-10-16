@@ -197,8 +197,6 @@ export default class PersonEditor {
       this.personForm.rSelect.setLast();
 
       this.personForm.enableAddChild(true);
-
-      Relation.add(rl.serialize());
     }
 
     getModifiedRelations() {
