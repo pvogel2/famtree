@@ -142,6 +142,11 @@ export default class GedcomMapper {
     return null;
   }
 
+  #sanitizeName(name = '') {
+    // the name part inside / chars signals the surname
+    return (name.replace(/\/.*\//g, '').replace(/".*"/g, '').trim() || '');
+  }
+
   #persons() {
     const ps = [];
     let id = -1;
@@ -150,7 +155,7 @@ export default class GedcomMapper {
       const config = {
         id: id--,
         lastName: indi.surn || '',
-        firstName: indi.name.replace(/\/.*\//g, '').replace(/".*"/g, '').trim() || '',
+        firstName: this.#sanitizeName(indi.name),
         birthday: this.#parseDate(indi.birthday),
         deathday: this.#parseDate(indi.deathday),
       };

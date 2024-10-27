@@ -105,6 +105,11 @@ export default class FamtreeClient {
     return this.restClient.post('/relation/', nonce, data);
   }
 
+  createRelations(data) {
+    const nonce = this.nonces.person();
+    return this.restClient.post('/relations/', nonce, { data });
+  }
+
   updateRelation(id, data) {
     const nonce = this.nonces.person();
     return this.restClient.post(`/relation/${id}`, nonce, data);

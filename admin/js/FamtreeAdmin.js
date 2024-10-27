@@ -59,12 +59,13 @@ export default class Famtree {
   }
 
   /**
-   * Saves all modified relations.
+   * Saves relations.
+   * @param rls [Relation] A list of relations to save.
    * @returns [Promise]
    */
-  saveRelations() {
+  saveRelations(rls) {
     const ps = [];
-    const rls = this.persEditor.getModifiedRelations();
+    const newRls = [];
 
     rls.forEach((rl) => {
       if (rl.isObsolete()) {
@@ -80,11 +81,16 @@ export default class Famtree {
 
       if (rl.isNew()) {
         delete data.id;
-        ps.push(this.client.createRelation(data));
+        newRls.push(data);
       } else {
         ps.push(this.client.updateRelation(rl.id, data));
       }
     });
+
+    if (newRls.length) {
+      const nps = this.client.createRelations(newRls);
+      ps = ps.concat(nps);
+    }
 
     return ps;
   }
@@ -96,37 +102,6 @@ export default class Famtree {
   saveModifiedRelations() {
     const rls = this.persEditor.getModifiedRelations();
     this.saveRelations(rls);
-  }
-
-  /**
-   * Saves relations.
-   * @param rls [Relation] A list of relations to save.
-   * @returns [Promise]
-   */
-  saveRelations(rls) {
-    const ps = [];
-
-    rls.forEach((rl) => {
-      if (rl.isObsolete()) {
-        return;
-      }
-      
-      if (rl.deleted) {
-        ps.push(this.client.deleteRelation(rl.id));
-        return;
-      }
-
-      const data = rl.serialize();
-
-      if (rl.isNew()) {
-        delete data.id;
-        ps.push(this.client.createRelation(data));
-      } else {
-        ps.push(this.client.updateRelation(rl.id, data));
-      }
-    });
-
-    return ps;
   }
 
   loadFamilies() {

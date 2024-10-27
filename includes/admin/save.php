@@ -20,34 +20,40 @@ function famtree_update_family_root(WP_REST_Request $req = null) {
 
 // RELATION
 
-function famtree_sanitize_relation($flag) {
+function famtree_sanitize_relation($data) {
   $relationArgs = array(
-    'id' => FILTER_VALIDATE_INT,
-    'type' => FILTER_SANITIZE_STRING,
-    'start' => FILTER_SANITIZE_STRING,
-    'end' => FILTER_SANITIZE_STRING,
-    'children' => array(
-      'filter' => FILTER_VALIDATE_INT,
-      'flags'  => FILTER_REQUIRE_ARRAY,
+      'id' => FILTER_VALIDATE_INT,
+      'type' => FILTER_SANITIZE_STRING,
+      'start' => FILTER_SANITIZE_STRING,
+      'end' => FILTER_SANITIZE_STRING,
+      'children' => array(
+        'filter' => FILTER_VALIDATE_INT,
+        'flags'  => FILTER_REQUIRE_ARRAY,
+        ),
+      'members' => array(
+        'filter' => FILTER_VALIDATE_INT,
+        'flags'  => FILTER_REQUIRE_ARRAY,
       ),
-    'members' => array(
-      'filter' => FILTER_VALIDATE_INT,
-      'flags'  => FILTER_REQUIRE_ARRAY,
-    ),
   );
-  $relation = filter_input_array($flag, $relationArgs);
+
+  $relation = filter_var_array($data, $relationArgs);
+
   if (empty($relation['type'])) {
     $relation['type'] = null;
   };
+
   if (empty($relation['start'])) {
     $relation['start'] = null;
   };
+
   if (empty($relation['end'])) {
     $relation['end'] = null;
   };
+
   if (!is_array($relation['children'])) {
     $relation['children'] = [];
   };
+
   if (!is_array($relation['members'])) {
     $relation['members'] = [];
   };
@@ -58,13 +64,32 @@ function famtree_sanitize_relation($flag) {
 function famtree_save_relation() {
   check_admin_referer('edit-person-nonce', 'edit-person-nonce');
 
-  $relation = famtree_sanitize_relation(INPUT_POST);
+  $relation = famtree_sanitize_relation($_POST);
 
   if (empty($relation['id'])) {
     return famtree_database_create_relation($relation);
   } else {
     return famtree_database_update_relation($relation);
   }
+}
+
+function famtree_save_relations() {
+  check_admin_referer('edit-person-nonce', 'edit-person-nonce');
+
+  $results = [];
+  $raws = array_values($_POST['data']);
+
+  foreach ($raws as &$raw) {
+    $relation = famtree_sanitize_relation($raw);
+
+    if (empty($relation['id'])) {
+      array_push($results, famtree_database_create_relation($relation));
+    } else {
+      array_push(famtree_database_update_relation($relation));
+    }
+  }
+
+  return $results;
 }
 
 function famtree_delete_relation(WP_REST_Request $req = null) {

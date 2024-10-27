@@ -76,6 +76,12 @@ function famtree_rest_register_routes() {
     'permission_callback' => 'famtree_rest_permission_write',
   ));
 
+  register_rest_route( $namespace, '/relations/', array(
+    'methods' => WP_REST_Server::CREATABLE,
+    'callback' => 'famtree_save_relations',
+    'permission_callback' => 'famtree_rest_permission_write',
+  ));
+
   register_rest_route( $namespace, '/relation/(?P<id>[\w%]+)', array(
     'methods' => WP_REST_Server::EDITABLE,
     'callback' => 'famtree_save_relation',
