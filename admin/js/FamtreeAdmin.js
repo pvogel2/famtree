@@ -287,14 +287,12 @@ export default class Famtree {
         }
       } while (persons.length);
 
-      console.log(idMap);
-
       let newRelId = 0;
       const rlsToSave = [];
 
       do {
         const r = relations.shift().serialize();
-        console.log('imported relation:', r);
+
         const known = Relation.findByMembers(r.members);
 
         // for now only import unknown relation
@@ -317,13 +315,10 @@ export default class Famtree {
 
           if (r.members.length > 1) {
             rlsToSave.push(new Relation(r));
-            // const result = await this.saveRelations(p); // TODO react on error
           }
-
-          console.log('mapped relation:', r);
         }
       } while (relations.length);
-      console.log('result:', rlsToSave);
+
       await this.saveRelations(rlsToSave);
       this.message.success('Import finished');
     } catch(err) {

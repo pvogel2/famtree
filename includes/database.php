@@ -309,6 +309,11 @@ function famtree_database_create_relation($relation) {
     famtree_prefix_tablename('relations'),
     famtree_relation_fields($relation),
   );
+
+  if ($result == true) {
+    return $wpdb->insert_id;
+  }
+
   return $result;
 }
 
