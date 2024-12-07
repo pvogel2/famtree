@@ -152,12 +152,14 @@ export default class GedcomMapper {
     let id = -1;
 
     this.result.individuals.forEach((indi) => {
+      const tmpId = id--;
       const config = {
-        id: id--,
+        id: tmpId,
         lastName: indi.surn || '',
         firstName: this.#sanitizeName(indi.name),
         birthday: this.#parseDate(indi.birthday),
         deathday: this.#parseDate(indi.deathday),
+        source: tmpId,
       };
 
       this.idMap[indi.id] = config.id;

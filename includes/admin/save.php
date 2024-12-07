@@ -108,7 +108,7 @@ function famtree_delete_relation(WP_REST_Request $req = null) {
 
 // PERSON
 
-function famtree_sanitize_person($flag) {
+function famtree_sanitize_person($data) {
   $personArgs = array(
     'id' => FILTER_VALIDATE_INT,
     'firstName' => FILTER_SANITIZE_STRING,
@@ -120,7 +120,7 @@ function famtree_sanitize_person($flag) {
     'portraitId' => FILTER_VALIDATE_INT,
   );
 
-  $person = filter_input_array($flag, $personArgs);
+  $person = filter_var_array($data, $personArgs);
 
   if (empty($person['birthday'])) {
     $person['birthday'] = null;
@@ -135,13 +135,32 @@ function famtree_sanitize_person($flag) {
 function famtree_save_person() {
   check_admin_referer('edit-person-nonce', 'edit-person-nonce');
 
-  $person = famtree_sanitize_person(INPUT_POST);
+  $person = famtree_sanitize_person($_POST);
 
   if (empty($person['id'])) {
     return famtree_database_create_person($person);
   } else {
     return famtree_database_update_person($person);
   }
+}
+
+function famtree_save_persons() {
+  check_admin_referer('edit-person-nonce', 'edit-person-nonce');
+
+  $results = [];
+  $raws = array_values($_POST['data']);
+
+  foreach ($raws as &$raw) {
+    $person = famtree_sanitize_person($raw);
+
+    if (empty($person['id'])) {
+      array_push($results, famtree_database_create_person($person));
+    } else {
+      array_push(famtree_database_update_person($person));
+    }
+  }
+
+  return $results;
 }
 
 function famtree_delete_person(WP_REST_Request $req = null) {

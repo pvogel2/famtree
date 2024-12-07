@@ -1,4 +1,5 @@
 const REST_PREFIX = 'famtree/v1';
+const MAX_SAVE_QUEUE = 3;
 
 const getRestClient = (wp) => ({
   wp,
@@ -62,6 +63,7 @@ export default class FamtreeClient {
   constructor(wp, nonces = {}) {
     this.restClient = getRestClient(wp);
     this.nonces = { ...nonces };
+    this.saveQueue = [];
     
   }
   /**
@@ -78,6 +80,37 @@ export default class FamtreeClient {
     } else {
       return this.createPerson(data);
     }
+  }
+
+  addToQueue(data) {
+    const p = new Promise((resolve, reject) => {
+      this.saveQueue.push({
+        data,
+        resolve,
+        reject,
+      });
+    });
+    this.checkQueue();
+    return p;
+  }
+
+  checkQueue() {
+    if (this.saveQueue.length >= MAX_SAVE_QUEUE) {
+      const nonce = this.nonces.person();
+      const toSave = this.saveQueue.concat([]);
+      this.saveQueue = [];
+      const response = this.restClient.post('/persons/', nonce, { data: toSave.map((d) => d.data) });
+      response.then((values) => {
+        toSave.forEach((ts, idx) => {
+          ts.data.id = values[idx];
+          ts.resolve(ts.data);
+        });
+      });
+    }
+  }
+
+  savePerson2(data) {
+    return this.addToQueue(data);
   }
 
   createPerson(data) {

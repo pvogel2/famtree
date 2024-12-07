@@ -89,7 +89,7 @@ export default class Famtree {
 
     if (newRls.length) {
       const nps = this.client.createRelations(newRls);
-      ps = ps.concat(nps);
+      return ps.concat(nps);
     }
 
     return ps;
@@ -112,6 +112,18 @@ export default class Famtree {
     return this.client.loadPersonMetadata(id);
   }
 
+    /**
+   * Save person object queued to the database.
+   * @param {Person} person 
+   * @returns Promise
+   */
+  
+  savePersons(person) {
+    person.root = this.personTable.isFounder(person.id);
+    // return this.savePerson(person);
+    return this.client.savePerson2(person.serialize());
+  }
+  
   /**
    * Save the person object to the database.
    * @param {Person} person 
@@ -249,13 +261,44 @@ export default class Famtree {
       const { persons, relations } = result;
 
       const idMap = {};
+      const ps = [];
 
       do {
         const p = persons.shift();
 
-        idMap[p.id] = null;
+        idMap[p.source] = null;
 
         const known = PersonList.findByName(p.name);
+
+        const onResult = (r) => {
+          if (Person.isValidId(r)) {
+            idMap[p.source] = r;
+          } else { // TODO react on error
+            console.log('warning, skipping person', p);
+          }
+        }
+
+        if (!known) {
+          const prm = this.savePersons(new Person({ ...(p.serialize()), id: null }));
+          prm.then(onResult);
+          ps.push(prm);
+        } else {
+          if (action === UIImportDialog.RETURN_CODE_ADD) {
+            const prm = this.savePersons(new Person({ ...(p.serialize()), id: null }));
+            prm.then(onResult);
+            ps.push(prm);
+          }
+          if (action === UIImportDialog.RETURN_CODE_REPLACE) {
+            const prm = this.savePersons(new Person({ ...(p.serialize()), id: known.id }));
+            prm.then(onResult);
+            ps.push(prm);
+          }
+          if (action === UIImportDialog.RETURN_CODE_SKIP) {
+            idMap[p.id] = known.id;
+          }
+        }
+
+        /*
         if (!known) {
           const result = await this.savePerson(new Person({ ...(p.serialize()), id: null })); // TODO react on error
           if (Person.isValidId(result)) {
@@ -272,7 +315,7 @@ export default class Famtree {
             } else { // TODO react on error
               console.log('warning, skipping person', p);
             }
-            }
+          }
           if (action === UIImportDialog.RETURN_CODE_REPLACE) {
             const result = await this.savePerson(new Person({ ...(p.serialize()), id: known.id })); // TODO react on error
             if (Person.isValidId(result)) {
@@ -284,8 +327,11 @@ export default class Famtree {
           if (action === UIImportDialog.RETURN_CODE_SKIP) {
             idMap[p.id] = known.id;
           }
-        }
+        } */
       } while (persons.length);
+
+      const results = await Promise.allSettled(ps);
+      console.log(results);
 
       let newRelId = 0;
       const rlsToSave = [];
