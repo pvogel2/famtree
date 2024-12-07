@@ -271,8 +271,8 @@ export default class Famtree {
         const known = PersonList.findByName(p.name);
 
         const onResult = (r) => {
-          if (Person.isValidId(r)) {
-            idMap[p.source] = r;
+          if (Person.isValidId(r?.id)) {
+            idMap[p.source] = r.id;
           } else { // TODO react on error
             console.log('warning, skipping person', p);
           }
