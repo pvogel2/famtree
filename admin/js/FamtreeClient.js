@@ -1,5 +1,5 @@
 const REST_PREFIX = 'famtree/v1';
-const MAX_SAVE_QUEUE = 3;
+const MAX_SAVE_QUEUE = 20;
 
 const getRestClient = (wp) => ({
   wp,
@@ -94,8 +94,8 @@ export default class FamtreeClient {
     return p;
   }
 
-  checkQueue() {
-    if (this.saveQueue.length >= MAX_SAVE_QUEUE) {
+  checkQueue(force) {
+    if (this.saveQueue.length >= MAX_SAVE_QUEUE || (this.saveQueue.length > 0 && force === true)) {
       const nonce = this.nonces.person();
       const toSave = this.saveQueue.concat([]);
       this.saveQueue = [];

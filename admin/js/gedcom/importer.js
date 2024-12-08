@@ -5,6 +5,10 @@ import Mapper from './mapper.js';
 const ELEMENT_ID = 'famtree_gedcom_import';
 
 export default class GedcomImporter {
+  static MODE_SKIP = 'skip';
+  static MODE_ADD = 'add';
+  static MODE_REPLACE = 'replace';
+
   constructor() {
     this.parser = new Parser();
     this.modal = new UIImportDialog();
@@ -45,6 +49,9 @@ export default class GedcomImporter {
   }
 
   async comparePersons(knownP, newP) {
+    if (!knownP) {
+      return GedcomImporter.MODE_ADD;
+    }
     this.modal.setContent(knownP, newP);
     return this.modal.open();
   }

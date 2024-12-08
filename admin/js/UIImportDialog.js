@@ -1,13 +1,10 @@
 import UIModalDialog from './UIModalDialog.js';
+import GedcomImporter from './gedcom/importer.js';
 
 
 const ELEMENT_ID = 'famtree-import-dialog';
 
 export default class UIImportDialog extends UIModalDialog {
-  static RETURN_CODE_SKIP = 'skip';
-  static RETURN_CODE_ADD = 'add';
-  static RETURN_CODE_REPLACE = 'replace';
-
   constructor() {
     super(ELEMENT_ID);
   }
@@ -36,15 +33,15 @@ export default class UIImportDialog extends UIModalDialog {
   #setButtons(resolve) {
     return {
       'Skip': () => {
-        resolve(UIImportDialog.RETURN_CODE_SKIP);
+        resolve(GedcomImporter.MODE_SKIP);
         this.element.dialog('close');
       },
       'Add' : () => {
-        resolve(UIImportDialog.RETURN_CODE_ADD);
+        resolve(GedcomImporter.MODE_ADD);
         this.element.dialog('close');
       },
       'Replace': () => {
-        resolve(UIImportDialog.RETURN_CODE_REPLACE);
+        resolve(GedcomImporter.MODE_REPLACE);
         this.element.dialog('close');
       },
       // currently not supported

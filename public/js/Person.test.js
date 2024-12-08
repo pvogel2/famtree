@@ -252,3 +252,18 @@ describe('hasMinimumData', () => {
     expect(person.hasMinimumData()).toBe(value);
   });
 });
+
+describe('id', () => {
+  it('can be set', () => {
+    const node = new Person();
+    node.id = 12;
+    expect(node.id).toBe(12);
+  });
+
+  it('can be unset', () => {
+    const node = new Person({ id: 12 });
+    node.id = null;
+    expect(node.id).toBe(null);
+  });
+});
+

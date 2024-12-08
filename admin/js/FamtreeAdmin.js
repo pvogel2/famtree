@@ -257,8 +257,7 @@ export default class Famtree {
 
   async importGedcom() {
     try {
-      const result = await this.gedcomImporter.import();
-      const { persons, relations } = result;
+      const { persons, relations } = await this.gedcomImporter.import();
 
       const idMap = {};
       const ps = [];
@@ -269,69 +268,34 @@ export default class Famtree {
         idMap[p.source] = null;
 
         const known = PersonList.findByName(p.name);
+        const action = await this.gedcomImporter.comparePersons(known, p);
 
-        const onResult = (r) => {
+        p.id = null;
+
+        if (action === GedcomImporter.MODE_SKIP) {
+          idMap[p.id] = known.id;
+          continue;
+        }
+
+        if (action === GedcomImporter.MODE_REPLACE) {
+          p.id = known.id;
+        }
+
+        const prm = this.savePersons(p); // ADD | REPLACE
+        prm.then((r) => {
           if (Person.isValidId(r?.id)) {
             idMap[p.source] = r.id;
-          } else { // TODO react on error
+          } else { // TODO: react on error
             console.log('warning, skipping person', p);
           }
-        }
+        });
+        ps.push(prm);
 
-        if (!known) {
-          const prm = this.savePersons(new Person({ ...(p.serialize()), id: null }));
-          prm.then(onResult);
-          ps.push(prm);
-        } else {
-          if (action === UIImportDialog.RETURN_CODE_ADD) {
-            const prm = this.savePersons(new Person({ ...(p.serialize()), id: null }));
-            prm.then(onResult);
-            ps.push(prm);
-          }
-          if (action === UIImportDialog.RETURN_CODE_REPLACE) {
-            const prm = this.savePersons(new Person({ ...(p.serialize()), id: known.id }));
-            prm.then(onResult);
-            ps.push(prm);
-          }
-          if (action === UIImportDialog.RETURN_CODE_SKIP) {
-            idMap[p.id] = known.id;
-          }
-        }
-
-        /*
-        if (!known) {
-          const result = await this.savePerson(new Person({ ...(p.serialize()), id: null })); // TODO react on error
-          if (Person.isValidId(result)) {
-            idMap[p.id] = result;
-          } else { // TODO react on error
-            console.log('warning, skipping person', p);
-          }
-        } else {
-          const action = await this.gedcomImporter.comparePersons(known, p);
-          if (action === UIImportDialog.RETURN_CODE_ADD) {
-            const result = await this.savePerson(new Person({ ...(p.serialize()), id: null })); // TODO react on error
-            if (Person.isValidId(result)) {
-              idMap[p.id] = result;
-            } else { // TODO react on error
-              console.log('warning, skipping person', p);
-            }
-          }
-          if (action === UIImportDialog.RETURN_CODE_REPLACE) {
-            const result = await this.savePerson(new Person({ ...(p.serialize()), id: known.id })); // TODO react on error
-            if (Person.isValidId(result)) {
-              idMap[p.id] = result;
-            } else { // TODO react on error
-              console.log('warning, skipping person', p);
-            }
-            }
-          if (action === UIImportDialog.RETURN_CODE_SKIP) {
-            idMap[p.id] = known.id;
-          }
-        } */
       } while (persons.length);
 
-      const results = await Promise.allSettled(ps);
-      console.log(results);
+      this.client.checkQueue(true);
+
+      await Promise.allSettled(ps);
 
       let newRelId = 0;
       const rlsToSave = [];
