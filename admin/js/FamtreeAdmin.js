@@ -7,7 +7,6 @@ import UIMessage from './UIMessage.js';
 import PersonTable from './PersonTable.js';
 import FamtreeClient from './FamtreeClient.js';
 import GedcomImporter from './gedcom/importer.js';
-import UIImportDialog from './UIImportDialog.js';
 
 
 export default class Famtree {
@@ -120,7 +119,6 @@ export default class Famtree {
   
   savePersons(person) {
     person.root = this.personTable.isFounder(person.id);
-    // return this.savePerson(person);
     return this.client.savePerson2(person.serialize());
   }
   
@@ -262,9 +260,7 @@ export default class Famtree {
       const idMap = {};
       const ps = [];
 
-      do {
-        const p = persons.shift();
-
+      for (const p of persons) {
         idMap[p.source] = null;
 
         const known = PersonList.findByName(p.name);
@@ -291,7 +287,7 @@ export default class Famtree {
         });
         ps.push(prm);
 
-      } while (persons.length);
+      };
 
       this.client.checkQueue(true);
 
@@ -300,8 +296,8 @@ export default class Famtree {
       let newRelId = 0;
       const rlsToSave = [];
 
-      do {
-        const r = relations.shift().serialize();
+      for (const r of relations) {
+        // const r = relations.shift().serialize();
 
         const known = Relation.findByMembers(r.members);
 
@@ -324,10 +320,10 @@ export default class Famtree {
           }
 
           if (r.members.length > 1) {
-            rlsToSave.push(new Relation(r));
+            rlsToSave.push(new Relation(r.serialize()));
           }
         }
-      } while (relations.length);
+      }// while (relations.length);
 
       await this.saveRelations(rlsToSave);
       this.message.success('Import finished');

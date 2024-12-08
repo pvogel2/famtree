@@ -89,6 +89,11 @@ export default class Relation {
     this.modified = true;
   }
 
+  set members(ms) {
+    this._members = ms.splice(0);
+    this.modified = true;
+  }
+
   get deleted() {
     return this._deleted;
   }

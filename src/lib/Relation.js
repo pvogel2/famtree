@@ -89,6 +89,10 @@ export default class Relation {
     return prevItem(this._members, id);
   }
 
+  setMembers(ids) {
+    this._members = getInitializedArray(ids);
+  }
+
   get children() {
     return this._children.slice();
   }
@@ -111,6 +115,10 @@ export default class Relation {
 
   prevChild(id) {
     return prevItem(this._children, id);
+  }
+
+  setChildren(ids) {
+    this._children = getInitializedArray(ids);
   }
 
   get type() {

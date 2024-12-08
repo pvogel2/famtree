@@ -156,7 +156,7 @@ function famtree_save_persons() {
     if (empty($person['id'])) {
       array_push($results, famtree_database_create_person($person));
     } else {
-      array_push(famtree_database_update_person($person));
+      array_push($results, famtree_database_update_person($person));
     }
   }
 

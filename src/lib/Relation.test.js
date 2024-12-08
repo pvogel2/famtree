@@ -47,6 +47,7 @@ const lists = [
     has: 'hasMembers',
     next: 'nextMember',
     prev: 'prevMember',
+    set: 'setMembers',
   },
   {
     key: 'children',
@@ -55,6 +56,7 @@ const lists = [
     has: 'hasChildren',
     next: 'nextChild',
     prev: 'prevChild',
+    set: 'setChildren',
   },
 ];
 
@@ -181,6 +183,23 @@ describe.each(lists)('for list property $key', (lp) => {
       const firstId = items[0];
       const pId = rl[lp.prev](firstId);
       expect(pId).toBe(null);
+    });
+  });
+
+  describe(`${lp.set}`, () => {  
+    const items = [10, 4];
+    const replaceItems = [11, 5];
+
+    it('set empty for no data', () => {
+      const rl = new Relation({ id: 1, [lp.key]:items });
+      rl[lp.set]();
+      expect(rl[lp.key]).toHaveLength(0);
+    });
+
+    it('replaces items with new array', () => {
+      const rl = new Relation({ id: 1, [lp.key]:items });
+      rl[lp.set](replaceItems);
+      expect(rl[lp.key]).toEqual(replaceItems);
     });
   });
 });
