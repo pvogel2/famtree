@@ -3,6 +3,7 @@ const CLASS_TEXT = 'famtree-message__text';
 const CLASS_HIDE = 'famtree-hidden';
 const CLASS_SUCCESS = 'notice-success';
 const CLASS_ERROR = 'notice-error';
+const CLASS_WARNING = 'notice-warning';
 
 export default class UIMessage {
   constructor() {
@@ -18,6 +19,10 @@ export default class UIMessage {
 
   error(message) {
     this.#show(message, CLASS_ERROR);
+  }
+
+  warning(message) {
+    this.#show(message, CLASS_WARNING);
   }
 
   hide() {

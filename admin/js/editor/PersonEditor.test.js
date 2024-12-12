@@ -2,7 +2,11 @@ import PersonEditor from './PersonEditor.js';
 import PersonList from '../../../public/js/PersonList.js';
 import Person from '../../../public/js/Person.js';
 import Relation from '../Relation.js';
+import UIMessage from '../UIMessage.js';
+
 import { getEditFormElements, getMetadataFormElements } from '../../../tests/utils.js';
+
+jest.mock('../UIMessage.js');
 
 function setNamePart(el, part) {
   el.value = part;
@@ -169,6 +173,54 @@ describe('The person editor', () => {
       const p = pe.getPerson();
       expect(p).toBeInstanceOf(Person);
       expect(p.hasId()).toBe(true);
+    });
+  });
+
+  describe('setPartners', () => {
+    beforeAll(() => {
+      jest.spyOn(UIMessage.prototype, 'error');
+    });
+
+    afterAll(() => {
+      UIMessage.prototype.error.mockRestore();
+    });
+
+    it('for non editing does nothing', () => {
+      const { pe, partners } = render();
+
+      pe.setPartners();
+
+      expect(partners.disabled).toBe(true);
+    });
+
+    it('configures partners of currently edited Person instance', () => {
+      const { pe, partners } = render();
+      pe.setPerson(person);
+
+      pe.setPartners();
+      const options = partners.querySelectorAll('option');
+
+      expect(partners.disabled).toBe(false);
+      expect(options).toHaveLength(1);
+    });
+
+    it('skips non existing partner', () => {
+      const { pe, partners } = render({ persons: [person] });
+      pe.setPerson(person);
+
+      pe.setPartners();
+      const options = partners.querySelectorAll('option');
+
+      expect(partners.disabled).toBe(true);
+      expect(options).toHaveLength(0);
+    });
+
+    it('triggers warning for non existing partners', () => {
+      const { pe } = render({ persons: [person] });
+      pe.setPerson(person);
+
+      expect(() => pe.setPartners()).not.toThrow();
+      expect(UIMessage.prototype.warning).toHaveBeenCalled();
     });
   });
 

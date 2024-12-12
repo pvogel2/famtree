@@ -193,6 +193,7 @@ export default class Famtree {
 
   deletePerson() {
     const person = this.persEditor.getPerson();
+    const name = person.name;
     const pId = person.id;
     if (!pId) return;
 
@@ -205,6 +206,7 @@ export default class Famtree {
 
       // remove from table
       this.personTable.removePerson(pId);
+      this.message.success(`Deleted person ${name}`);
     });
   }
 
