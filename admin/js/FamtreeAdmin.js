@@ -288,7 +288,6 @@ export default class Famtree {
           }
         });
         ps.push(prm);
-
       };
 
       this.client.checkQueue(true);
@@ -299,8 +298,6 @@ export default class Famtree {
       const rlsToSave = [];
 
       for (const r of relations) {
-        // const r = relations.shift().serialize();
-
         const known = Relation.findByMembers(r.members);
 
         // for now only import unknown relation
@@ -325,12 +322,13 @@ export default class Famtree {
             rlsToSave.push(new Relation(r.serialize()));
           }
         }
-      }// while (relations.length);
+      }
 
       await this.saveRelations(rlsToSave);
       this.message.success('Import finished');
     } catch(err) {
       console.log('Error, import faild:', err);
+      this.message.error(`Import failed with error: ${err.message}`);
     }
   }
 }

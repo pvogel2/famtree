@@ -33,7 +33,7 @@ export default class UIMessage {
 
   #show(message, css_class) {
     const m = 
-    this.element.classList.remove(CLASS_HIDE, CLASS_SUCCESS, CLASS_ERROR);
+    this.element.classList.remove(CLASS_HIDE, CLASS_SUCCESS, CLASS_ERROR, CLASS_WARNING);
     this.element.classList.add(css_class);
     const p = this.element.querySelector(`.${CLASS_TEXT}`);
     p.textContent = message;

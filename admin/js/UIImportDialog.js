@@ -18,7 +18,6 @@ export default class UIImportDialog extends UIModalDialog {
   }
 
   open() {
-    console.log('do open');
     const p = new Promise((resolve, reject) => {
       this.element.dialog('option', 'buttons', this.#setButtons(resolve));
       super.open().then((code) => {

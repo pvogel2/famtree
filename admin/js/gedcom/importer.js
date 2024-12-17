@@ -45,6 +45,7 @@ export default class GedcomImporter {
       } else {
         resolve(result);
       }
+      this.element.value = '';
     });
   }
 
