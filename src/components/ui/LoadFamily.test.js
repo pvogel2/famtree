@@ -1,12 +1,12 @@
 import { cleanup } from '@testing-library/react';
 
-import U from '../../lib/tests/utils';
+import U from '@tests/setup';
 
 import LoadFamily from './LoadFamily';
 
 jest.useFakeTimers();
 
-jest.mock('../../lib/Connect');
+jest.mock('@src/lib/Connect');
 
 afterEach(cleanup);
 

@@ -1,5 +1,5 @@
 import { fireEvent } from '@testing-library/react';
-import U from '../lib/tests/utils';
+import U from '@tests/setup';
 import KNavigation from './KeyboardNavigation';
 
 afterEach(() => {

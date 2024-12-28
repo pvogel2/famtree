@@ -1,4 +1,4 @@
-import U from '../lib/tests/utils';
+import U from '@tests/setup';
 import Placeholder from './Placeholder';
 
 

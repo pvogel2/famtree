@@ -4,7 +4,7 @@ import {
   Group,
 } from 'three';
 import { waitFor } from '@testing-library/react';
-import U from '../lib/tests/utils';
+import U from '@tests/setup';
 import Node from './Node';
 
 const nodeDist = 6;

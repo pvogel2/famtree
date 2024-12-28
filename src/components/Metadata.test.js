@@ -1,4 +1,4 @@
-import U from '../lib/tests/utils';
+import U from '@tests/setup';
 import Metadata from './Metadata';
 import { loadMetadata } from '../lib/Connect.js';
 import { act } from 'react';
@@ -13,8 +13,8 @@ async function renderWithActContext(conpoment, options) {
   return container;
 };
 
-jest.mock('./relations/MetadataRelation.js', () => jest.fn(() => <div>X</div>));
-jest.mock('../lib/Connect.js', () => {
+jest.mock('@src/components/relations/MetadataRelation.js', () => jest.fn(() => <div>X</div>));
+jest.mock('@src/lib/Connect.js', () => {
   return {
     loadMetadata: jest.fn(() => []),
   };
