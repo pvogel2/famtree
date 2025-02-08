@@ -31,7 +31,7 @@ const getRestClient = (wp) => ({
       type: 'POST',
       data,
     };
-  
+
     options.data[nonce.name] = nonce.value;
   
     return this.wp.apiRequest(options);

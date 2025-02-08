@@ -11,7 +11,8 @@ describe('The Gedcom Parser', () => {
   });
 
   it('is initialized correctly', () => {
-    expect(() => {process.nextTick
+    expect(() => {
+      process.nextTick
       new GedcomParser();
     }).not.toThrow();
   });

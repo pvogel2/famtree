@@ -266,6 +266,7 @@ export default class Famtree {
         idMap[p.source] = null;
 
         const known = PersonList.findByName(p.name);
+
         const action = await this.gedcomImporter.comparePersons(known, p);
 
         p.id = null;
