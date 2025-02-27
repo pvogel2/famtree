@@ -1,6 +1,6 @@
 import GedcomParser from './parser';
 import GedcomMapper from './mapper';
-import { RAW } from './data';
+import { RAW } from '@tests/gedcom/data';
 
 describe('The Gedcom Mapper', () => {
   it('is defined', () => {

@@ -1,5 +1,5 @@
 import GedcomParser from './parser';
-import { RAW } from './data';
+import { RAW } from '@tests/gedcom/data';
 
 describe('The Gedcom Parser', () => {
   function filterTag(node, tag) {
