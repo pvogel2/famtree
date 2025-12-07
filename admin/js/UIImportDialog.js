@@ -3,16 +3,24 @@ import GedcomImporter from './gedcom/importer.js';
 
 
 const ELEMENT_ID = 'famtree-import-dialog';
+const AUTOUPDATE_ID = 'famtree-import-dialog__autoaction';
 
 export default class UIImportDialog extends UIModalDialog {
   constructor() {
     super(ELEMENT_ID);
+    this.autoAction = false;
+    this.contentElement = this.element.find(UIModalDialog.CONTAINER_SELECTOR);
+
+    const autoUpCheckbox = this.contentElement.find(`#${AUTOUPDATE_ID}`);
+    autoUpCheckbox.on('change', (ev) => {
+      this.autoAction = ev.target.checked;
+      console.log('>>', this.autoAction);
+    });
   }
 
   setContent(knownP, newP) {
-    const elem = this.element.find(UIModalDialog.CONTAINER_SELECTOR);
-    const knownPForm = elem.find('.famtree-known-person form');
-    const newPForm = elem.find('.famtree-new-person form');
+    const knownPForm = this.contentElement.find('.famtree-known-person form');
+    const newPForm = this.contentElement.find('.famtree-new-person form');
     this.#setFields(knownPForm, knownP);
     this.#setFields(newPForm, newP);
   }
@@ -31,16 +39,20 @@ export default class UIImportDialog extends UIModalDialog {
 
   #setButtons(resolve) {
     return {
+      'Cancel': () => {
+        resolve({action: GedcomImporter.MODE_Cancel, auto: false});
+        this.element.dialog('close');
+      },
       'Skip': () => {
-        resolve(GedcomImporter.MODE_SKIP);
+        resolve({action: GedcomImporter.MODE_SKIP, auto: this.autoAction});
         this.element.dialog('close');
       },
       'Add' : () => {
-        resolve(GedcomImporter.MODE_ADD);
+        resolve({action: GedcomImporter.MODE_ADD, auto: this.autoAction});
         this.element.dialog('close');
       },
       'Replace': () => {
-        resolve(GedcomImporter.MODE_REPLACE);
+        resolve({action: GedcomImporter.MODE_REPLACE, auto: this.autoAction});
         this.element.dialog('close');
       },
       // currently not supported

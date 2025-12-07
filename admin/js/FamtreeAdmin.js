@@ -256,40 +256,80 @@ export default class Famtree {
   }
 
   async importGedcom() {
+    let doCancel = false;
     try {
       const { persons, relations } = await this.gedcomImporter.import();
 
       const idMap = {};
       const ps = [];
 
+      let autoUpdate = false;
+      let importAction = GedcomImporter.MODE_ADD;
+      let autoAction = GedcomImporter.MODE_ADD;
+
+      const stats = {
+        all: persons.length,
+        invalid: 0,
+        [GedcomImporter.MODE_SKIP]: 0,
+        [GedcomImporter.MODE_ADD]: 0,
+        [GedcomImporter.MODE_REPLACE]: 0,
+        [GedcomImporter.MODE_CANCEL]: 0,
+      };
+
       for (const p of persons) {
         idMap[p.source] = null;
 
+        if (!Person.isValidName(p.name)) {
+          stats.invalid++;
+          continue;
+        }
+
         const known = PersonList.findByName(p.name);
 
-        const action = await this.gedcomImporter.comparePersons(known, p);
+        if (autoUpdate) {
+          importAction = known ? autoAction : GedcomImporter.MODE_ADD;
+        } else {
+          const { action, auto } = await this.gedcomImporter.comparePersons(known, p);
+          autoAction = action;
+          importAction = action;
+          autoUpdate = auto;
+        }
 
         p.id = null;
 
-        if (action === GedcomImporter.MODE_SKIP) {
+        doCancel = importAction === GedcomImporter.MODE_CANCEL;
+
+        stats[importAction]++;
+
+        if (doCancel) {
+          break;
+        }
+        if (importAction === GedcomImporter.MODE_SKIP) {
           idMap[p.id] = known.id;
           continue;
         }
 
-        if (action === GedcomImporter.MODE_REPLACE) {
+        if (importAction === GedcomImporter.MODE_REPLACE) {
           p.id = known.id;
         }
 
         const prm = this.savePersons(p); // ADD | REPLACE
+
         prm.then((r) => {
           if (Person.isValidId(r?.id)) {
             idMap[p.source] = r.id;
           } else { // TODO: react on error
+            stats.invalid++;
             console.log('warning, skipping person', p);
           }
         });
         ps.push(prm);
       };
+
+      if (doCancel) {
+        this.message.warning('Import was canceled');
+        return;
+      }
 
       this.client.checkQueue(true);
 
@@ -326,7 +366,7 @@ export default class Famtree {
       }
 
       await this.saveRelations(rlsToSave);
-      this.message.success('Import finished');
+      this.message.success(`Import finished (imported:${stats.all}, added: ${stats[GedcomImporter.MODE_ADD]}, replaced: ${stats[GedcomImporter.MODE_REPLACE]}, skiped: ${stats[GedcomImporter.MODE_SKIP] + stats[GedcomImporter.MODE_CANCEL]}, invalid: ${stats.invalid}).`);
     } catch(err) {
       console.log('Error, import faild:', err);
       this.message.error(`Import failed with error: ${err.message}`);

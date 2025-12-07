@@ -261,22 +261,28 @@ function famtree_render_modal_dialog() {
 function famtree_render_import_dialog() {
   ?>
     <div id="famtree-import-dialog" class="famtree-hidden">
-      <div class="famtree-modal-dialog__content" style="display:flex;flex-direction:row;">
-        <div class="famtree-known-person">
-          <form>
-            <fieldset disabled="disabled">
-              <?php famtree_render_legend(__('Found existing person', 'famtree')) ?>
-              <?php fammtree_render_person_table() ?>
-            </fieldset>
-          </form>
+      <div class="famtree-modal-dialog__content">
+        <div style="display:flex;flex-direction:row;">  
+          <div class="famtree-known-person">
+            <form>
+              <fieldset disabled="disabled">
+                <?php famtree_render_legend(__('Found existing person', 'famtree')) ?>
+                <?php fammtree_render_person_table() ?>
+              </fieldset>
+            </form>
+          </div>
+          <div class="famtree-new-person">
+            <form>
+              <fieldset disabled="disabled">
+                <?php famtree_render_legend(__('Person for import', 'famtree')) ?>
+                <?php fammtree_render_person_table() ?>
+              </fieldset>
+            </form>
+          </div>
         </div>
-        <div class="famtree-new-person">
-        <form>
-          <fieldset disabled="disabled">
-            <?php famtree_render_legend(__('Person for import', 'famtree')) ?>
-            <?php fammtree_render_person_table() ?>
-          </fieldset>
-        </form>
+        <div>
+          <input name="famtree-import-dialog__autoaction" type="checkbox" id="famtree-import-dialog__autoaction">
+          <label for="famtree-import-dialog__autoaction">Reuse decision for all upcoming matches.</label>
         </div>
       </div>
     </div>

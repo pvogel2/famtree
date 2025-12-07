@@ -8,6 +8,7 @@ export default class GedcomImporter {
   static MODE_SKIP = 'skip';
   static MODE_ADD = 'add';
   static MODE_REPLACE = 'replace';
+  static MODE_CANCEL = 'cancel';
 
   constructor() {
     this.parser = new Parser();
@@ -51,7 +52,7 @@ export default class GedcomImporter {
 
   async comparePersons(knownP, newP) {
     if (!knownP) {
-      return GedcomImporter.MODE_ADD;
+      return { action: GedcomImporter.MODE_ADD, auto: false };
     }
     this.modal.setContent(knownP, newP);
     return this.modal.open();
