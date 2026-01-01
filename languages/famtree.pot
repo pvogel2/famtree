@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Peter Vogel
+# Copyright (C) 2026 Peter Vogel
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-19T08:04:25+02:00\n"
+"POT-Creation-Date: 2026-01-01T21:34:48+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: famtree\n"
@@ -34,143 +34,151 @@ msgstr ""
 msgid "On the published page the data of the family trees can be read without login. Usefull for trees that should be visible to the public."
 msgstr ""
 
-#: includes/admin/layout.php:126
+#: includes/admin/layout.php:132
 msgid "Attributes"
 msgstr ""
 
-#: includes/admin/layout.php:129
-#: includes/admin/PersonsListTable.php:23
-msgid "First name"
-msgstr ""
-
-#: includes/admin/layout.php:130
-#: includes/admin/PersonsListTable.php:24
-msgid "Sur names"
-msgstr ""
-
-#: includes/admin/layout.php:131
-#: includes/admin/PersonsListTable.php:25
-msgid "Last name"
-msgstr ""
-
-#: includes/admin/layout.php:132
-#: includes/admin/PersonsListTable.php:26
-msgid "Birth name"
-msgstr ""
-
-#: includes/admin/layout.php:133
-#: includes/admin/PersonsListTable.php:27
-#: build/index.js:22027
-#: build/view.js:21937
-#: build/index.js:17527
-#: build/view.js:17500
-msgid "Birthday"
-msgstr ""
-
-#: includes/admin/layout.php:134
-#: includes/admin/PersonsListTable.php:28
-#: build/index.js:22035
-#: build/view.js:21945
-#: build/index.js:17531
-#: build/view.js:17504
-msgid "Date of death"
-msgstr ""
-
-#: includes/admin/layout.php:139
+#: includes/admin/layout.php:136
 #: includes/admin/PersonsListTable.php:29
 msgid "Relations"
 msgstr ""
 
-#: includes/admin/layout.php:142
+#: includes/admin/layout.php:139
 msgid "Partners"
 msgstr ""
 
-#: includes/admin/layout.php:145
+#: includes/admin/layout.php:142
 msgid "Children"
 msgstr ""
 
-#: includes/admin/layout.php:148
+#: includes/admin/layout.php:145
 msgid "Begin"
 msgstr ""
 
-#: includes/admin/layout.php:149
+#: includes/admin/layout.php:146
 msgid "End"
 msgstr ""
 
-#: includes/admin/layout.php:154
+#: includes/admin/layout.php:151
 msgid "marriage"
 msgstr ""
 
-#: includes/admin/layout.php:155
+#: includes/admin/layout.php:152
 msgid "partnership"
 msgstr ""
 
-#: includes/admin/layout.php:157
+#: includes/admin/layout.php:154
 msgid "Kind of"
 msgstr ""
 
-#: includes/admin/layout.php:164
+#: includes/admin/layout.php:161
 msgid "Add person"
 msgstr ""
 
-#: includes/admin/layout.php:171
+#: includes/admin/layout.php:168
 msgid "As child"
 msgstr ""
 
-#: includes/admin/layout.php:174
+#: includes/admin/layout.php:171
 msgid "As partner"
 msgstr ""
 
-#: includes/admin/layout.php:182
+#: includes/admin/layout.php:179
 msgid "Portrait foto"
 msgstr ""
 
-#: includes/admin/layout.php:194
+#: includes/admin/layout.php:191
 msgid "Select image"
 msgstr ""
 
-#: includes/admin/layout.php:201
+#: includes/admin/layout.php:198
 msgid "Reset person"
 msgstr ""
 
-#: includes/admin/layout.php:202
+#: includes/admin/layout.php:199
 msgid "Remove person"
 msgstr ""
 
-#: includes/admin/layout.php:203
+#: includes/admin/layout.php:200
 msgid "Save person"
 msgstr ""
 
-#: includes/admin/layout.php:208
+#: includes/admin/layout.php:205
 msgid "Additional files"
 msgstr ""
 
-#: includes/admin/layout.php:212
+#: includes/admin/layout.php:209
 msgid "Preview"
 msgstr ""
 
-#: includes/admin/layout.php:213
+#: includes/admin/layout.php:210
 msgid "Name"
 msgstr ""
 
-#: includes/admin/layout.php:214
+#: includes/admin/layout.php:211
 msgid "Description"
 msgstr ""
 
-#: includes/admin/layout.php:219
+#: includes/admin/layout.php:216
 msgid "No files found"
 msgstr ""
 
-#: includes/admin/layout.php:233
+#: includes/admin/layout.php:230
 msgid "Add metadata"
 msgstr ""
 
-#: includes/admin/layout.php:250
+#: includes/admin/layout.php:247
 msgid "Dismiss this notice."
 msgstr ""
 
-#: includes/admin/layout.php:267
+#: includes/admin/layout.php:269
+msgid "Found existing person"
+msgstr ""
+
+#: includes/admin/layout.php:277
+msgid "Person for import"
+msgstr ""
+
+#: includes/admin/layout.php:303
 msgid "Error"
+msgstr ""
+
+#: includes/admin/layout.php:312
+#: includes/admin/PersonsListTable.php:23
+msgid "First name"
+msgstr ""
+
+#: includes/admin/layout.php:313
+#: includes/admin/PersonsListTable.php:24
+msgid "Sur names"
+msgstr ""
+
+#: includes/admin/layout.php:314
+#: includes/admin/PersonsListTable.php:25
+msgid "Last name"
+msgstr ""
+
+#: includes/admin/layout.php:315
+#: includes/admin/PersonsListTable.php:26
+msgid "Birth name"
+msgstr ""
+
+#: includes/admin/layout.php:316
+#: includes/admin/PersonsListTable.php:27
+#: build/index.js:22054
+#: build/view.js:21964
+#: build/index.js:17557
+#: build/view.js:17530
+msgid "Birthday"
+msgstr ""
+
+#: includes/admin/layout.php:317
+#: includes/admin/PersonsListTable.php:28
+#: build/index.js:22062
+#: build/view.js:21972
+#: build/index.js:17561
+#: build/view.js:17534
+msgid "Date of death"
 msgstr ""
 
 #: includes/admin/PersonsListTable.php:21
@@ -193,91 +201,95 @@ msgstr ""
 msgid "Visiblity of family data"
 msgstr ""
 
-#: includes/settings.php:130
+#: includes/settings.php:132
 msgid "FamTree configuration"
 msgstr ""
 
-#: includes/settings.php:138
+#: includes/settings.php:141
 msgid "Save global settings"
 msgstr ""
 
-#: includes/settings.php:142
+#: includes/settings.php:145
+msgid "Import gedcom data"
+msgstr ""
+
+#: includes/settings.php:149
 msgid "Person configuration"
 msgstr ""
 
-#: build/index.js:21722
-#: build/view.js:21632
-#: build/index.js:17282
-#: build/view.js:17255
+#: build/index.js:21749
+#: build/view.js:21659
+#: build/index.js:17312
+#: build/view.js:17285
 msgid "previous"
 msgstr ""
 
-#: build/index.js:21726
-#: build/view.js:21636
-#: build/index.js:17283
-#: build/view.js:17256
+#: build/index.js:21753
+#: build/view.js:21663
+#: build/index.js:17313
+#: build/view.js:17286
 msgid "next"
 msgstr ""
 
-#: build/index.js:22172
-#: build/index.js:17631
+#: build/index.js:22199
+#: build/index.js:17661
 msgid "General Settings"
 msgstr ""
 
-#: build/index.js:22175
-#: build/index.js:17635
+#: build/index.js:22202
+#: build/index.js:17665
 msgid "Current founder"
 msgstr ""
 
-#: build/index.js:22182
-#: build/index.js:17640
+#: build/index.js:22209
+#: build/index.js:17670
 msgid "For selectable founders you need to set the 'Founder' flag on at least one person on the FamTree settings page!"
 msgstr ""
 
-#: build/index.js:22184
-#: build/index.js:17643
+#: build/index.js:22211
+#: build/index.js:17673
 msgid "Show founder menu button"
 msgstr ""
 
-#: build/index.js:22190
-#: build/index.js:17647
+#: build/index.js:22217
+#: build/index.js:17677
 msgid "For multiple founders available adds a menu to change the displayed family tree on the published page."
 msgstr ""
 
-#: build/index.js:22192
-#: build/index.js:17651
+#: build/index.js:22219
+#: build/index.js:17681
 msgid "Color settings"
 msgstr ""
 
-#: build/index.js:22200
-#: build/index.js:17658
+#: build/index.js:22227
+#: build/index.js:17688
 msgid "Background Color"
 msgstr ""
 
-#: build/index.js:22208
-#: build/index.js:17665
+#: build/index.js:22235
+#: build/index.js:17695
 msgid "Text color"
 msgstr ""
 
-#: build/index.js:22216
-#: build/index.js:17672
+#: build/index.js:22243
+#: build/index.js:17702
 msgid "Foreground Color"
 msgstr ""
 
-#: build/index.js:22224
-#: build/index.js:17679
+#: build/index.js:22251
+#: build/index.js:17709
 msgid "Highlight Color"
 msgstr ""
 
-#: build/index.js:22232
-#: build/index.js:17686
+#: build/index.js:22259
+#: build/index.js:17716
 msgid "Selection Color"
 msgstr ""
 
-#: build/index.js:23273
-#: build/view.js:22911
-#: build/index.js:18767
-#: build/view.js:18521
+#: build/index.js:23300
+#: build/view.js:22938
+#: build/index.js:18797
+#: build/view.js:18551
 msgid "no information"
 msgstr ""
 

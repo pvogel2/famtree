@@ -141,8 +141,11 @@ function famtree_options_page_html() {
       submit_button(__('Save global settings', 'famtree'));
     ?>
     </form>
-    <?php
+    <div style="display: flex;flex-direction: row;align-items: center; gap: 5px;"><?php
       famtree_render_section_title(__('Import gedcom data', 'famtree'));
+    ?><span title="<?php echo esc_html_e('experimental feature', 'famtree') ?>" class="dashicons dashicons-info-outline"></span>
+    </div>
+    <?php
       famtree_render_gedcom_import();
     ?>
     <?php
