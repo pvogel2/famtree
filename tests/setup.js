@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 
 import { RegistryProvider, createRegistry } from '@wordpress/data';
-import registerFamiliesStore from '../../store/families';
-import registerRuntimeStore from '../../store/runtime';
+import registerFamiliesStore from '@src/store/families';
+import registerRuntimeStore from '@src/store/runtime';
 
 import { getByRole, getAllByRole, fireEvent } from '@testing-library/react';
 import {
@@ -15,10 +15,10 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 
-import RenderContext from '../../components/RenderContext';
-import { getAssetsGroup, getSymbolGroup, getNavigationGroup } from '../../lib/nodes/utils';
+import RenderContext from '@src/components/RenderContext';
+import { getAssetsGroup, getSymbolGroup, getNavigationGroup } from '@src/lib/nodes/utils';
 
-import Person from '../../../public/js/Person';
+import Person from '@public/js/Person';
 
 
 if (!global.structuredClone) {
@@ -26,22 +26,22 @@ if (!global.structuredClone) {
 
 }
 
-jest.mock('../../assets/images/avatar.png', () => {
+jest.mock('@src/assets/images/avatar.png', () => {
   return {};
 });
 [
-  '../../assets/images/pdf.jpg',
-  '../../assets/images/video.jpg',
-  '../../assets/images/txt.jpg',
-  '../../assets/images/file.jpg',
+  '@src/assets/images/pdf.jpg',
+  '@src/assets/images/video.jpg',
+  '@src/assets/images/txt.jpg',
+  '@src/assets/images/file.jpg',
 ].forEach((path) => {
   jest.mock(path, () => {
     return {};
   });
 });
 
-jest.mock('../../lib/three/Text3D');
-jest.mock ('../../lib/three/PreparedMeshes', () => {
+jest.mock('@src/lib/three/Text3D');
+jest.mock ('@src/lib/three/PreparedMeshes', () => {
   const personMesh = new MockGroup();
   const portraitMaterial = new MockMaterial({ name: 'personMeshPortrait' });
   const portraitMesh = new MockMesh(new MockGeometry(), portraitMaterial);

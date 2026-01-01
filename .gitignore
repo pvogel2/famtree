@@ -29,6 +29,9 @@ node_modules/
 # dotenv environment variables file
 .env
 
+# ide config files
+*.code-workspace
+
 # i18n generated resources
 languages/*.json
 languages/*.mo

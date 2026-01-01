@@ -1,10 +1,13 @@
 import PersonEditor from './editor/PersonEditor.js';
 import MetadataEditor from './editor/MetadataEditor.js';
 import PersonList from '../../public/js/PersonList.js';
+import Person from '../../public/js/Person.js';
 import Relation from './Relation.js';
-import UIMessage from './UIMessage.js'
+import UIMessage from './UIMessage.js';
 import PersonTable from './PersonTable.js';
-import FamtreeClient from './FamtreeClient.js'
+import FamtreeClient from './FamtreeClient.js';
+import GedcomImporter from './gedcom/importer.js';
+
 
 export default class Famtree {
   /**
@@ -14,6 +17,7 @@ export default class Famtree {
   constructor(wp) {
     this.persEditor = new PersonEditor();
     this.metaEditor = new MetadataEditor();
+    this.gedcomImporter = new GedcomImporter();
 
     this.wkEditMedia = wp.media({
       title: 'Edit media',
@@ -46,7 +50,7 @@ export default class Famtree {
     };
   
     Promise.allSettled([
-      this.saveRelations(),
+      this.saveModifiedRelations(),
       this.savePerson(person)],
     ).then(() => {
       document.location.reload();
@@ -54,12 +58,13 @@ export default class Famtree {
   }
 
   /**
-   * Saves all modified relations.
+   * Saves relations.
+   * @param rls [Relation] A list of relations to save.
    * @returns [Promise]
    */
-  saveRelations() {
+  saveRelations(rls) {
     const ps = [];
-    const rls = this.persEditor.getModifiedRelations();
+    const newRls = [];
 
     rls.forEach((rl) => {
       if (rl.isObsolete()) {
@@ -75,13 +80,27 @@ export default class Famtree {
 
       if (rl.isNew()) {
         delete data.id;
-        ps.push(this.client.createRelation(data));
+        newRls.push(data);
       } else {
         ps.push(this.client.updateRelation(rl.id, data));
       }
     });
 
+    if (newRls.length) {
+      const nps = this.client.createRelations(newRls);
+      return ps.concat(nps);
+    }
+
     return ps;
+  }
+
+  /**
+   * Saves all modified relations.
+   * @returns [Promise]
+   */
+  saveModifiedRelations() {
+    const rls = this.persEditor.getModifiedRelations();
+    this.saveRelations(rls);
   }
 
   loadFamilies() {
@@ -92,6 +111,17 @@ export default class Famtree {
     return this.client.loadPersonMetadata(id);
   }
 
+    /**
+   * Save person object queued to the database.
+   * @param {Person} person 
+   * @returns Promise
+   */
+  
+  savePersons(person) {
+    person.root = this.personTable.isFounder(person.id);
+    return this.client.savePerson2(person.serialize());
+  }
+  
   /**
    * Save the person object to the database.
    * @param {Person} person 
@@ -163,6 +193,7 @@ export default class Famtree {
 
   deletePerson() {
     const person = this.persEditor.getPerson();
+    const name = person.name;
     const pId = person.id;
     if (!pId) return;
 
@@ -175,6 +206,7 @@ export default class Famtree {
 
       // remove from table
       this.personTable.removePerson(pId);
+      this.message.success(`Deleted person ${name}`);
     });
   }
 
@@ -221,5 +253,123 @@ export default class Famtree {
       console.log('error', statusText);
       this.message.error('Updating roots failed');
     });
+  }
+
+  async importGedcom() {
+    let doCancel = false;
+    try {
+      const { persons, relations } = await this.gedcomImporter.import();
+
+      const idMap = {};
+      const ps = [];
+
+      let autoUpdate = false;
+      let importAction = GedcomImporter.MODE_ADD;
+      let autoAction = GedcomImporter.MODE_ADD;
+
+      const stats = {
+        all: persons.length,
+        invalid: 0,
+        [GedcomImporter.MODE_SKIP]: 0,
+        [GedcomImporter.MODE_ADD]: 0,
+        [GedcomImporter.MODE_REPLACE]: 0,
+        [GedcomImporter.MODE_CANCEL]: 0,
+      };
+
+      for (const p of persons) {
+        idMap[p.source] = null;
+
+        if (!Person.isValidName(p.name)) {
+          stats.invalid++;
+          continue;
+        }
+
+        const known = PersonList.findByName(p.name);
+
+        if (autoUpdate) {
+          importAction = known ? autoAction : GedcomImporter.MODE_ADD;
+        } else {
+          const { action, auto } = await this.gedcomImporter.comparePersons(known, p);
+          autoAction = action;
+          importAction = action;
+          autoUpdate = auto;
+        }
+
+        p.id = null;
+
+        doCancel = importAction === GedcomImporter.MODE_CANCEL;
+
+        stats[importAction]++;
+
+        if (doCancel) {
+          break;
+        }
+        if (importAction === GedcomImporter.MODE_SKIP) {
+          idMap[p.id] = known.id;
+          continue;
+        }
+
+        if (importAction === GedcomImporter.MODE_REPLACE) {
+          p.id = known.id;
+        }
+
+        const prm = this.savePersons(p); // ADD | REPLACE
+
+        prm.then((r) => {
+          if (Person.isValidId(r?.id)) {
+            idMap[p.source] = r.id;
+          } else { // TODO: react on error
+            stats.invalid++;
+            console.log('warning, skipping person', p);
+          }
+        });
+        ps.push(prm);
+      };
+
+      if (doCancel) {
+        this.message.warning('Import was canceled');
+        return;
+      }
+
+      this.client.checkQueue(true);
+
+      await Promise.allSettled(ps);
+
+      let newRelId = 0;
+      const rlsToSave = [];
+
+      for (const r of relations) {
+        const known = Relation.findByMembers(r.members);
+
+        // for now only import unknown relation
+        if (!known.length) {
+          const ms = [];
+          const cs = [];
+          r.members.forEach((m) => {
+            ms.push(idMap[m]);
+          });
+          r.members = ms;
+
+          r.children.forEach((c) => {
+            cs.push(idMap[c]);
+          });
+          r.children = cs;
+
+          if (r.id === null) {
+            r.id = --newRelId;
+          }
+
+          if (r.members.length > 1) {
+            rlsToSave.push(new Relation(r.serialize()));
+          }
+        }
+      }
+
+      await this.saveRelations(rlsToSave);
+      this.message.success(`Import finished (imported:${stats.all}, added: ${stats[GedcomImporter.MODE_ADD]}, replaced: ${stats[GedcomImporter.MODE_REPLACE]}, skiped: ${stats[GedcomImporter.MODE_SKIP] + stats[GedcomImporter.MODE_CANCEL]}, invalid: ${stats.invalid}).`);
+    } catch(err) {
+      console.log('Error, import faild:', err);
+      this.message.error(`Import failed with error: ${err.message}`);
+    }
   }
 }

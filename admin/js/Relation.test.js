@@ -47,6 +47,7 @@ const lists = [
     has: 'hasMembers',
     next: 'nextMember',
     prev: 'prevMember',
+    set: 'setMembers',
   },
   {
     key: 'children',
@@ -55,6 +56,7 @@ const lists = [
     has: 'hasChildren',
     next: 'nextChild',
     prev: 'prevChild',
+    set: 'setChildren',
   },
 ];
 
@@ -183,6 +185,23 @@ describe.each(lists)('for list property $key', (lp) => {
       expect(pId).toBe(null);
     });
   });
+
+  describe(`${lp.set}`, () => {  
+    const items = [10, 4];
+    const replaceItems = [11, 5];
+
+    it('set empty for no data', () => {
+      const rl = new Relation({ id: 1, [lp.key]:items });
+      rl[lp.set]();
+      expect(rl[lp.key]).toHaveLength(0);
+    });
+
+    it('replaces items with new array', () => {
+      const rl = new Relation({ id: 1, [lp.key]:items });
+      rl[lp.set](replaceItems);
+      expect(rl[lp.key]).toEqual(replaceItems);
+    });
+  });
 });
 
 describe.each(properties)('for property $key', (prop) => {
@@ -198,6 +217,48 @@ describe.each(properties)('for property $key', (prop) => {
   });
 });
 
+describe('for property modified', () => {
+  it('is set to false initially', () => {
+    const rl = new Relation({ id: 1 });
+    expect(rl.modified).toBe(false);
+  });
+
+  describe.each(lists)('for list property $key', (lp) => {
+    it('adding item sets modified true', () => {
+      const rl = new Relation({ id: 1 });
+      rl[lp.add](4);
+      expect(rl.modified).toBe(true);
+    });
+
+    it('setting items sets modified true', () => {
+      const rl = new Relation({ id: 1 });
+      rl[lp.set]([4,5]);
+      expect(rl.modified).toBe(true);
+    });
+
+    it('failing changing property not seting modified true', () => {
+      const rl = new Relation({ id: 1, [lp.key]: [4] });
+      rl[lp.add](4);
+      expect(rl.modified).toBe(false);
+    });
+
+
+    it('multiple changes modified remains true', () => {
+      const rl = new Relation({ id: 1 });
+      rl[lp.add](4);
+      rl[lp.add](5);
+      expect(rl.modified).toBe(true);
+    });
+  });
+});
+
+describe('for property deleted', () => {
+  it('is set to false initially', () => {
+    const rl = new Relation({ id: 1 });
+    expect(rl.deleted).toBe(false);
+  });
+});
+
 it('serialize returns serialiable relation data', () => {
   const rl = new Relation({ id: 1 });
   const data = rl.serialize();
@@ -209,5 +270,9 @@ it('serialize returns serialiable relation data', () => {
     end: null,
     children: expect.any(Array),
     members: expect.any(Array),
+  }));
+  expect(data).toEqual(expect.not.objectContaining({
+    deleted: expect.anything(),
+    modified: expect.anything(),
   }));
 });

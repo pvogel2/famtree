@@ -52,6 +52,12 @@ function famtree_rest_register_routes() {
     'permission_callback' => 'famtree_rest_permission_read',
   ));
 
+  register_rest_route( $namespace, '/persons/', array(
+    'methods' => WP_REST_Server::CREATABLE,
+    'callback' => 'famtree_save_persons',
+    'permission_callback' => 'famtree_rest_permission_write',
+  ));
+
   register_rest_route( $namespace, '/metadata/', array(
     'methods' => WP_REST_Server::EDITABLE,
     'callback' => 'famtree_save_metadata',
@@ -73,6 +79,12 @@ function famtree_rest_register_routes() {
   register_rest_route( $namespace, '/relation/', array(
     'methods' => WP_REST_Server::CREATABLE,
     'callback' => 'famtree_save_relation',
+    'permission_callback' => 'famtree_rest_permission_write',
+  ));
+
+  register_rest_route( $namespace, '/relations/', array(
+    'methods' => WP_REST_Server::CREATABLE,
+    'callback' => 'famtree_save_relations',
     'permission_callback' => 'famtree_rest_permission_write',
   ));
 

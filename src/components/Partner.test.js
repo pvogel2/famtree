@@ -3,7 +3,7 @@ import {
   Vector3,
 } from 'three';
 import { waitFor } from '@testing-library/react';
-import U from '../lib/tests/utils';
+import U from '@tests/setup';
 import Partner from './Partner';
 
 function getAddObjectNode(r, id) {

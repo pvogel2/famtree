@@ -1,3 +1,57 @@
+function isValidId(id) {
+  return (typeof id === 'number');
+} 
+
+function getInitializedArray(arr = []) {
+  if (!Array.isArray(arr)) {
+    return [];
+  }
+  return arr.filter((id) => isValidId(parseInt(id)));
+}
+
+function addItem(arr = [], nId) {
+  const newId = parseInt(nId);
+  if (!arr.find((id) => newId === id) && isValidId(newId)) {
+    arr.push(newId);
+    return true;
+  }
+  return false;
+}
+
+function removeItem(arr = [], rmId) {
+  const removeId = parseInt(rmId);
+  const idx = arr.findIndex((item) => item === removeId);
+  if (idx > -1) {
+    arr.splice(idx, 1);
+  }
+}
+
+function nextItem(arr = [], id) {
+  if (!arr.length) {
+    return null;
+  }
+
+  if (typeof id === 'undefined') {
+    return arr[0];
+  }
+
+  const idx = arr.findIndex((aId) => aId === id);
+  return idx >= 0 && (idx + 1) < arr.length ? arr[idx + 1] : null;
+}
+
+function prevItem(arr = [], id) {
+  if (!arr.length) {
+    return null;
+  }
+
+  if (typeof id === 'undefined') {
+    return arr[arr.length - 1];
+  }
+
+  const idx = arr.findIndex((aId) => aId === id);
+  return idx > 0 && idx < arr.length ? arr[idx - 1] : null;
+}
+
 export default class Relation {
   static all = {};
 
@@ -26,10 +80,22 @@ export default class Relation {
     return Object.values(Relation.all).filter(filter);
   }
 
+  // realy expensive
+  static findByMembers(members) {
+    return Object.values(Relation.all).filter((r) => {
+      const ro = new Relation(r);
+      let found = true;
+      members.forEach((m) => {
+        found = found &&  ro.hasMember(m);
+      });
+      return found;
+    });
+  }
+
   constructor(r) {
     this._id = parseInt(r.id) || null;
-    this._members = r.members.map((m) => parseInt(m));
-    this._children = r.children.map((c) => parseInt(c));
+    this._members = getInitializedArray(r.members);
+    this._children = getInitializedArray(r.children);
     this._start = r.start || null;
     this._end = r.end || null;
     this._type = r.type || null;
@@ -77,6 +143,11 @@ export default class Relation {
     this.modified = true;
   }
 
+  set members(ms) {
+    this._members = ms.splice(0);
+    this.modified = true;
+  }
+
   get deleted() {
     return this._deleted;
   }
@@ -109,12 +180,37 @@ export default class Relation {
     return this._members.includes(parseInt(id));
   }
 
-  addChild(id) {
-    const newId = parseInt(id);
-    if (this._children.findIndex(_id => _id === newId) === -1) {
-      this._children.push(newId);
-      this.modified = true;
-    }
+  addMember(newId) {
+    if (addItem(this._members, newId)) {
+      this._modified = true;
+    };
+  }
+
+  removeMember(id) {
+    removeItem(this._members, id);
+  }
+
+  hasMembers() {
+    return !!this._members.length;
+  }
+
+  nextMember(id) {
+    return nextItem(this._members, id);
+  }
+
+  prevMember(id) {
+    return prevItem(this._members, id);
+  }
+
+  setMembers(ids) {
+    this._members = getInitializedArray(ids);
+    this._modified = true;
+  }
+
+  addChild(newId) {
+    if (addItem(this._children, newId)) {
+      this._modified = true;
+    };
   }
 
   removeChild(id) {
@@ -127,8 +223,33 @@ export default class Relation {
     }
   }
 
+  removeChild(id) {
+    removeItem(this._children, id);
+  }
+
+  hasChildren() {
+    return !!this._children.length;
+  }
+
+  nextChild(id) {
+    return nextItem(this._children, id);
+  }
+
+  prevChild(id) {
+    return prevItem(this._children, id);
+  }
+
+  setChildren(ids) {
+    this._children = getInitializedArray(ids);
+    this._modified = true;
+  }
+
   isNew() {
     return this._id < 0;
+  }
+
+  equals(p = {}) {
+    return p?.id === this._id;
   }
 
   isObsolete() {

@@ -4,7 +4,7 @@ import {
   Group,
   } from 'three';
 
-import U from '../../lib/tests/utils';
+import U from '@tests/setup';
 import PartnerRelation from './PartnerRelation';
 
 afterEach(cleanup);

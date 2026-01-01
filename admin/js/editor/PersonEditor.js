@@ -1,6 +1,8 @@
 import PersonList from '../../../public/js/PersonList.js';
 import Person from '../../../public/js/Person.js';
 import Relation from '../Relation.js';
+import UIMessage from '../UIMessage.js';
+
 import PersonRelations from './PersonRelations.js';
 import PersonForm from './PersonForm.js';
 
@@ -27,6 +29,8 @@ export default class PersonEditor {
 
     this.personForm.onFirstname(checkForEditing);
     this.personForm.onLastname(checkForEditing);
+
+    this.message = new UIMessage();
   }
 
   registerCallback(cb) {
@@ -67,9 +71,14 @@ export default class PersonEditor {
 
     setPartners() {
       const pId = this.personForm.getId();
+
       this.relations.getMembers(pId).forEach(({ rId, mId }) =>  {
         const person = PersonList.find(mId);
-        this.personForm.rSelect.addOption(person.name, rId);
+        if (person) {
+          this.personForm.rSelect.addOption(person.name, rId);
+        } else {
+          this.message.warning(`Did not find related person (${mId}), skipping.`);
+        }
       });
     }
 

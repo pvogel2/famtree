@@ -268,6 +268,10 @@ function famtree_database_create_person($person) {
     famtree_prefix_tablename('persons'), 
     famtree_person_fields($person)
   );
+  if ($result == true) {
+    return $wpdb->insert_id;
+  }
+
   return $result;
 }
 
@@ -276,7 +280,7 @@ function famtree_database_update_person($person) {
   $id = $person['id'];
 
   if (empty($id)) {
-    return false;
+    return -1;
   }
 	$result = $wpdb->update( 
     famtree_prefix_tablename('persons'),
@@ -285,7 +289,7 @@ function famtree_database_update_person($person) {
       'id' => $id,
     )
   );
-  return is_numeric($result) || $result;
+  return is_numeric($result) ? $id : -1;
 }
 
 function famtree_relation_fields($relation) {
@@ -305,6 +309,11 @@ function famtree_database_create_relation($relation) {
     famtree_prefix_tablename('relations'),
     famtree_relation_fields($relation),
   );
+
+  if ($result == true) {
+    return $wpdb->insert_id;
+  }
+
   return $result;
 }
 

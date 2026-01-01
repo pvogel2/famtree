@@ -5,19 +5,19 @@ import {
   BoxGeometry as MockGeometry,
 } from 'three';
 
-import U from '../lib/tests/utils';
+import U from '@tests/setup';
 import Intersector from './Intersector';
-import { getMesh, getDataGroup, addLabelText3D, focusNode } from '../lib/nodes/utils';
+import { getMesh, getDataGroup, addLabelText3D, focusNode } from '@src/lib/nodes/utils';
 import { act } from 'react';
 
-jest.mock('../lib/Connect.js', () => {
+jest.mock('@src/lib/Connect.js', () => {
   return {
     loadMetadata: jest.fn(() => []),
   };
 });
 
-jest.mock('../lib/nodes/utils', () => {
-  const origUtils = jest.requireActual('../lib/nodes/utils');
+jest.mock('@src/lib/nodes/utils', () => {
+  const origUtils = jest.requireActual('@src/lib/nodes/utils');
 
   //Mock the default export and named export 'foo'
   return {
@@ -27,15 +27,15 @@ jest.mock('../lib/nodes/utils', () => {
   };
 });
 
-jest.mock('../assets/images/avatar.png', () => {
+jest.mock('@src/assets/images/avatar.png', () => {
   return {};
 });
 
-jest.mock('../lib/three/Text', () => {
+jest.mock('@src/lib/three/Text', () => {
   return {};
 });
 
-jest.mock('../lib/three/Text3D', () => {
+jest.mock('@src/lib/three/Text3D', () => {
   return function() {
     return {
       attach: jest.fn(),
@@ -44,7 +44,7 @@ jest.mock('../lib/three/Text3D', () => {
   };
 });
 
-jest.mock ('../lib/three/PreparedMeshes', () => {
+jest.mock ('@src/lib/three/PreparedMeshes', () => {
   const personMesh = new MockGroup();
   const portraitMaterial = new MockMaterial({ name: 'personMeshPortrait' });
   const portraitMesh = new MockMesh(new MockGeometry(), portraitMaterial);

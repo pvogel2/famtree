@@ -112,6 +112,12 @@ function famtree_render_global_settings() {
   // currently nothing to render
 }
 
+function famtree_render_gedcom_import() {
+  ?>
+    <input name="famtree_gedcom_import" type="file" id="famtree_gedcom_import" onchange="window.famtree.importGedcom()">
+  <?php
+}
+
 function famtree_render_edit_person_form() {
   ?>
   <div style="display: flex;">
@@ -123,17 +129,8 @@ function famtree_render_edit_person_form() {
       <input readonly hidden type="text" name="id" id="personId" />
       <div class="famtree-form__flex">
         <fieldset>
-        <?php famtree_render_legend(__('Attributes', 'famtree')) ?>
-          <table>
-            <?php
-            famtree_form_text_field('firstName', __('First name', 'famtree'));
-            famtree_form_text_field('surNames', __('Sur names', 'famtree'));
-            famtree_form_text_field('lastName', __('Last name', 'famtree'));
-            famtree_form_text_field('birthName', __('Birth name', 'famtree'));
-            famtree_form_date_field('birthday', __('Birthday', 'famtree'));
-            famtree_form_date_field('deathday', __('Date of death', 'famtree'));
-            ?>
-          </table>
+          <?php famtree_render_legend(__('Attributes', 'famtree')) ?>
+          <?php fammtree_render_person_table() ?>
         </fieldset>
         <fieldset name="fs_relations" disabled="disabled">
         <?php famtree_render_legend(__('Relations', 'famtree')) ?>
@@ -253,6 +250,45 @@ function famtree_render_runtime_message() {
   <?php
 }
 
+function famtree_render_modal_dialog() {
+  ?>
+    <div id="famtree-modal-dialog" class="famtree-hidden">
+      <div class="famtree-modal-dialog__content"></div>
+    </div>
+  <?php
+}
+
+function famtree_render_import_dialog() {
+  ?>
+    <div id="famtree-import-dialog" class="famtree-hidden">
+      <div class="famtree-modal-dialog__content">
+        <div style="display:flex;flex-direction:row;">  
+          <div class="famtree-known-person">
+            <form>
+              <fieldset disabled="disabled">
+                <?php famtree_render_legend(__('Found existing person', 'famtree')) ?>
+                <?php fammtree_render_person_table() ?>
+              </fieldset>
+            </form>
+          </div>
+          <div class="famtree-new-person">
+            <form>
+              <fieldset disabled="disabled">
+                <?php famtree_render_legend(__('Person for import', 'famtree')) ?>
+                <?php fammtree_render_person_table() ?>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div>
+          <input name="famtree-import-dialog__autoaction" type="checkbox" id="famtree-import-dialog__autoaction">
+          <label for="famtree-import-dialog__autoaction">Reuse decision for all upcoming matches.</label>
+        </div>
+      </div>
+    </div>
+  <?php
+}
+
 function famtree_render_success_feedback($message) {
   ?>
   <div class="notice notice-success is-dismissible">
@@ -266,5 +302,20 @@ function famtree_render_error_feedback($message) {
   <div class="notice notice-error is-dismissible">
       <p><?php print esc_html_e('Error', 'famtree'); echo ': '; echoesc_html($message); ?></p>
   </div>
+  <?php
+}
+
+function fammtree_render_person_table() {
+  ?>
+  <table>
+    <?php
+      famtree_form_text_field('firstName', __('First name', 'famtree'));
+      famtree_form_text_field('surNames', __('Sur names', 'famtree'));
+      famtree_form_text_field('lastName', __('Last name', 'famtree'));
+      famtree_form_text_field('birthName', __('Birth name', 'famtree'));
+      famtree_form_date_field('birthday', __('Birthday', 'famtree'));
+      famtree_form_date_field('deathday', __('Date of death', 'famtree'));
+    ?>
+  </table>
   <?php
 }

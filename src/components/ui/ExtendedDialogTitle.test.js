@@ -1,5 +1,5 @@
 import { cleanup } from '@testing-library/react';
-import U from '../../lib/tests/utils';
+import U from '@tests/setup';
 
 import ExtendedDialogTitle from './ExtendedDialogTitle';
 

@@ -7,6 +7,7 @@ const defaultConfig = {
   deathday: null,
   portraitUrl: null,
   portraitId: null,
+  source: null,
 };
 
 function getInitializedArray(arr = []) {
@@ -41,6 +42,24 @@ export default class Person {
     return ((typeof id === 'string' && !!id) || (typeof id === 'number' && !isNaN(id)));
   }
     
+  /**
+   * Valid name has to be non empty string.
+   * @param {*} name 
+   * @returns boolean
+   */
+  static isValidName(name) {
+    return ((typeof name === 'string' && !!name));
+  }
+    
+  /**
+   * Valid source has to be non empty string or a number.
+   * @param {*} source 
+   * @returns boolean
+   */
+  static isValidSource(source) {
+    return (source === null || Person.isValidId(source)); // might change in future
+  }
+
   constructor(config = defaultConfig) {
     this.pFirstName = config.firstName ? config.firstName.trim() : defaultConfig.firstName;
     this.pLastName = config.lastName ? config.lastName.trim() : defaultConfig.lastName;
@@ -50,7 +69,8 @@ export default class Person {
     this.pBirthName = config.birthName ? config.birthName.trim() : defaultConfig.birthName;
     this.pDeathday = parseDate(config.deathday);
 
-    this.id = Person.isValidId(config.id) ? config.id : null; //  || `${this.pFirstName}${this.pLastName}${this.pBirthday}`; // TODO: remove generated id stuff
+    this.id = Person.isValidId(config.id) ? config.id : null;
+    this.pSource = Person.isValidSource(config.source) ? config.source : defaultConfig.source;
 
     this.pRelations = getInitializedArray(config.relations);
 
@@ -121,6 +141,12 @@ export default class Person {
     }
   }
 
+  set source(source) {
+    if (Person.isValidSource(source)) {
+      this.pSource = source;
+    }
+  }
+
   get relations() {
     return this.pRelations.slice();
   }
@@ -131,6 +157,10 @@ export default class Person {
 
   get portraitId() {
     return this.pPortraitId;
+  }
+
+  get source() {
+    return this.pSource;
   }
 
   hasRelations() {

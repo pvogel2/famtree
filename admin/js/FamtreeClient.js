@@ -1,4 +1,5 @@
 const REST_PREFIX = 'famtree/v1';
+const MAX_SAVE_QUEUE = 20;
 
 const getRestClient = (wp) => ({
   wp,
@@ -30,7 +31,7 @@ const getRestClient = (wp) => ({
       type: 'POST',
       data,
     };
-  
+
     options.data[nonce.name] = nonce.value;
   
     return this.wp.apiRequest(options);
@@ -62,6 +63,7 @@ export default class FamtreeClient {
   constructor(wp, nonces = {}) {
     this.restClient = getRestClient(wp);
     this.nonces = { ...nonces };
+    this.saveQueue = [];
     
   }
   /**
@@ -80,8 +82,40 @@ export default class FamtreeClient {
     }
   }
 
+  addToQueue(data) {
+    const p = new Promise((resolve, reject) => {
+      this.saveQueue.push({
+        data,
+        resolve,
+        reject,
+      });
+    });
+    this.checkQueue();
+    return p;
+  }
+
+  checkQueue(force) {
+    if (this.saveQueue.length >= MAX_SAVE_QUEUE || (this.saveQueue.length > 0 && force === true)) {
+      const nonce = this.nonces.person();
+      const toSave = this.saveQueue.concat([]);
+      this.saveQueue = [];
+      const response = this.restClient.post('/persons/', nonce, { data: toSave.map((d) => d.data) });
+      response.then((values) => {
+        toSave.forEach((ts, idx) => {
+          ts.data.id = values[idx];
+          ts.resolve(ts.data);
+        });
+      });
+    }
+  }
+
+  savePerson2(data) {
+    return this.addToQueue(data);
+  }
+
   createPerson(data) {
     const nonce = this.nonces.person();
+    delete data.id;
     return this.restClient.post('/person/', nonce, data);
   }
 
@@ -102,6 +136,11 @@ export default class FamtreeClient {
   createRelation(data) {
     const nonce = this.nonces.person();
     return this.restClient.post('/relation/', nonce, data);
+  }
+
+  createRelations(data) {
+    const nonce = this.nonces.person();
+    return this.restClient.post('/relations/', nonce, { data });
   }
 
   updateRelation(id, data) {

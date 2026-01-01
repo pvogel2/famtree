@@ -1,7 +1,7 @@
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import U from '../../lib/tests/utils';
+import U from '@tests/setup';
 import InfoDialog from './InfoDialog';
 
 function getDialog(base) {

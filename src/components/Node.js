@@ -65,7 +65,7 @@ function getChildSize(id, szs) {
 function getChildrenGroupSize(cs, szs) {
   let groupSize = cs.reduce((total, c) => {
     return total += getChildSize(c.id, szs);
-  }, 0); //  + Math.max((cs.length - 1), 0) * cldDist;
+  }, 0);
   return groupSize;
 }
 
@@ -234,7 +234,7 @@ function Node(props) {
       relationTarget.add(new Vector3(0, 0,  -NODE_DIST));
 
       if (idx === 0) {
-        childMinZ = relationTarget.z - childrenSize * 0.5; // getNormalizedDistance(childrenSize);
+        childMinZ = relationTarget.z - childrenSize * 0.5;
       } else if (children.length && childMinZ <= relationTarget.z) { // childMin is right side from relation target
         relationTarget.setZ(childMinZ - (childrenSize + NODE_DIST) * 0.5);
         childMinZ = relationTarget.z - childrenSize * 0.5;
