@@ -3,6 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { Vector3 } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
+import RelationSymbol from './relations/RelationSymbol';
 import ChildRelation from './relations/ChildRelation';
 import KNavigation from './KeyboardNavigation';
 
@@ -226,6 +227,9 @@ function Node(props) {
         return null;
       }
 
+      const relationType = r.type;
+      const relationEnd = r.end;
+
       rightPartnerId = getParnterId(relations[idx + 1], person.id) || nextSiblingId;
 
       const children = findItems(r.children, persons);
@@ -245,6 +249,7 @@ function Node(props) {
       const partnerFocused = partner.id === focusedPerson?.id;
       const partnerSelected = partner.id === selectedPerson?.id;
 
+      console.log(relationType, relationEnd);
       const partnerNode = (
         <>
           <Partner
@@ -257,6 +262,14 @@ function Node(props) {
             toLeftId={ (isValidId(leftPartnerId) ? leftPartnerId : null) }
             toRightId={ (isValidId(rightPartnerId) ? rightPartnerId : null) }
             />
+          <RelationSymbol
+            parent={ assetsGroup }
+            type={relationType}
+            end={relationEnd}
+            targetX={ relationTarget.x }
+            targetY={ relationTarget.y }
+            targetZ={ relationTarget.z }
+          />
           <PartnerRelation
             highstart={ isSelected ? selection : (isFocused ? highlight : undefined) }
             highend={ partnerSelected ? selection : (partnerFocused ? highlight : undefined) }
