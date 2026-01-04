@@ -12,6 +12,10 @@ const textureLoader = new TextureLoader();
 const ARROW_OFFSET = 0.2;
 const NAVI_OFFSET = 0.9;
 
+export const NODE_DIST = 6;
+export const NODE_SIZE = 6;
+export const GEN_DIST = 6;
+
 export function isValidId(id) {
   return !isNaN(parseInt(id));
 }

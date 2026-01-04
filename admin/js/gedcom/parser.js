@@ -15,6 +15,10 @@ export const TAGS = {
   DATE: 'date',
   FORM: 'form',//
   TRLR: 'trlr',//
+  MARR: 'marr',
+  DIV: 'divorce',
+  TYPE: 'type',
+  PLAC: 'place',
 };
 
 const re = new RegExp(/^(?<level>^\d+)\s((?<id>\@[a-zA-Z0-9]+\@)\s)?(?<tag>[a-zA-Z]+)(\s(?<value>.*))?/);

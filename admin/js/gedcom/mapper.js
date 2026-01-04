@@ -32,7 +32,6 @@ export default class GedcomMapper {
         case 'TRLR': this.result.finish = c; break;
       }
     });
-    // console.log(this.result);
   }
 
   #mapChildren(p, n) {
@@ -107,6 +106,14 @@ export default class GedcomMapper {
     parent.date = node.value;
   }
 
+  TYPE(parent, node) {
+    parent.type = node.value;
+  }
+
+  PLAC(parent, node) {
+    parent.place = node.value;
+  }
+
   FAM(parent, node) {
     if (!parent.relations) {
       parent.relations = [];
@@ -116,6 +123,17 @@ export default class GedcomMapper {
     this.#mapChildren(rela, node);
 
     parent.relations.push(rela);
+  }
+
+  MARR(parent, node) {
+    const marr = {};
+    parent.marr = marr;
+    this.#mapChildren(marr, node);
+  }
+  DIV(parent, node) {
+    const div = {};
+    parent[TAGS.DIV] = div;
+    this.#mapChildren(div, node);
   }
 
   HUSB(parent, node) {
@@ -180,7 +198,6 @@ export default class GedcomMapper {
         children: [],
       };
 
-      // console.log('rela', rela);
       if (rela[TAGS.WIFE]) {
         config.members.push(this.idMap[rela[TAGS.WIFE]]);
       }
@@ -195,7 +212,23 @@ export default class GedcomMapper {
         });
       }
 
+      if (rela[TAGS.MARR]) {
+        if (rela[TAGS.MARR][TAGS.TYPE]) {
+          config.type = rela[TAGS.MARR][TAGS.TYPE];
+        }
+
+        if (rela[TAGS.MARR][TAGS.DATE]) {
+          config.start = this.#parseDate(rela[TAGS.MARR][TAGS.DATE]);
+        }
+
+        // currently only divorce in case of marriage is supported
+        if (rela[TAGS.DIV]?.[TAGS.DATE]) {
+          config.end = this.#parseDate(rela[TAGS.DIV][TAGS.DATE]);
+        }
+      }
+
       const r = new Relation(config);
+
       rs.push(r);
     });
 
