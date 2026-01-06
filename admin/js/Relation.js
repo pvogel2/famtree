@@ -176,6 +176,15 @@ export default class Relation {
     this._id = parseInt(id);
   }
 
+  replaceId(oldId, newId) {
+    console.log('replace', oldId, newId);
+    const mIdx = this._members.findIndex(id => id === oldId);
+    const cIdx = this._children.findIndex(id => id === oldId);
+    this._members.splice(mIdx, 1, newId);
+    this._members.splice(cIdx, 1, newId);
+  }
+
+
   hasMember(id) {
     return this._members.includes(parseInt(id));
   }

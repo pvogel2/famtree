@@ -262,6 +262,7 @@ export default class Famtree {
 
       const idMap = {};
       const ps = [];
+      const idUpdatedMap = {};
 
       let autoUpdate = false;
       let importAction = GedcomImporter.MODE_ADD;
@@ -295,22 +296,32 @@ export default class Famtree {
           autoUpdate = auto;
         }
 
-        p.id = null;
+        // p.id = null; why done here?
 
         doCancel = importAction === GedcomImporter.MODE_CANCEL;
 
         stats[importAction]++;
 
         if (doCancel) {
+          p.id = null;
           break;
         }
         if (importAction === GedcomImporter.MODE_SKIP) {
           idMap[p.id] = known.id;
+          p.id = null;
           continue;
         }
 
         if (importAction === GedcomImporter.MODE_REPLACE) {
+          // update imported relations with new id setting
+          for (const r of relations) {
+            r.replaceId(p.id, known.id);
+          }
           p.id = known.id;
+        }
+
+        if (importAction === GedcomImporter.MODE_ADD) {
+          p.id = null;
         }
 
         const prm = this.savePersons(p); // ADD | REPLACE
@@ -339,8 +350,10 @@ export default class Famtree {
       const rlsToSave = [];
 
       for (const r of relations) {
+        // if ids were changed reflect in relations
+        // imported persons have negative ids, can never be found in existing...
         const known = Relation.findByMembers(r.members);
-
+        console.log(r.members, known);
         // for now only import unknown relation
         if (!known.length) {
           const ms = [];
