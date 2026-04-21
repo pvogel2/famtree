@@ -259,11 +259,10 @@ export default class Famtree {
     let doCancel = false;
     try {
       const { persons, relations } = await this.gedcomImporter.import();
-
+console.log('0', structuredClone(relations));
       const idMap = {};
       const ps = [];
-      const idUpdatedMap = {};
-
+      
       let autoUpdate = false;
       let importAction = GedcomImporter.MODE_ADD;
       let autoAction = GedcomImporter.MODE_ADD;
@@ -314,8 +313,16 @@ export default class Famtree {
 
         if (importAction === GedcomImporter.MODE_REPLACE) {
           // update imported relations with new id setting
-          for (const r of relations) {
+          // console.log('linked', p);
+          /* for (const r of relations) {
             r.replaceId(p.id, known.id);
+          }*/
+          for (const rId of p.relations) {
+            if (relations[rId]) {
+              relations[rId].replaceId(p.id, known.id);
+            } else {
+              console.warn('did not find relation for linked rleation', rId);
+            }
           }
           p.id = known.id;
         }
@@ -349,11 +356,13 @@ export default class Famtree {
       let newRelId = 0;
       const rlsToSave = [];
 
-      for (const r of relations) {
+      console.log('1', structuredClone(relations));
+      for (const rId of Object.keys(relations)) {
+        const r = relations[rId];
         // if ids were changed reflect in relations
         // imported persons have negative ids, can never be found in existing...
         const known = Relation.findByMembers(r.members);
-        console.log(r.members, known);
+        // console.log('known', r.members, known);
         // for now only import unknown relation
         if (!known.length) {
           const ms = [];

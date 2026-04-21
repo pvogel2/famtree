@@ -6,6 +6,8 @@ export default class GedcomMapper {
   constructor(json = { children: [] }) {
     this.json = json;
     this.idMap = {};
+    this.persons = {};
+    this.relations = {};
     this.result = {
       head: null,
       finish: null,
@@ -15,8 +17,8 @@ export default class GedcomMapper {
 
     this.#mapParts();
 
-    this.persons = this.#persons();
-    this.relations = this.#relations();
+    this.#persons();
+    this.#relations();
   }
 
   getResult() {
@@ -166,7 +168,7 @@ export default class GedcomMapper {
   }
 
   #persons() {
-    const ps = [];
+    this.persons = {};
     let id = -1;
 
     this.result.individuals.forEach((indi) => {
@@ -183,26 +185,29 @@ export default class GedcomMapper {
       this.idMap[indi.id] = config.id;
 
       const p = new Person(config);
-      ps.push(p);
+      this.persons[p.id] = p;
     });
-
-    return ps;
   }
 
   #relations() {
-    const rs = [];
+    this.relations = {};
+    let id = -1;
 
     this.result.relations.forEach((rela) => {
+      const tmpId = id--;
       const config = {
+        id: tmpId,
         members: [],
         children: [],
       };
 
       if (rela[TAGS.WIFE]) {
+        // console.log('wife', rela[TAGS.WIFE], this.idMap[rela[TAGS.WIFE]]);
         config.members.push(this.idMap[rela[TAGS.WIFE]]);
       }
 
       if (rela[TAGS.HUSB]) {
+        // console.log('husb', rela[TAGS.HUSB], this.idMap[rela[TAGS.HUSB]]);
         config.members.push(this.idMap[rela[TAGS.HUSB]]);
       }
 
@@ -228,15 +233,17 @@ export default class GedcomMapper {
       }
 
       const r = new Relation(config);
+      [...r.children, ...r.members].forEach((pId) => {
+        this.persons[pId].addRelation(r.id);
+       //console .log('add rel', this.persons[pId].pRelations);
+      });
 
-      rs.push(r);
+      this.relations[tmpId] = r;
     });
-
-    return rs;
   }
 
   getPersons() {
-    return this.persons;
+    return Object.keys(this.persons).map(id => (this.persons[id]));
   }
 
   getRelations() {

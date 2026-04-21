@@ -180,7 +180,9 @@ export default class Person {
   }
 
   addRelation(newId) {
+    //console.log('newId', newId);
     if (!this.pRelations.find((id) => newId === id) && Person.isValidId(newId)) {
+      //console.log('adding');
       this.pRelations.push(newId);
     }
   }
