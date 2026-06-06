@@ -305,12 +305,14 @@ console.log('0', structuredClone(relations));
           p.id = null;
           break;
         }
+
         if (importAction === GedcomImporter.MODE_SKIP) {
           idMap[p.id] = known.id;
           p.id = null;
           continue;
         }
 
+        // set the old id for the new person imported with replace mode, so the client can update the existing person instead of creating a new one
         if (importAction === GedcomImporter.MODE_REPLACE) {
           // update imported relations with new id setting
           // console.log('linked', p);
@@ -356,32 +358,28 @@ console.log('0', structuredClone(relations));
       let newRelId = 0;
       const rlsToSave = [];
 
-      console.log('1', structuredClone(relations));
-      for (const rId of Object.keys(relations)) {
-        const r = relations[rId];
-        // if ids were changed reflect in relations
-        // imported persons have negative ids, can never be found in existing...
-        const known = Relation.findByMembers(r.members);
-        // console.log('known', r.members, known);
-        // for now only import unknown relation
-        if (!known.length) {
-          const ms = [];
-          const cs = [];
-          r.members.forEach((m) => {
-            ms.push(idMap[m]);
-          });
-          r.members = ms;
+      for (const r of relations) {
+        const ms = [];
+        const cs = [];
+        r.members.forEach((m) => {
+          ms.push(idMap[m]);
+        });
+        r.members = ms;
 
-          r.children.forEach((c) => {
-            cs.push(idMap[c]);
-          });
-          r.children = cs;
+        r.children.forEach((c) => {
+          cs.push(idMap[c]);
+        });
+        r.children = cs;
 
+        const knownRelations = Relation.findByMembers(r.members);
+
+        // for now only unknown realtions are taken into account
+        if (!knownRelations.length) {
           if (r.id === null) {
             r.id = --newRelId;
           }
 
-          if (r.members.length > 1) {
+          if (r.members.filter(c => typeof c === 'number').length > 1) {
             rlsToSave.push(new Relation(r.serialize()));
           }
         }
