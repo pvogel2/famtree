@@ -304,11 +304,13 @@ export default class Famtree {
         if (doCancel) {
           break;
         }
+
         if (importAction === GedcomImporter.MODE_SKIP) {
           idMap[p.id] = known.id;
           continue;
         }
 
+        // set the old id for the new person imported with replace mode, so the client can update the existing person instead of creating a new one
         if (importAction === GedcomImporter.MODE_REPLACE) {
           p.id = known.id;
         }
@@ -339,27 +341,27 @@ export default class Famtree {
       const rlsToSave = [];
 
       for (const r of relations) {
-        const known = Relation.findByMembers(r.members);
+        const ms = [];
+        const cs = [];
+        r.members.forEach((m) => {
+          ms.push(idMap[m]);
+        });
+        r.members = ms;
 
-        // for now only import unknown relation
-        if (!known.length) {
-          const ms = [];
-          const cs = [];
-          r.members.forEach((m) => {
-            ms.push(idMap[m]);
-          });
-          r.members = ms;
+        r.children.forEach((c) => {
+          cs.push(idMap[c]);
+        });
+        r.children = cs;
 
-          r.children.forEach((c) => {
-            cs.push(idMap[c]);
-          });
-          r.children = cs;
+        const knownRelations = Relation.findByMembers(r.members);
 
+        // for now only unknown realtions are taken into account
+        if (!knownRelations.length) {
           if (r.id === null) {
             r.id = --newRelId;
           }
 
-          if (r.members.length > 1) {
+          if (r.members.filter(c => typeof c === 'number').length > 1) {
             rlsToSave.push(new Relation(r.serialize()));
           }
         }

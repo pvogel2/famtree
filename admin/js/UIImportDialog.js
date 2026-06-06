@@ -14,7 +14,6 @@ export default class UIImportDialog extends UIModalDialog {
     const autoUpCheckbox = this.contentElement.find(`#${AUTOUPDATE_ID}`);
     autoUpCheckbox.on('change', (ev) => {
       this.autoAction = ev.target.checked;
-      console.log('>>', this.autoAction);
     });
   }
 
@@ -29,7 +28,6 @@ export default class UIImportDialog extends UIModalDialog {
     const p = new Promise((resolve, reject) => {
       this.element.dialog('option', 'buttons', this.#setButtons(resolve));
       super.open().then((code) => {
-        console.log('resolve with code', code);
         resolve(code);
       });
 

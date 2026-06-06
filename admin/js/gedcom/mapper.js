@@ -32,7 +32,6 @@ export default class GedcomMapper {
         case 'TRLR': this.result.finish = c; break;
       }
     });
-    // console.log(this.result);
   }
 
   #mapChildren(p, n) {
@@ -180,7 +179,6 @@ export default class GedcomMapper {
         children: [],
       };
 
-      // console.log('rela', rela);
       if (rela[TAGS.WIFE]) {
         config.members.push(this.idMap[rela[TAGS.WIFE]]);
       }
