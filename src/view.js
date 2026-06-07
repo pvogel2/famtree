@@ -16,6 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
       foreground={ root.dataset.foregroundColor }
       highlight={ root.dataset.highlightColor }
       selection={ root.dataset.selectionColor }
+      relationSymbols={ root.dataset.relationSymbols === '1' }
       instanceId= { instanceId }
     />);
   });

@@ -27,6 +27,7 @@ function App(props) {
     families = null,
     relations = null, // TODO needed?
     founderFAB = false,
+    relationSymbols = false,
     readonly = false,
     text,
     background,
@@ -44,7 +45,7 @@ function App(props) {
   }, []);
 
   const { setPersons, setFamilies, setFounder, setRelations } = registry.dispatch('famtree/families');
-  const { setForeground, setBackground, setText, setHighlight, setSelection } = registry.dispatch('famtree/runtime');
+  const { setForeground, setBackground, setText, setHighlight, setSelection, setRelationSymbols } = registry.dispatch('famtree/runtime');
 
   const theme = createTheme({
     palette: {
@@ -111,6 +112,10 @@ function App(props) {
       setSelection(selection);
     }
   }, [selection]);
+
+  useEffect(() => {
+    setRelationSymbols(relationSymbols);
+  }, [relationSymbols]);
 
   return (
     <LocalizationProvider dateAdapter={ AdapterDateFns }>

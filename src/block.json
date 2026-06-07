@@ -25,7 +25,7 @@
 		},
 		"founderFAB": {
 			"type": "boolean",
-			"default": "false"
+			"default": false
 		},
 		"backgroundColor": {
 			"type": "string",
@@ -46,6 +46,10 @@
 		"selectionColor": {
 			"type": "string",
 			"default": "#ffffff"
+		},
+		"relationSymbols": {
+			"type": "boolean",
+			"default": false
 		}
 	}
 }

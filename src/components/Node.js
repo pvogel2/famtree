@@ -105,13 +105,14 @@ function Node(props) {
     };
   }, []);
 
-  const { text, foreground, highlight, selection } = useSelect((select) => {
+  const { text, foreground, highlight, selection, relationSymbols } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
       highlight: store.getHighlight(),
       selection: store.getSelection(),
+      relationSymbols: store.getRelationSymbols(),
     };
   });
 
@@ -256,7 +257,7 @@ function Node(props) {
             toLeftId={ (isValidId(leftPartnerId) ? leftPartnerId : null) }
             toRightId={ (isValidId(rightPartnerId) ? rightPartnerId : null) }
             />
-          {relationType && <RelationSymbol
+          {relationType && relationSymbols && <RelationSymbol
             parent={ assetsGroup }
             type={relationType}
             end={relationEnd}

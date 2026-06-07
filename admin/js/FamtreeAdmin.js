@@ -259,7 +259,6 @@ export default class Famtree {
     let doCancel = false;
     try {
       const { persons, relations } = await this.gedcomImporter.import();
-console.log('0', structuredClone(relations));
       const idMap = {};
       const ps = [];
       

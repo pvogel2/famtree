@@ -5,6 +5,7 @@ const DEFAULT_STATE = {
   text: '#333333',
   highlight: '#770000',
   selection: '#ffffff',
+  relationSymbols: false,
 };
 
 export default function reducer( state = DEFAULT_STATE, action ) {
@@ -38,6 +39,11 @@ export default function reducer( state = DEFAULT_STATE, action ) {
       return {
         ...state,
         selection: action.selection,
+      };
+    case 'SET_RELATION_SYMBOLS':
+      return {
+        ...state,
+        relationSymbols: action.relationSymbols,
       };
     default:
       return { ...state };
