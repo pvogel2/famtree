@@ -37,7 +37,7 @@ import { loadFamily } from './lib/Connect';
  * @return {WPElement} Element to render.
  */
 export default function Edit({ attributes, setAttributes, clientId  }) {
-	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor, selectionColor } = attributes;
+	const { align, founder, founderFAB, textColor, backgroundColor, foregroundColor, highlightColor, selectionColor, relationSymbols } = attributes;
     const [families, setFamilies] = useState([]);
 	const [relations, setRelations] = useState([]);
 	const [persons, setPersons] = useState([]);
@@ -91,20 +91,27 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 				  title={ __('General Settings', 'famtree') }
 					initialOpen={ true }
 				>
-				  <SelectControl
-  			    label={ __('Current founder', 'famtree') }
-	  				labelPosition= 'side'
-            value={ parseInt(founder) }
-            onChange={ ( f ) => setAttributes({ founder: parseInt(f) }) }
-				  	options={ getFamiliesOptions() }
+					<SelectControl
+						label={ __('Current founder', 'famtree') }
+	  					labelPosition= 'side'
+            			value={ parseInt(founder) }
+            			onChange={ ( f ) => setAttributes({ founder: parseInt(f) }) }
+				  		options={ getFamiliesOptions() }
 						help={__('For selectable founders you need to set the \'Founder\' flag on at least one person on the FamTree settings page!', 'famtree') }
 					/>
-          <ToggleControl
-  			    label={ __('Show founder menu button', 'famtree') }
-	  				labelPosition= 'side'
-            checked={ founderFAB ? 'checked' : '' }
-            onChange={ () => setAttributes({ founderFAB: !founderFAB }) }
+          			<ToggleControl
+  			    		label={ __('Show founder menu button', 'famtree') }
+	  					labelPosition= 'side'
+            			checked={ founderFAB }
+            			onChange={ () => setAttributes({ founderFAB: !founderFAB }) }
 						help={__('For multiple founders available adds a menu to change the displayed family tree on the published page.', 'famtree') }
+					/>
+          			<ToggleControl
+  			    		label={ __('Show relation symbols', 'famtree') }
+	  					labelPosition= 'side'
+            			checked={ relationSymbols }
+            			onChange={ () => setAttributes({ relationSymbols: !relationSymbols }) }
+						help={__('Shows symbols in family tree for the kind of relation they are in.', 'famtree') }
 					/>
 				</PanelBody>
 				<PanelColorSettings 
@@ -160,11 +167,12 @@ export default function Edit({ attributes, setAttributes, clientId  }) {
 				  relations={ relations }
 				  founderFAB={ founderFAB }	
 				  readonly={ true }
-          text={ textColor }
+          		  text={ textColor }
 				  background={ backgroundColor }
 				  foreground={ foregroundColor }
 				  highlight={ highlightColor }
 				  selection={ selectionColor }
+				  relationSymbols={ relationSymbols }
 				  instanceId={ `famtree${ clientId }` }
 				/>
 		  </div>

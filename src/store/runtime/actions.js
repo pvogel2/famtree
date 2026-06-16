@@ -39,3 +39,10 @@ export function setSelection(selection) {
     selection,
   };
 }
+
+export function setRelationSymbols(relationSymbols) {
+  return {
+    type: 'SET_RELATION_SYMBOLS',
+    relationSymbols,
+  };
+}

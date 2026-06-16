@@ -21,3 +21,7 @@ export function getHighlight( state ) {
 export function getSelection( state ) {
   return state.selection;
 }
+
+export function getRelationSymbols( state ) {
+  return state.relationSymbols;
+}

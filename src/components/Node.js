@@ -3,15 +3,12 @@ import { useSelect } from '@wordpress/data';
 import { Vector3 } from 'three';
 import RenderContext from './RenderContext.js';
 import PartnerRelation from './relations/PartnerRelation';
+import RelationSymbol from './relations/RelationSymbol';
 import ChildRelation from './relations/ChildRelation';
 import KNavigation from './KeyboardNavigation';
 
-import { isValidId, createTreeNode, getRelationsGroup, getAssetsGroup, createNavigationNode } from '../lib/nodes/utils';
+import { NODE_DIST, NODE_SIZE, GEN_DIST, isValidId, createTreeNode, getRelationsGroup, getAssetsGroup, createNavigationNode } from '../lib/nodes/utils';
 import Partner from './Partner';
-
-const NODE_DIST = 6;
-const NODE_SIZE = 6;
-const GEN_DIST = 6;
 
 function getFirstChildOfRelations(rs) {
   const fr = rs.find((rl) => rl.children.length);
@@ -108,13 +105,14 @@ function Node(props) {
     };
   }, []);
 
-  const { text, foreground, highlight, selection } = useSelect((select) => {
+  const { text, foreground, highlight, selection, relationSymbols } = useSelect((select) => {
     const store = select('famtree/runtime');
     return {
       text: store.getText(),
       foreground: store.getForeground(),
       highlight: store.getHighlight(),
       selection: store.getSelection(),
+      relationSymbols: store.getRelationSymbols(),
     };
   });
 
@@ -226,6 +224,9 @@ function Node(props) {
         return null;
       }
 
+      const relationType = r.type;
+      const relationEnd = r.end;
+
       rightPartnerId = getParnterId(relations[idx + 1], person.id) || nextSiblingId;
 
       const children = findItems(r.children, persons);
@@ -244,7 +245,6 @@ function Node(props) {
 
       const partnerFocused = partner.id === focusedPerson?.id;
       const partnerSelected = partner.id === selectedPerson?.id;
-
       const partnerNode = (
         <>
           <Partner
@@ -257,6 +257,14 @@ function Node(props) {
             toLeftId={ (isValidId(leftPartnerId) ? leftPartnerId : null) }
             toRightId={ (isValidId(rightPartnerId) ? rightPartnerId : null) }
             />
+          {relationType && relationSymbols && <RelationSymbol
+            parent={ assetsGroup }
+            type={relationType}
+            end={relationEnd}
+            targetX={ relationTarget.x }
+            targetY={ relationTarget.y }
+            targetZ={ relationTarget.z }
+          />}
           <PartnerRelation
             highstart={ isSelected ? selection : (isFocused ? highlight : undefined) }
             highend={ partnerSelected ? selection : (partnerFocused ? highlight : undefined) }

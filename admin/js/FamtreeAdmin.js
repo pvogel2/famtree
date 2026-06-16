@@ -259,10 +259,9 @@ export default class Famtree {
     let doCancel = false;
     try {
       const { persons, relations } = await this.gedcomImporter.import();
-
       const idMap = {};
       const ps = [];
-
+      
       let autoUpdate = false;
       let importAction = GedcomImporter.MODE_ADD;
       let autoAction = GedcomImporter.MODE_ADD;
@@ -295,24 +294,42 @@ export default class Famtree {
           autoUpdate = auto;
         }
 
-        p.id = null;
+        // p.id = null; why done here?
 
         doCancel = importAction === GedcomImporter.MODE_CANCEL;
 
         stats[importAction]++;
 
         if (doCancel) {
+          p.id = null;
           break;
         }
 
         if (importAction === GedcomImporter.MODE_SKIP) {
           idMap[p.id] = known.id;
+          p.id = null;
           continue;
         }
 
         // set the old id for the new person imported with replace mode, so the client can update the existing person instead of creating a new one
         if (importAction === GedcomImporter.MODE_REPLACE) {
+          // update imported relations with new id setting
+          // console.log('linked', p);
+          /* for (const r of relations) {
+            r.replaceId(p.id, known.id);
+          }*/
+          for (const rId of p.relations) {
+            if (relations[rId]) {
+              relations[rId].replaceId(p.id, known.id);
+            } else {
+              console.warn('did not find relation for linked rleation', rId);
+            }
+          }
           p.id = known.id;
+        }
+
+        if (importAction === GedcomImporter.MODE_ADD) {
+          p.id = null;
         }
 
         const prm = this.savePersons(p); // ADD | REPLACE

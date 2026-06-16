@@ -6,6 +6,8 @@ export default class GedcomMapper {
   constructor(json = { children: [] }) {
     this.json = json;
     this.idMap = {};
+    this.persons = {};
+    this.relations = {};
     this.result = {
       head: null,
       finish: null,
@@ -15,8 +17,8 @@ export default class GedcomMapper {
 
     this.#mapParts();
 
-    this.persons = this.#persons();
-    this.relations = this.#relations();
+    this.#persons();
+    this.#relations();
   }
 
   getResult() {
@@ -106,6 +108,14 @@ export default class GedcomMapper {
     parent.date = node.value;
   }
 
+  TYPE(parent, node) {
+    parent.type = node.value;
+  }
+
+  PLAC(parent, node) {
+    parent.place = node.value;
+  }
+
   FAM(parent, node) {
     if (!parent.relations) {
       parent.relations = [];
@@ -115,6 +125,17 @@ export default class GedcomMapper {
     this.#mapChildren(rela, node);
 
     parent.relations.push(rela);
+  }
+
+  MARR(parent, node) {
+    const marr = {};
+    parent.marr = marr;
+    this.#mapChildren(marr, node);
+  }
+  DIV(parent, node) {
+    const div = {};
+    parent[TAGS.DIV] = div;
+    this.#mapChildren(div, node);
   }
 
   HUSB(parent, node) {
@@ -147,7 +168,7 @@ export default class GedcomMapper {
   }
 
   #persons() {
-    const ps = [];
+    this.persons = {};
     let id = -1;
 
     this.result.individuals.forEach((indi) => {
@@ -164,26 +185,29 @@ export default class GedcomMapper {
       this.idMap[indi.id] = config.id;
 
       const p = new Person(config);
-      ps.push(p);
+      this.persons[p.id] = p;
     });
-
-    return ps;
   }
 
   #relations() {
-    const rs = [];
+    this.relations = {};
+    let id = -1;
 
     this.result.relations.forEach((rela) => {
+      const tmpId = id--;
       const config = {
+        id: tmpId,
         members: [],
         children: [],
       };
 
       if (rela[TAGS.WIFE]) {
+        // console.log('wife', rela[TAGS.WIFE], this.idMap[rela[TAGS.WIFE]]);
         config.members.push(this.idMap[rela[TAGS.WIFE]]);
       }
 
       if (rela[TAGS.HUSB]) {
+        // console.log('husb', rela[TAGS.HUSB], this.idMap[rela[TAGS.HUSB]]);
         config.members.push(this.idMap[rela[TAGS.HUSB]]);
       }
 
@@ -193,15 +217,33 @@ export default class GedcomMapper {
         });
       }
 
-      const r = new Relation(config);
-      rs.push(r);
-    });
+      if (rela[TAGS.MARR]) {
+        if (rela[TAGS.MARR][TAGS.TYPE]) {
+          config.type = rela[TAGS.MARR][TAGS.TYPE];
+        }
 
-    return rs;
+        if (rela[TAGS.MARR][TAGS.DATE]) {
+          config.start = this.#parseDate(rela[TAGS.MARR][TAGS.DATE]);
+        }
+
+        // currently only divorce in case of marriage is supported
+        if (rela[TAGS.DIV]?.[TAGS.DATE]) {
+          config.end = this.#parseDate(rela[TAGS.DIV][TAGS.DATE]);
+        }
+      }
+
+      const r = new Relation(config);
+      [...r.children, ...r.members].forEach((pId) => {
+        this.persons[pId].addRelation(r.id);
+       //console .log('add rel', this.persons[pId].pRelations);
+      });
+
+      this.relations[tmpId] = r;
+    });
   }
 
   getPersons() {
-    return this.persons;
+    return Object.keys(this.persons).map(id => (this.persons[id]));
   }
 
   getRelations() {
